@@ -19,6 +19,11 @@ app.use("/roles", rolesRouter);
 app.use("/category", cateogryRouter);
 app.use("/subcateogry", subcategoriesRouter);
 
+// Handles any other endpoints [unassigned - endpoints]
+const reviewRouter = require("./routes/review");
+app.use("/review", reviewRouter);
+
+
 app.use("*", (req, res) => res.status(404).json("NO content at this path"));
 
 app.listen(PORT, () => {
