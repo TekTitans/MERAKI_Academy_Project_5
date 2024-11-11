@@ -82,7 +82,7 @@ const removeCateegory = async (req, res) => {
 };
 
 const getAllCategory = async (req, res) => {
-  const query = `SELECT * FROM categories RETURNING *;`;
+  const query = `SELECT * FROM categories;`;
 
   try {
     const result = await pool.query(query);
@@ -90,7 +90,7 @@ const getAllCategory = async (req, res) => {
     res.json({
       success: true,
       message: "All Category",
-      category: result.rows[0],
+      category: result.rows,
     });
   } catch (error) {
     res.status(500).json({
