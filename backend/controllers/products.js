@@ -1,7 +1,7 @@
 const pool = require("../models/db.js");
 
 const createProduct = async (req, res) => {
-  // const seller_id = req.token.userId;
+   const seller_id = req.token.userId;
   //console.log(seller_id);
 
   const {
@@ -13,7 +13,7 @@ const createProduct = async (req, res) => {
     color_options,
     size_options,
     product_image,
-    seller_id,
+    
     category_id,
     subcategory_id,
   } = req.body;
@@ -55,7 +55,7 @@ const createProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  //const seller_id = req.token.userId;
+  const seller_id = req.token.userId;
   const productId = req.params.pId;
   const {
     title,
@@ -65,7 +65,6 @@ const updateProduct = async (req, res) => {
     stock_quantity,
     color_options,
     size_options,
-    seller_id,
     product_image,
     category_id,
     subcategory_id,
@@ -79,7 +78,6 @@ const updateProduct = async (req, res) => {
                  stock_quantity=COALESCE($5,stock_quantity),
                  color_options=COALESCE($6,color_options),
                  size_options=COALESCE($7,size_options),
-                 seller_id=COALESCE($11,seller_id),
                  product_image=COALESCE($8,product_image),
                  category_id=COALESCE($9,category_id),
                  subcategory_id=COALESCE($10,subcategory_id) WHERE id = ${productId} AND seller_id = ${seller_id} RETURNING *;`;
@@ -95,7 +93,6 @@ const updateProduct = async (req, res) => {
     product_image,
     category_id,
     subcategory_id,
-    seller_id,
   ];
   try {
     const result = await pool.query(query, data);
