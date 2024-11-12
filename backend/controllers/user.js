@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const saltRounds = parseInt(process.env.SALT);
+const crypto = require("crypto");
 
 const register = async (req, res) => {
   const { first_Name, last_Name, username, role_id, country, email, password } =
@@ -34,7 +35,6 @@ const register = async (req, res) => {
 
   const passwordRegex =
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@!%*?&])[A-Za-z\d$@!%*?&]{8,}$/;
-
   if (!passwordRegex.test(password)) {
     return res.status(400).json({
       success: false,
@@ -45,8 +45,11 @@ const register = async (req, res) => {
 
   try {
     const encryptedPassword = await bcrypt.hash(password, saltRounds);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = await bcrypt.hash(verificationToken, saltRounds);
 
-    const query = `INSERT INTO users (first_Name, last_Name, username, country, email, password, role_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
+    const query = `INSERT INTO users (first_Name, last_Name, username, country, email, password, role_id, verification_token) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
     const data = [
       first_Name,
       last_Name,
@@ -55,17 +58,20 @@ const register = async (req, res) => {
       email.toLowerCase(),
       encryptedPassword,
       role_id,
+      hashedToken,
     ];
 
     const result = await pool.query(query, data);
-
     const newUser = result.rows[0];
 
-    await sendWelcomeEmail(newUser.email, newUser.username, newUser.role_id);
+    await sendVerificationEmail(username, newUser.email, verificationToken);
+
+    await sendWelcomeEmail(newUser.email, username, newUser.role_id);
 
     res.status(201).json({
       success: true,
-      message: "Account created successfully, welcome email sent.",
+      message:
+        "Account created successfully. Please verify your email address.",
     });
   } catch (err) {
     if (err.code === "23505") {
@@ -83,6 +89,123 @@ const register = async (req, res) => {
         "An error occurred while creating your account. Please try again later.",
       error: err.message,
     });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      message: "Token is required.",
+    });
+  }
+
+  try {
+    const query = `SELECT * FROM users WHERE is_verified = false AND verification_token IS NOT NULL`;
+    const result = await pool.query(query);
+
+    const user = result.rows.find(
+      async (user) => await bcrypt.compare(token, user.verification_token)
+    );
+
+    if (user) {
+      const updateQuery = `UPDATE users SET is_verified = TRUE, verification_token = NULL WHERE id = $1`;
+      await pool.query(updateQuery, [user.id]);
+
+      return res.status(200).json({
+        success: true,
+        message: "Email verified successfully.",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Invalid or expired token.",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
+
+const sendVerificationEmail = async (username, email, token) => {
+  try {
+    console.log("username :", username);
+    console.log("email :", email);
+    console.log("token :", token);
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const verificationUrl = `${process.env.FRONTEND_URL}/users/verifyEmail/${token}`;
+
+    const mailOptions = {
+      from: `"SmartCart Team" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Verify Your Email Address – SmartCart",
+      html: `
+          <p>Dear ${username},</p>
+          <p>Thank you for signing up with SmartCart! To complete your registration, please verify your email address by clicking the link below:</p>
+          <p><a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify My Email</a></p>
+          <p>If you are unable to click the button, you can also copy and paste the following link into your browser:</p>
+          <p>${verificationUrl}</p>
+          <p>For any questions or if you didn't create this account, please contact our support team at support@smartcart.com.</p>
+          <p>Best regards,<br>The SmartCart Team</p>
+          <p><strong>SmartCart – Empowering Your E-Commerce Journey</strong></p>
+        `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Verification email sent to:", email);
+  } catch (error) {
+    console.error("Error sending verification email:", error);
+    throw new Error("Email sending failed. Please try again later.");
+  }
+};
+
+const sendWelcomeEmail = async (userEmail, userName, userRole) => {
+  try {
+    console.log("username :", userName);
+    console.log("email :", userEmail);
+    console.log("Role :", userRole);
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    let roleSpecificMessage = "";
+
+    if (userRole === 2) {
+      roleSpecificMessage = `<p>As a seller, you now have access to a range of features that will help you manage your products, orders, and grow your business on SmartCart.</p><p>We are excited to have you as part of our platform!</p>`;
+    } else if (userRole === 3) {
+      roleSpecificMessage = `<p>As a customer, you can now browse our wide selection of products, make purchases, and enjoy a seamless shopping experience at SmartCart.</p><p>We are thrilled to have you with us!</p>`;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: "Welcome to SmartCart – Your E-Commerce Journey Begins!",
+      text: `Dear ${userName},\n\nWelcome to SmartCart!\n\nWe are delighted to have you join our platform.\n\n${roleSpecificMessage}\n\nBest regards,\nThe SmartCart Team\n\nSmartCart – Empowering Your E-Commerce Journey`,
+      html: `<p>Dear ${userName},</p><p>Welcome to SmartCart!</p><p>We are delighted to have you join our platform.</p>${roleSpecificMessage}<p>Best regards,</p><p>The SmartCart Team</p><p><strong>SmartCart – Empowering Your E-Commerce Journey</strong></p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Welcome email sent successfully.");
+  } catch (error) {
+    console.error("Error sending email: ", error);
   }
 };
 
@@ -537,39 +660,6 @@ const AdminUnblockUser = async (req, res) => {
   }
 };
 
-const sendWelcomeEmail = async (userEmail, userName, userRole) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    let roleSpecificMessage = "";
-
-    if (userRole === 2) {
-      roleSpecificMessage = `<p>As a seller, you now have access to a range of features that will help you manage your products, orders, and grow your business on SmartCart.</p><p>We are excited to have you as part of our platform!</p>`;
-    } else if (userRole === 3) {
-      roleSpecificMessage = `<p>As a customer, you can now browse our wide selection of products, make purchases, and enjoy a seamless shopping experience at SmartCart.</p><p>We are thrilled to have you with us!</p>`;
-    }
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: userEmail,
-      subject: "Welcome to SmartCart – Your E-Commerce Journey Begins!",
-      text: `Dear ${userName},\n\nWelcome to SmartCart!\n\nWe are delighted to have you join our platform.\n\n${roleSpecificMessage}\n\nBest regards,\nThe SmartCart Team\n\nSmartCart – Empowering Your E-Commerce Journey`,
-      html: `<p>Dear ${userName},</p><p>Welcome to SmartCart!</p><p>We are delighted to have you join our platform.</p>${roleSpecificMessage}<p>Best regards,</p><p>The SmartCart Team</p><p><strong>SmartCart – Empowering Your E-Commerce Journey</strong></p>`,
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log("Welcome email sent successfully.");
-  } catch (error) {
-    console.error("Error sending email: ", error);
-  }
-};
-
 const generateResetToken = (userId) => {
   // Log and check if the userId is a simple string or number
   console.log("User ID type:", typeof userId); // Should log 'string' or 'number'
@@ -595,7 +685,7 @@ const sendPasswordResetEmail = async (userEmail, resetToken) => {
       },
     });
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/users/reset-password/${resetToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -706,6 +796,7 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
   register,
+  verifyEmail,
   login,
   getProfile,
   updateProfile,
