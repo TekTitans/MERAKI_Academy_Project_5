@@ -3,10 +3,10 @@ const pool = require("../models/db");
 
 
 const createReview=(req,res)=>{
-    const {u_id,p_id,rating,comment}=req.body;
+    const {p_id,rating,comment}=req.body;
     const product_id = p_id;
 
-    const user_id = u_id//req.token.userId;
+    const user_id = req.token.userId
 
     const query = `INSERT INTO reviews (product_id, user_id, rating,comment) VALUES ($1,$2,$3,$4) RETURNING *;`;
     const data = [product_id, user_id, rating,comment];
@@ -111,7 +111,7 @@ const getProductReviews=(req,res)=>{
 };
 const createSellerReviews=(req,res)=>{
     const {user_id,rating,comment}=req.body;
-const id=req.params.id
+const id=req.token.userId
     
 
     const query = `INSERT INTO sellerreviews (seller_id, user_id, rating,comment) VALUES ($1,$2,$3,$4) RETURNING *;`;
