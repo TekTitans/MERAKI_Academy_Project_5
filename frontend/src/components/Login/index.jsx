@@ -17,7 +17,7 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const validateEmail = (email) => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
@@ -121,7 +121,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      history("/dashboard");
+      history("/Home");
     }
   }, [isLoggedIn, history]);
 
@@ -139,17 +139,26 @@ const Login = () => {
         {emailError && <div className="error-note">{emailError}</div>}
 
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
+          name="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         {passwordError && <div className="error-note">{passwordError}</div>}
         {message && (
-          <div className={status ? "SuccessMessage_login" : "ErrorMessage_login"}>
+          <div
+            className={status ? "SuccessMessage_login" : "ErrorMessage_login"}
+          >
             {message}
           </div>
         )}
+        <span
+          className="toggle-password"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "Hide" : "Show"}
+        </span>
 
         <div className="button-container_Login">
           <button onClick={login} className="login-button" disabled={isLoading}>

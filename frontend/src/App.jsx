@@ -27,6 +27,7 @@ function App() {
           path="/users/reset-password/:resetToken"
           element={<ResetPassword />}
         />
+        <Route path="/users/verifyEmail/:token" element={<Login />} />
       </Routes>
     </div>
   );
