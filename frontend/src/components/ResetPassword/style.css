@@ -9,7 +9,7 @@
 .ResetPassword_Container {
   display: flex;
   justify-content: center;
-  background-color: #f0f4f8;
+  background-color: #e6e9f0;
   padding: 3rem;
 }
 
@@ -43,7 +43,7 @@
   font-size: 1rem;
   outline: none;
   transition: border 0.2s ease, box-shadow 0.2s ease;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   background-color: #f9f9f9;
 }
 
@@ -130,6 +130,19 @@
   width: 30px;
   height: 30px;
   animation: spin 1s linear infinite;
+}
+
+.toggle-password-Reset {
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  margin-left: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.toggle-password-Reset:hover {
+  color: #0056b3;
 }
 
 @keyframes spin {

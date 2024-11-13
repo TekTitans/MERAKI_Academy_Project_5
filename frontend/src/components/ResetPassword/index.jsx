@@ -14,6 +14,7 @@ const ResetPassword = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const validatePassword = (password) => {
     const passwordPattern =
@@ -71,18 +72,24 @@ const ResetPassword = () => {
         <p className="Title">Reset Password:</p>
 
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Enter new password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
 
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Confirm new password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
+        <span
+          className="toggle-password-Reset"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "Hide" : "Show"}
+        </span>
 
         {passwordError && <div className="ErrorMessage">{passwordError}</div>}
         {message && (
@@ -108,7 +115,6 @@ const ResetPassword = () => {
             Back to Login
           </a>
         </div>
-
       </div>
     </div>
   );
