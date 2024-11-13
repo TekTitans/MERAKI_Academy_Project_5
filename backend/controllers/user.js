@@ -45,8 +45,10 @@ const register = async (req, res) => {
 
   try {
     const emailCheckQuery = "SELECT * FROM users WHERE email = $1";
-    const emailCheckResult = await pool.query(emailCheckQuery, [email.toLowerCase()]);
-    
+    const emailCheckResult = await pool.query(emailCheckQuery, [
+      email.toLowerCase(),
+    ]);
+
     if (emailCheckResult.rows.length > 0) {
       return res.status(409).json({
         success: false,
@@ -55,8 +57,10 @@ const register = async (req, res) => {
     }
 
     const usernameCheckQuery = "SELECT * FROM users WHERE username = $1";
-    const usernameCheckResult = await pool.query(usernameCheckQuery, [username]);
-    
+    const usernameCheckResult = await pool.query(usernameCheckQuery, [
+      username,
+    ]);
+
     if (usernameCheckResult.rows.length > 0) {
       return res.status(409).json({
         success: false,
@@ -103,7 +107,6 @@ const register = async (req, res) => {
     });
   }
 };
-
 
 const verifyEmail = async (req, res) => {
   const { token } = req.params;
@@ -674,10 +677,8 @@ const AdminUnblockUser = async (req, res) => {
 };
 
 const generateResetToken = (userId) => {
-  // Log and check if the userId is a simple string or number
-  console.log("User ID type:", typeof userId); // Should log 'string' or 'number'
+  console.log("User ID type:", typeof userId);
 
-  // If userId is not a primitive, extract the primitive value
   if (typeof userId !== "string" && typeof userId !== "number") {
     throw new Error("Invalid userId: must be a primitive type");
   }

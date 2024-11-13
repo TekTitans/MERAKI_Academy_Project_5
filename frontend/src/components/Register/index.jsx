@@ -207,7 +207,11 @@ const Register = () => {
                   Customer
                 </label>
               </div>
-
+              {message && (
+                <div className={status ? "SuccessMessage" : "ErrorMessage"}>
+                  {message}
+                </div>
+              )}
               <div className="button-container_Register">
                 <button type="submit" disabled={loading} className="submit-btn">
                   {loading ? (
@@ -220,12 +224,6 @@ const Register = () => {
                 </button>
               </div>
             </form>
-
-            {message && (
-              <div className={status ? "SuccessMessage" : "ErrorMessage"}>
-                {message}
-              </div>
-            )}
           </>
         ) : (
           <>
