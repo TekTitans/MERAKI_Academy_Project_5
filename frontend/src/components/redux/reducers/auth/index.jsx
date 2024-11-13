@@ -5,14 +5,14 @@ export const authSlice = createSlice({
   initialState: {
     token: localStorage.getItem("token"),
     userId: null,
-    isLoggedIn: JSON.parse(localStorage.getItem("isLoggedIn")) || false,  // Parse to boolean
+    isLoggedIn: JSON.parse(localStorage.getItem("isLoggedIn")) || false,  
   },
   reducers: {
     setLogin: (state, action) => {
       const token = action.payload;
       state.token = token;
       state.isLoggedIn = true;
-      localStorage.setItem("isLoggedIn", JSON.stringify(true));  // Store as boolean
+      localStorage.setItem("isLoggedIn", JSON.stringify(true)); 
       localStorage.setItem("token", token);
     },
     setUserId: (state, action) => {

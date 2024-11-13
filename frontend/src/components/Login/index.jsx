@@ -1,49 +1,62 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
-
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogin, setUserId } from "../redux/reducers/auth";
 
-//===============================================================
-
 const Login = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  console.log("isLoggedIn: ",isLoggedIn);
-
   const history = useNavigate();
 
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [message, setMessage] = useState("");
   const [status, setStatus] = useState(false);
-
-  //===============================================================
+  const [isLoading, setIsLoading] = useState(false);  
 
   const login = async (e) => {
     e.preventDefault();
+    setEmailError("");
+    setPasswordError("");
+    setMessage("");
+    setIsLoading(true);  
+
     try {
       const result = await axios.post("http://localhost:5000/users/login", {
         email,
         password,
       });
       if (result.data) {
-        setMessage("");
         dispatch(setLogin(result.data.token));
         dispatch(setUserId(result.data.userId));
-        console.log("isLoggedIn after: ",isLoggedIn);
-      } else throw Error;
+        setMessage("");
+        setStatus(true);
+      } else {
+        throw new Error("Login failed");
+      }
     } catch (error) {
       if (error.response && error.response.data) {
-        return setMessage(error.response.data.message);
+        const errorMessage = error.response.data.message;
+        setMessage(errorMessage);
+
+        if (errorMessage.toLowerCase().includes("email")) {
+          setEmailError("Invalid email address.");
+        }
+        if (errorMessage.toLowerCase().includes("password")) {
+          setPasswordError("Incorrect password.");
+        }
+      } else {
+        setMessage("Error happened while Login, please try again");
       }
-      setMessage("Error happened while Login, please try again");
+      setStatus(false);
+    } finally {
+      setIsLoading(false); 
     }
   };
-
-  //===============================================================
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -51,43 +64,49 @@ const Login = () => {
     }
   }, [isLoggedIn, history]);
 
-  //===============================================================
-
   return (
-    <>
-      <div className="Form">
+    <div className="Login_Container">
+      <div className="Login_Form">
         <p className="Title">Login:</p>
-        <form onSubmit={login}>
-          <br />
 
-          <input
-            type="email"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <br />
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <br />
-          <div className="button-container">
-            <button
-              onClick={(e) => {
-                login(e);
-              }}
-            >
-              Login
-            </button>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {emailError && <div className="error-note">{emailError}</div>}
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {passwordError && <div className="error-note">{passwordError}</div>}
+
+        <div className="button-container_Login">
+          <button onClick={login} className="login-button" disabled={isLoading}>
+            {isLoading ? (
+              <div className="spinner-container">
+                <div className="spinner"></div>
+              </div>
+            ) : (
+              "Login"
+            )}
+          </button>
+          <a onClick={() => history("/forgot-password")} className="forgot-password-link">
+            Forgot Password?
+          </a>
+        </div>
+
+        {message && (
+          <div className={status ? "SuccessMessage" : "ErrorMessage"}>
+            {message}
           </div>
-        </form>
-
-        {status
-          ? message && <div className="SuccessMessage">{message}</div>
-          : message && <div className="ErrorMessage">{message}</div>}
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

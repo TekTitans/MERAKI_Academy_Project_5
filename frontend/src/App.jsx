@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import "./index.css";
+
 
 function App() {
   return (
@@ -15,7 +17,6 @@ function App() {
           Login
         </Link>
       </>
-      <h1>App Component</h1>
       <Routes>
         <Route path="/users" element={<Register />} />
         <Route path="/users/login" element={<Login />} />
