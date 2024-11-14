@@ -44,6 +44,30 @@ const register = async (req, res) => {
   }
 
   try {
+    const emailCheckQuery = "SELECT * FROM users WHERE email = $1";
+    const emailCheckResult = await pool.query(emailCheckQuery, [
+      email.toLowerCase(),
+    ]);
+
+    if (emailCheckResult.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "The email already exists.",
+      });
+    }
+
+    const usernameCheckQuery = "SELECT * FROM users WHERE username = $1";
+    const usernameCheckResult = await pool.query(usernameCheckQuery, [
+      username,
+    ]);
+
+    if (usernameCheckResult.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "The username already exists.",
+      });
+    }
+
     const encryptedPassword = await bcrypt.hash(password, saltRounds);
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = await bcrypt.hash(verificationToken, saltRounds);
@@ -74,14 +98,6 @@ const register = async (req, res) => {
         "Account created successfully. Please verify your email address.",
     });
   } catch (err) {
-    if (err.code === "23505") {
-      return res.status(409).json({
-        success: false,
-        message: "The email already exists.",
-        error: err.message,
-      });
-    }
-
     console.error(err);
     res.status(500).json({
       success: false,
@@ -185,6 +201,7 @@ const sendWelcomeEmail = async (userEmail, userName, userRole) => {
         pass: process.env.EMAIL_PASS,
       },
     });
+    console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
 
     let roleSpecificMessage = "";
 
@@ -661,10 +678,8 @@ const AdminUnblockUser = async (req, res) => {
 };
 
 const generateResetToken = (userId) => {
-  // Log and check if the userId is a simple string or number
-  console.log("User ID type:", typeof userId); // Should log 'string' or 'number'
+  console.log("User ID type:", typeof userId);
 
-  // If userId is not a primitive, extract the primitive value
   if (typeof userId !== "string" && typeof userId !== "number") {
     throw new Error("Invalid userId: must be a primitive type");
   }

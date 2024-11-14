@@ -30,8 +30,8 @@ userRouter.post("/verifyEmail/:token", verifyEmail);
 
 // Protected User Routes ( User Block/Unverified Check)
 userRouter.post("/login", checkBlockedkUser, login);
-userRouter.post("/forgot-password", checkBlockedkUser, forgotPassword);
-userRouter.post("/reset-password", checkBlockedkUser, resetPassword);
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.post("/reset-password",resetPassword);
 
 // Protected User Routes ( Auth )
 

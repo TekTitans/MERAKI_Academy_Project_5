@@ -1,0 +1,207 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.Login_Container {
+  display: flex;
+  justify-content: center;
+  background-color: #e6e9f0;
+  padding: 3rem; 
+}
+
+.Login_Form {
+  background-color: #ffffff;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border: 2px solid #28a745;
+  padding: 2rem; 
+  margin: 2rem; 
+}
+
+.Login_Form .Title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem; 
+}
+
+.Login_Form input {
+  width: 100%;
+  padding: 1rem; 
+  border: 1px solid #ccc;
+  border-radius: 0.4rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 0.5rem; 
+  background-color: #f9f9f9;
+}
+
+.Login_Form input:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 6px rgba(40, 167, 69, 0.4);
+}
+
+.Login_Form .error-note {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem; 
+  text-align: center;
+}
+
+.button-container_Login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-container_Login .login-button {
+  background-color: #28a745;
+  color: white;
+  padding: 1rem; 
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: 1.5rem;
+}
+
+.button-container_Login .login-button:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.button-container_Login .login-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.button-container_Login .forgot-password-link {
+  color: #007bff;
+  font-size: 1rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 1.5rem; 
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.button-container_Login .forgot-password-link:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.Login_Form .SuccessMessage_login,
+.Login_Form .ErrorMessage_login  {
+  padding: 1rem; 
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.SuccessMessage_login {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.ErrorMessage_login  {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #218838;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .Login_Form {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .Title {
+    font-size: 1.3rem;
+  }
+
+  .Login_Form input {
+    font-size: 0.95rem;
+    padding: 0.9rem;
+  }
+
+  .button-container_Login .login-button {
+    font-size: 0.95rem;
+    padding: 0.9rem;
+  }
+
+  .SuccessMessage,
+  .ErrorMessage {
+    font-size: 0.8rem;
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .Login_Form {
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .Title {
+    font-size: 1.1rem;
+  }
+
+  .Login_Form input {
+    font-size: 0.85rem;
+    padding: 0.8rem;
+  }
+
+  .button-container_Login .login-button {
+    font-size: 0.85rem;
+    padding: 0.8rem;
+  }
+
+  .forgot-password-link {
+    font-size: 0.85rem;
+  }
+
+  .SuccessMessage,
+  .ErrorMessage {
+    font-size: 0.75rem;
+    padding: 0.7rem;
+  }
+}
