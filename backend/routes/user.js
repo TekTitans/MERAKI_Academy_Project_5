@@ -22,6 +22,8 @@ const {
   AdminUnblockUser,
   forgotPassword,
   resetPassword,
+  googleLogin,
+  completeRegister,
 } = require("../controllers/user");
 
 // Public Routes (No Auth or status check)
@@ -31,10 +33,14 @@ userRouter.post("/verifyEmail/:token", verifyEmail);
 // Protected User Routes ( User Block/Unverified Check)
 userRouter.post("/login", checkBlockedkUser, login);
 userRouter.post("/forgot-password", forgotPassword);
-userRouter.post("/reset-password",resetPassword);
+userRouter.post("/reset-password", resetPassword);
+
+// Google Sign-In Route
+userRouter.post("/google-login", googleLogin);
+userRouter.post("/google-complete-register/:userId", completeRegister);
+
 
 // Protected User Routes ( Auth )
-
 userRouter.get("/profile", auth, getProfile);
 userRouter.put("/profile", auth, updateProfile);
 userRouter.put("/change-password", auth, updatePassword);
@@ -75,29 +81,3 @@ userRouter.put(
 );
 
 module.exports = userRouter;
-
-/*
- * Testing Object:
-
-   *register:
-{
-  "first_Name": "Sara",
-  "last_Name": "Ahmad",
-  "username": "sara123",
-  "role_id": "1",
-  "country": "Jordan",
-  "email": "sara.alahmad@gmail.com",
-  "password": "123456"
-}
-
-   *UpdateProfile:
-{
-    firstName: "Admin",
-    lastName: "Al-Khateeb",
-    country: "Jordan",
-    location: "Amman",
-    profile_image: "https://example.com/profile.jpg"
-  }
-
-
-*/

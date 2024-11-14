@@ -4,10 +4,12 @@ import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogin, setUserId } from "../redux/reducers/auth";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
   const history = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -18,6 +20,8 @@ const Login = () => {
   const [status, setStatus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isCompletedRegister, setIsCompletedRegister] = useState(false);
+
   const validateEmail = (email) => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
@@ -119,17 +123,41 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLoginSuccess = (response) => {
+    const { credential } = response;
+    axios
+      .post("http://localhost:5000/users/google-login", { token: credential })
+      .then((res) => {
+        dispatch(setLogin(res.data.token));
+        dispatch(setUserId(res.data.userId));
+        setIsCompletedRegister(res.data.isComplete);
+        console.log(res);
+
+        if (res.data.isComplete) {
+          history("/Home");
+        } else {
+          history(`/google-complete-register/${res.data.userId}`);
+        }
+      })
+      .catch((err) => {
+        console.error("Google login error:", err);
+      });
+  };
+
+  const handleGoogleLoginFailure = (error) => {
+    console.error("Google login failure:", error);
+  };
+
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && isCompletedRegister) {
       history("/Home");
     }
-  }, [isLoggedIn, history]);
+  }, [isLoggedIn, isCompletedRegister, history]);
 
   return (
     <div className="Login_Container">
       <div className="Login_Form">
         <p className="Title">Login:</p>
-
         <input
           type="email"
           placeholder="Email"
@@ -137,7 +165,6 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         {emailError && <div className="error-note">{emailError}</div>}
-
         <input
           type={showPassword ? "text" : "password"}
           name="password"
@@ -159,7 +186,6 @@ const Login = () => {
         >
           {showPassword ? "Hide" : "Show"}
         </span>
-
         <div className="button-container_Login">
           <button onClick={login} className="login-button" disabled={isLoading}>
             {isLoading ? (
@@ -173,6 +199,13 @@ const Login = () => {
           <a onClick={handleForgotPassword} className="forgot-password-link">
             Forgot Password?
           </a>
+
+          <div className="google-login-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginFailure}
+            />
+          </div>
         </div>
       </div>
     </div>
