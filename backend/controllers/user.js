@@ -204,6 +204,7 @@ const sendWelcomeEmail = async (userEmail, userName, userRole) => {
         pass: process.env.EMAIL_PASS,
       },
     });
+    console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
 
     let roleSpecificMessage = "";
 
