@@ -8,6 +8,7 @@ import Navbar from "./components/navbar/Navbar";
 
 import ResetPassword from "./components/ResetPassword";
 import { Home } from "./pages/home/Home";
+import Details from "./pages/productdetails/Details";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Register />} />
         <Route path="/users/login" element={<Login />} />
+        <Route path="/details/:pId" element={<Details />} />
         <Route
           path="/users/reset-password/:resetToken"
           element={<ResetPassword />}
