@@ -92,12 +92,21 @@ const getProductReviews=(req,res)=>{
     pool
       .query(query, data)
       .then((result) => {
-        console.log(result.rows)
+       if( result.rows.length==0){
+        res.status(404).json({
+          success: false,
+          message: "no data",
+        
+        });
+
+        
+       }
+       else{
         res.status(200).json({
           success: true,
           message: "review selected successfully",
           result: result.rows[0],
-        });
+        })};
       })
       .catch((err) => {
         res.status(500).json({

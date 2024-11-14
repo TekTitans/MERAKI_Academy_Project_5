@@ -1,4 +1,6 @@
 const express = require("express");
+const auth = require("../middleware/authentication");
+
 const {
     cancelOrder,createOrder,getAllOrders,getOrderDetails
 
@@ -10,10 +12,10 @@ const {
 
 const orderRouter = express.Router();
 
-orderRouter.post("/", createOrder);
-orderRouter.delete("/:id", cancelOrder);
-orderRouter.get("/", getAllOrders);
-orderRouter.get("/details/:id", getOrderDetails);
+orderRouter.post("/",auth ,createOrder);
+orderRouter.delete("/:id", auth,cancelOrder);
+orderRouter.get("/",auth, getAllOrders);
+orderRouter.get("/details/:id",auth, getOrderDetails);
 
 
 
