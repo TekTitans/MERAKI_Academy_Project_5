@@ -7,11 +7,12 @@ import "./index.css";
 import Navbar from "./components/navbar/Navbar";
 
 import ResetPassword from "./components/ResetPassword";
+import { Home } from "./pages/home/Home";
 
 function App() {
   return (
     <div className="App">
-      <Navbar/>
+      <Navbar />
       <>
         <Link className="Link" to="/users">
           Register
@@ -24,6 +25,7 @@ function App() {
         </Link>
       </>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/users" element={<Register />} />
         <Route path="/users/login" element={<Login />} />
         <Route
