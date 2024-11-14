@@ -22,6 +22,7 @@ const Register = () => {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,8 +33,15 @@ const Register = () => {
   };
 
   const validateForm = () => {
-    const { first_Name, last_Name, username, country, email, password } =
-      formData;
+    const {
+      first_Name,
+      last_Name,
+      username,
+      country,
+      email,
+      password,
+      role_id,
+    } = formData;
     const errors = {};
 
     if (!first_Name) errors.first_Name = "First name is required.";
@@ -70,7 +78,7 @@ const Register = () => {
           country: "",
           email: "",
           password: "",
-          role: 3,
+          role_id: 3,
         });
       } else {
         throw new Error(result.data.message || "Registration failed");
@@ -79,7 +87,7 @@ const Register = () => {
       setStatus(false);
       setMessage(
         error.response?.data?.message ||
-          "Error happened while register, please try again"
+          "Error happened while registering, please try again"
       );
     } finally {
       setLoading(false);
@@ -92,6 +100,10 @@ const Register = () => {
 
   const getInputClassName = (field) => {
     return errors[field] ? "input-error" : "";
+  };
+
+  const handleRoleSelection = (role) => {
+    setFormData({ ...formData, role });
   };
 
   return (
@@ -173,7 +185,7 @@ const Register = () => {
 
               <div className="input-group">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Password"
                   onChange={handleInputChange}
@@ -183,30 +195,42 @@ const Register = () => {
                 {errors.password && (
                   <div className="error-note">{errors.password}</div>
                 )}
+                <span
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </span>
               </div>
 
-              <div className="role-selection">
-                <label>
-                  <input
-                    type="radio"
-                    name="role"
-                    value="2"
-                    checked={formData.role === 2}
-                    onChange={() => setFormData({ ...formData, role: 2 })}
-                  />
-                  Seller
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="role"
-                    value="3"
-                    checked={formData.role === 3}
-                    onChange={() => setFormData({ ...formData, role: 3 })}
-                  />
-                  Customer
-                </label>
+              <div className="role-selection-container">
+                <h3>Select Your Role</h3>
+                <div className="role-cards">
+                  <div
+                    className={`role-card ${
+                      formData.role === 2 ? "selected" : ""
+                    }`}
+                    onClick={() => handleRoleSelection(2)}
+                  >
+                    <h4>Seller</h4>
+                  </div>
+                  <div
+                    className={`role-card ${
+                      formData.role === 3 ? "selected" : ""
+                    }`}
+                    onClick={() => handleRoleSelection(3)}
+                  >
+                    <h4>Customer</h4>
+                  </div>
+                </div>
+                {errors.role && <div className="error-note">{errors.role}</div>}
               </div>
+
+              {message && (
+                <div className={status ? "SuccessMessage" : "ErrorMessage"}>
+                  {message}
+                </div>
+              )}
 
               <div className="button-container_Register">
                 <button type="submit" disabled={loading} className="submit-btn">
@@ -220,12 +244,6 @@ const Register = () => {
                 </button>
               </div>
             </form>
-
-            {message && (
-              <div className={status ? "SuccessMessage" : "ErrorMessage"}>
-                {message}
-              </div>
-            )}
           </>
         ) : (
           <>

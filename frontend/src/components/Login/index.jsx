@@ -16,14 +16,48 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);  
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const validateEmail = (email) => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  };
+
+  const validatePassword = (password) => {
+    const passwordPattern =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordPattern.test(password);
+  };
 
   const login = async (e) => {
     e.preventDefault();
     setEmailError("");
     setPasswordError("");
     setMessage("");
-    setIsLoading(true);  
+    setIsLoading(true);
+
+    if (!email) {
+      setEmailError("Email is required");
+      setIsLoading(false);
+      return;
+    }
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+    if (!password) {
+      setPasswordError("Password is required");
+      setIsLoading(false);
+      return;
+    }
+    if (!validatePassword(password)) {
+      setPasswordError(
+        "Password must be at least 8 characters, include at least one number, one letter, and one special character"
+      );
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await axios.post("http://localhost:5000/users/login", {
@@ -42,25 +76,52 @@ const Login = () => {
       if (error.response && error.response.data) {
         const errorMessage = error.response.data.message;
         setMessage(errorMessage);
-
-        if (errorMessage.toLowerCase().includes("email")) {
-          setEmailError("Invalid email address.");
-        }
-        if (errorMessage.toLowerCase().includes("password")) {
-          setPasswordError("Incorrect password.");
-        }
       } else {
         setMessage("Error happened while Login, please try again");
       }
       setStatus(false);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setMessage("");
+    if (!email) {
+      setEmailError("Please enter your email to reset password");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const result = await axios.post(
+        "http://localhost:5000/users/forgot-password",
+        {
+          email,
+        }
+      );
+      if (result.data.success) {
+        setStatus(true);
+        setMessage(
+          "A password reset link has been sent to your email address. Please check your inbox and follow the instructions to reset your password."
+        );
+      } else {
+        setMessage("Error: " + result.data.message);
+      }
+    } catch (error) {
+      setMessage("Error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (isLoggedIn) {
-      history("/dashboard");
+      history("/Home");
     }
   }, [isLoggedIn, history]);
 
@@ -78,12 +139,26 @@ const Login = () => {
         {emailError && <div className="error-note">{emailError}</div>}
 
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
+          name="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         {passwordError && <div className="error-note">{passwordError}</div>}
+        {message && (
+          <div
+            className={status ? "SuccessMessage_login" : "ErrorMessage_login"}
+          >
+            {message}
+          </div>
+        )}
+        <span
+          className="toggle-password"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "Hide" : "Show"}
+        </span>
 
         <div className="button-container_Login">
           <button onClick={login} className="login-button" disabled={isLoading}>
@@ -95,16 +170,10 @@ const Login = () => {
               "Login"
             )}
           </button>
-          <a onClick={() => history("/forgot-password")} className="forgot-password-link">
+          <a onClick={handleForgotPassword} className="forgot-password-link">
             Forgot Password?
           </a>
         </div>
-
-        {message && (
-          <div className={status ? "SuccessMessage" : "ErrorMessage"}>
-            {message}
-          </div>
-        )}
       </div>
     </div>
   );

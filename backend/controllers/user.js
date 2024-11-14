@@ -678,10 +678,8 @@ const AdminUnblockUser = async (req, res) => {
 };
 
 const generateResetToken = (userId) => {
-  // Log and check if the userId is a simple string or number
-  console.log("User ID type:", typeof userId); // Should log 'string' or 'number'
+  console.log("User ID type:", typeof userId);
 
-  // If userId is not a primitive, extract the primitive value
   if (typeof userId !== "string" && typeof userId !== "number") {
     throw new Error("Invalid userId: must be a primitive type");
   }

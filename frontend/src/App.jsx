@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import "./index.css";
 import Navbar from "./components/navbar/Navbar";
 
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   return (
@@ -18,10 +19,18 @@ function App() {
         <Link className="Link" to="/users/login">
           Login
         </Link>
+        <Link className="Link" to="/users/reset-password/:resetToken">
+          Reset Password
+        </Link>
       </>
       <Routes>
         <Route path="/users" element={<Register />} />
         <Route path="/users/login" element={<Login />} />
+        <Route
+          path="/users/reset-password/:resetToken"
+          element={<ResetPassword />}
+        />
+        <Route path="/users/verifyEmail/:token" element={<Login />} />
       </Routes>
     </div>
   );
