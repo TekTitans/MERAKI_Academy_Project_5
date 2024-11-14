@@ -45,8 +45,10 @@ const register = async (req, res) => {
 
   try {
     const emailCheckQuery = "SELECT * FROM users WHERE email = $1";
-    const emailCheckResult = await pool.query(emailCheckQuery, [email.toLowerCase()]);
-    
+    const emailCheckResult = await pool.query(emailCheckQuery, [
+      email.toLowerCase(),
+    ]);
+
     if (emailCheckResult.rows.length > 0) {
       return res.status(409).json({
         success: false,
@@ -55,8 +57,10 @@ const register = async (req, res) => {
     }
 
     const usernameCheckQuery = "SELECT * FROM users WHERE username = $1";
-    const usernameCheckResult = await pool.query(usernameCheckQuery, [username]);
-    
+    const usernameCheckResult = await pool.query(usernameCheckQuery, [
+      username,
+    ]);
+
     if (usernameCheckResult.rows.length > 0) {
       return res.status(409).json({
         success: false,
@@ -103,7 +107,6 @@ const register = async (req, res) => {
     });
   }
 };
-
 
 const verifyEmail = async (req, res) => {
   const { token } = req.params;
@@ -198,6 +201,7 @@ const sendWelcomeEmail = async (userEmail, userName, userRole) => {
         pass: process.env.EMAIL_PASS,
       },
     });
+    console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
 
     let roleSpecificMessage = "";
 

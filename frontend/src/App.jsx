@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import "./index.css";
+import Navbar from "./components/navbar/Navbar";
 
 
 function App() {
   return (
     <div className="App">
+      <Navbar/>
       <>
         <Link className="Link" to="/users">
           Register
