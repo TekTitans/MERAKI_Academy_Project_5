@@ -3,6 +3,7 @@ import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
+import { Link } from "react-router-dom";
 
 export const Home = () => {
   const [message, setMessage] = useState("");
@@ -45,7 +46,9 @@ export const Home = () => {
           <h3 className="product-title">{product.title}</h3>
           <p className="product-description">{product.description}</p>
           <div className="product-price">{product.price} JD</div>
-          <button className="add-to-cart-btn">Add to Cart</button>
+          <Link to={`/details/${product.id}`}>
+            Details
+          </Link>
         </div>
       </div>
     );
