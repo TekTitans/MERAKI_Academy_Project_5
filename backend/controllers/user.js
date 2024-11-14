@@ -5,6 +5,9 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const saltRounds = parseInt(process.env.SALT);
 const crypto = require("crypto");
+const { OAuth2Client } = require("google-auth-library");
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const register = async (req, res) => {
   const { first_Name, last_Name, username, role_id, country, email, password } =
@@ -88,7 +91,7 @@ const register = async (req, res) => {
     const result = await pool.query(query, data);
     const newUser = result.rows[0];
 
-    await sendVerificationEmail(username, newUser.email, verificationToken);
+    await sendVerificationEmail(username, newUser.email, hashedToken);
 
     await sendWelcomeEmail(newUser.email, username, newUser.role_id);
 
@@ -310,6 +313,149 @@ const login = (req, res) => {
         error: err.message,
       });
     });
+};
+
+const googleLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const googleUserId = payload.sub;
+    const email = payload.email;
+    const name = payload.name || "Google User";
+    const picture = payload.picture || "";
+
+    const query = `SELECT * FROM users WHERE email = $1`;
+    const result = await pool.query(query, [email]);
+
+    let user = result.rows[0];
+    let isNewUser = false;
+
+    if (!user) {
+      const createUserQuery = `
+        INSERT INTO users (google_id, email, first_name, profile_image, is_verified, is_active)
+        VALUES ($1, $2, $3, $4, $5, $6) 
+        RETURNING *`;
+
+      const first_name = name.split(" ")[0];
+
+      const createResult = await pool.query(createUserQuery, [
+        googleUserId,
+        email,
+        first_name,
+        picture,
+        true,
+        false,
+      ]);
+
+      user = createResult.rows[0];
+      isNewUser = true;
+    }
+
+    const isComplete = Boolean(
+      user.username && user.last_name && user.country && user.role_id
+    );
+
+    const payloadJwt = {
+      userId: user.id,
+      isComplete,
+      role: user.role_id || null,
+      country: user.country || null,
+    };
+    const options = { expiresIn: "1d" };
+    const tokenJwt = jwt.sign(payloadJwt, process.env.SECRET, options);
+
+    return res.status(200).json({
+      success: true,
+      message: "Google login successful",
+      token: tokenJwt,
+      userId: user.id,
+      isComplete,
+      isNewUser,
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Google login failed",
+      error: error.message,
+    });
+  }
+};
+
+const completeRegister = async (req, res) => {
+  const { username, last_Name, country, role_id } = req.body;
+  const { userId } = req.params;
+
+  try {
+    if (!username || !last_Name || !country || !role_id) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
+    }
+
+    const checkUserQuery = `SELECT is_active FROM users WHERE id = $1`;
+    const checkUserResult = await pool.query(checkUserQuery, [userId]);
+
+    if (checkUserResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    if (checkUserResult.rows[0].is_active) {
+      return res.status(400).json({
+        success: false,
+        message: "Account is already activated.",
+      });
+    }
+
+    const query = `
+      UPDATE users
+      SET username = $1, last_name = $2, country = $3, role_id = $4, is_active = true
+      WHERE id = $5
+      RETURNING *`;
+
+    const result = await pool.query(query, [
+      username,
+      last_Name,
+      country,
+      role_id,
+      userId,
+    ]);
+
+    const updatedUser = result.rows[0];
+
+    const payloadJwt = {
+      userId: updatedUser.id,
+      isComplete: true,
+      role: updatedUser.role_id,
+      country: updatedUser.country,
+    };
+    const options = { expiresIn: "1d" };
+    const tokenJwt = jwt.sign(payloadJwt, process.env.SECRET, options);
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile activated successfully.",
+      user: updatedUser,
+      token: tokenJwt,
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update user profile.",
+      error: error.message,
+    });
+  }
 };
 
 const getProfile = async (req, res) => {
@@ -824,4 +970,6 @@ module.exports = {
   AdminUnblockUser,
   forgotPassword,
   resetPassword,
+  googleLogin,
+  completeRegister,
 };
