@@ -1,7 +1,7 @@
 const pool = require("../models/db.js");
 
 const createProduct = async (req, res) => {
-   const seller_id = req.token.userId;
+  const seller_id = req.token.userId;
   //console.log(seller_id);
 
   const {
@@ -13,7 +13,7 @@ const createProduct = async (req, res) => {
     color_options,
     size_options,
     product_image,
-    
+
     category_id,
     subcategory_id,
   } = req.body;
@@ -154,7 +154,7 @@ const getAllProducts = async (req, res) => {
     res.json({
       success: true,
       message: "All products",
-      category: result.rows,
+      result: result.rows,
     });
   } catch (error) {
     res.status(500).json({

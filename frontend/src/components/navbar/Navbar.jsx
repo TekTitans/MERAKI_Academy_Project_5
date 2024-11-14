@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
-import { RiAccountCircleFill } from "react-icons/ri";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setLogin, setUserId, setLogout } from "../redux/reducers/auth";
-import Login from "../Login";
+import { setLogout } from "../redux/reducers/auth";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const history = useNavigate();
+  //const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -29,7 +28,7 @@ const Navbar = () => {
       {/* Navbar Links */}
       <ul className={`navbar-links ${isOpen ? "open" : ""}`}>
         <li>
-          <a href="#home">Home</a>
+          <Link to="/">Home</Link>
         </li>
         <li>
           <a href="#contact">Contact Us</a>
@@ -58,10 +57,6 @@ const Navbar = () => {
             Login
           </Link>
         )}
-
-        {/* <a href="#login" className="login-btn">
-          Login
-        </a> */}
       </div>
 
       {/* Mobile Menu Toggle */}
