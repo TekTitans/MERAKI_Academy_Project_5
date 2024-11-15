@@ -31,10 +31,10 @@ const Navbar = () => {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <a href="#contact">Contact Us</a>
+          <Link to="/Contact">Contact us</Link>
         </li>
         <li>
-          <a href="#about">About</a>
+          <Link to="/About">About</Link>
         </li>
       </ul>
 
@@ -45,9 +45,10 @@ const Navbar = () => {
 
       {/* Cart & Login */}
       <div className="navbar-icons">
-        <a href="#cart">
+        <Link to="/Cart">
+          {" "}
           <FaShoppingCart />
-        </a>
+        </Link>
         {isLoggedIn ? (
           <Link to="/users/login" className="login-btn" onClick={handleLogout}>
             Logout

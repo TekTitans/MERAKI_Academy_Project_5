@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 
-export const Home = () => {
+const Home = () => {
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const products = useSelector((state) => {
@@ -46,9 +46,7 @@ export const Home = () => {
           <h3 className="product-title">{product.title}</h3>
           <p className="product-description">{product.description}</p>
           <div className="product-price">{product.price} JD</div>
-          <Link to={`/details/${product.id}`}>
-            Details
-          </Link>
+          <Link to={`/details/${product.id}`}>Details</Link>
         </div>
       </div>
     );
@@ -58,3 +56,5 @@ export const Home = () => {
 
   return <div className="container">{showAllProducts}</div>;
 };
+
+export default Home;

@@ -184,23 +184,29 @@ const Register = () => {
               </div>
 
               <div className="input-group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Password"
-                  onChange={handleInputChange}
-                  value={formData.password}
-                  className={getInputClassName("password")}
-                />
+                <div className="input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    onChange={handleInputChange}
+                    value={formData.password}
+                    className={getInputClassName("password")}
+                  />
+                  <span
+                    className="register-toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    <i
+                      className={
+                        showPassword ? "fas fa-eye-slash" : "fas fa-eye"
+                      }
+                    ></i>
+                  </span>
+                </div>
                 {errors.password && (
                   <div className="error-note">{errors.password}</div>
                 )}
-                <span
-                  className="toggle-password"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </span>
               </div>
 
               <div className="role-selection-container">

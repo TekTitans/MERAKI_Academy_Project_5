@@ -1,0 +1,130 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1e2a47;
+  color: #f4f4f4;
+  padding: 0 20px;
+  animation: fadeIn 1s ease-out;
+}
+
+.not-found-box {
+  background: linear-gradient(135deg, #4e74e2, #5e8dc4);
+  padding: 40px 30px;
+  text-align: center;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease-in-out;
+}
+
+.not-found-title {
+  font-size: 130px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 15px;
+  animation: scaleIn 0.6s ease-out;
+}
+
+.not-found-subtitle {
+  font-size: 24px;
+  color: #d0e7ff;
+  margin-bottom: 20px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.not-found-description {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #d9e7f4;
+  line-height: 1.6;
+}
+
+.home-link {
+  background-color: #ffffff;
+  color: #4e74e2;
+  padding: 16px 36px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+  animation: bounceIn 1s ease-out;
+}
+
+.home-link:hover {
+  background-color: #d0e7ff;
+  transform: translateY(-5px);
+  color: #1e2a47;
+}
+
+.home-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .not-found-title {
+    font-size: 100px;
+  }
+
+  .not-found-box {
+    padding: 35px 25px;
+  }
+
+  .home-link {
+    padding: 12px 28px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .not-found-title {
+    font-size: 80px;
+  }
+
+  .not-found-subtitle {
+    font-size: 22px;
+  }
+
+  .not-found-description {
+    font-size: 16px;
+  }
+
+  .home-link {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

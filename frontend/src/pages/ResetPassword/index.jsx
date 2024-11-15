@@ -70,27 +70,38 @@ const ResetPassword = () => {
     <div className="ResetPassword_Container">
       <div className="ResetPassword_Form">
         <p className="Title">Reset Password:</p>
-
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Enter new password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Confirm new password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        <span
-          className="toggle-password-Reset"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? "Hide" : "Show"}
-        </span>
-
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+          </span>
+        </div>
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+          </span>
+        </div>
+       
+       
         {passwordError && <div className="ErrorMessage">{passwordError}</div>}
         {message && (
           <div className={status ? "SuccessMessage" : "ErrorMessage"}>
