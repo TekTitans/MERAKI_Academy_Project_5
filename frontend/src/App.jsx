@@ -2,32 +2,21 @@
 import { Route, Routes } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import Register from "./components/Register";
-import Login from "./components/Login";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
 import "./index.css";
 import Navbar from "./components/navbar/Navbar";
 import { Home } from "./pages/home/Home";
 import Details from "./pages/productdetails/Details";
-import ResetPassword from "./components/ResetPassword";
-import VerifyEmail from "./VerifyEmail";
-import CompletedRegister from "./components/CompleteRegister";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
+import CompletedRegister from "./pages/CompleteRegister";
 
 function App() {
   return (
     <GoogleOAuthProvider clientId="726146060309-4l2d4nuhqk4jhgj13fgg6unnfuii6d47.apps.googleusercontent.com">
       <div className="App">
           <Navbar />
-        <div className="links-container">
-          <Link className="Link" to="/users">
-            Register
-          </Link>
-          <Link className="Link" to="/users/login">
-            Login
-          </Link>
-          <Link className="Link" to="/users/reset-password/:resetToken">
-            Reset Password
-          </Link>
-        </div>
         <Routes>
             <Route path="/" element={<Home />} />
 
