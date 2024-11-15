@@ -6,14 +6,13 @@
   box-sizing: border-box;
 }
 
-.Login_Container {
+.ResetPassword_Container {
   display: flex;
   justify-content: center;
   background-color: #e6e9f0;
-  padding: 3rem; 
 }
 
-.Login_Form {
+.ResetPassword_Form {
   background-color: #ffffff;
   border-radius: 0.8rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -23,105 +22,98 @@
   flex-direction: column;
   align-items: stretch;
   border: 2px solid #28a745;
-  padding: 2rem; 
-  margin: 2rem; 
+  padding: 2rem;
+  margin: 2rem;
 }
 
-.Login_Form .Title {
+.ResetPassword_Form .Title {
   font-size: 1.75rem;
   font-weight: 600;
   color: #333;
   text-align: center;
-  margin-bottom: 2rem; 
+  margin-bottom: 2rem;
 }
 
-.Login_Form input {
+.ResetPassword_Form input {
   width: 100%;
-  padding: 1rem; 
+  padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 0.4rem;
   font-size: 1rem;
   outline: none;
   transition: border 0.2s ease, box-shadow 0.2s ease;
-  margin-bottom: 0.5rem; 
+  margin-bottom: 1rem;
   background-color: #f9f9f9;
 }
 
-.Login_Form input:focus {
+.ResetPassword_Form input:focus {
   border-color: #28a745;
   box-shadow: 0 0 6px rgba(40, 167, 69, 0.4);
 }
 
-.Login_Form .error-note {
-  color: #e74c3c;
+.ResetPassword_Form .SuccessMessage,
+.ResetPassword_Form .ErrorMessage {
   font-size: 0.9rem;
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
+  padding: 1rem;
   text-align: center;
+  border-radius: 0.5rem;
 }
 
-.button-container_Login {
+.SuccessMessage {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.ErrorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.button-container_ResetPassword {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.button-container_Login .login-button {
+.button-container_ResetPassword .submit-button {
   background-color: #28a745;
   color: white;
-  padding: 1rem; 
+  padding: 1rem;
   border: none;
   border-radius: 0.4rem;
   font-size: 1rem;
   width: 100%;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
-  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.button-container_Login .login-button:hover {
+.button-container_ResetPassword .submit-button:hover {
   background-color: #218838;
   transform: translateY(-1px);
 }
 
-.button-container_Login .login-button:disabled {
+.button-container_ResetPassword .submit-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.button-container_Login .forgot-password-link {
+.button-container_ResetPassword .forgot-password-link {
   color: #007bff;
   font-size: 1rem;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  margin-top: 1.5rem; 
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.button-container_Login .forgot-password-link:hover {
+.button-container_ResetPassword .forgot-password-link:hover {
   text-decoration: underline;
   color: #0056b3;
-}
-
-.Login_Form .SuccessMessage_login,
-.Login_Form .ErrorMessage_login  {
-  padding: 1rem; 
-  border-radius: 0.5rem;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.SuccessMessage_login {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.ErrorMessage_login  {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
 }
 
 .spinner-container {
@@ -139,6 +131,19 @@
   animation: spin 1s linear infinite;
 }
 
+.toggle-password-Reset {
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  margin-left: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.toggle-password-Reset:hover {
+  color: #0056b3;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -149,21 +154,21 @@
 }
 
 @media (max-width: 768px) {
-  .Login_Form {
+  .ResetPassword_Form {
     width: 90%;
     padding: 1.5rem;
   }
 
-  .Title {
+  .ResetPassword_Form .Title {
     font-size: 1.3rem;
   }
 
-  .Login_Form input {
+  .ResetPassword_Form input {
     font-size: 0.95rem;
     padding: 0.9rem;
   }
 
-  .button-container_Login .login-button {
+  .button-container_ResetPassword .submit-button {
     font-size: 0.95rem;
     padding: 0.9rem;
   }
@@ -175,51 +180,22 @@
   }
 }
 
-.google-login-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
-
-.google-login-wrapper button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #db4437;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.google-login-wrapper button:hover {
-  background-color: #c23321;
-}
-
-.google-login-wrapper button:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(219, 68, 55, 0.6);
-}
-
 @media (max-width: 480px) {
-  .Login_Form {
+  .ResetPassword_Form {
     width: 100%;
     padding: 1.5rem;
   }
 
-  .Title {
+  .ResetPassword_Form .Title {
     font-size: 1.1rem;
   }
 
-  .Login_Form input {
+  .ResetPassword_Form input {
     font-size: 0.85rem;
     padding: 0.8rem;
   }
 
-  .button-container_Login .login-button {
+  .button-container_ResetPassword .submit-button {
     font-size: 0.85rem;
     padding: 0.8rem;
   }
