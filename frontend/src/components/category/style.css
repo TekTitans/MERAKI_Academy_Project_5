@@ -1,0 +1,10 @@
+.categories {
+  display: flex;
+  justify-content: space-between;
+  width: 700px;
+  margin: auto;
+  font-size: 17px;
+}
+.categoryCard {
+  display: flex;
+}

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 export const Home = () => {
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
+  const [size, setSize] = useState(5);
   const products = useSelector((state) => {
     console.log();
 
@@ -16,12 +17,12 @@ export const Home = () => {
 
   const getAllProducts = async () => {
     try {
-      const result = await axios.get("http://localhost:5000/products/");
-      console.log(result);
+      const result = await axios.get(
+        `http://localhost:5000/products?size=${size}`
+      );
 
       if (result.data.success) {
         const allProducts = result.data.result;
-        // console.log(products);
 
         dispatch(setProducts(allProducts));
       } else {
@@ -34,10 +35,13 @@ export const Home = () => {
       setMessage("Error happened while Get Data, please try again");
     }
   };
-
+  const handleSize = () => {
+    setSize(size + 5);
+    console.log(size);
+  };
   useEffect(() => {
     getAllProducts();
-  }, []);
+  }, [products]);
 
   const showAllProducts = products?.map((product, index) => {
     return (
@@ -46,15 +50,18 @@ export const Home = () => {
           <h3 className="product-title">{product.title}</h3>
           <p className="product-description">{product.description}</p>
           <div className="product-price">{product.price} JD</div>
-          <Link to={`/details/${product.id}`}>
-            Details
-          </Link>
+          <Link to={`/details/${product.id}`}>Details</Link>
         </div>
       </div>
     );
   });
 
-  console.log(products);
-
-  return <div className="container">{showAllProducts}</div>;
+  return (
+    <div className="container">
+      {showAllProducts}
+      <button className="pagination" onClick={handleSize}>
+        Show More
+      </button>{" "}
+    </div>
+  );
 };

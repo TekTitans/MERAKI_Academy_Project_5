@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -10,11 +9,13 @@ import Navbar from "./components/navbar/Navbar";
 import ResetPassword from "./components/ResetPassword";
 import { Home } from "./pages/home/Home";
 import Details from "./pages/productdetails/Details";
+import Category from "./components/category/Category";
 
 function App() {
   return (
     <div className="App">
       <Navbar />
+      <Category />
       <>
         <Link className="Link" to="/users">
           Register
