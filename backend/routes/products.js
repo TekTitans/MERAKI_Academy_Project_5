@@ -9,6 +9,7 @@ const {
   getProductById,
   getSellerProduct,
   getProductsByCategory,
+  getProductByName,
 } = require("../controllers/products");
 
 const productRouter = express.Router();
@@ -20,4 +21,5 @@ productRouter.get("/", getAllProducts);
 productRouter.get("/:pId", getProductById);
 productRouter.get("/seller", auth, getSellerProduct);
 productRouter.get("/category/:cId", getProductsByCategory);
+productRouter.get("/serach/:title", getProductByName);
 module.exports = productRouter;
