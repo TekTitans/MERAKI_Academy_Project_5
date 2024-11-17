@@ -90,10 +90,17 @@ const getCartItems=(req,res)=>{
 
     // const user_id = u_id//req.token.userId;
  
-     const query = `SELECT price ,quantity ,title,description 
-FROM cart
-FULL OUTER JOIN orders
-ON cart.order_id= orders.id JOIN products on cart.product_id=products.id
+     const query = `SELECT 
+    t1.price, 
+    t1.description, 
+    t2.quantity,
+    t1.title
+FROM 
+    products t1
+FULL OUTER JOIN 
+    cart t2
+ON 
+    t1.id = t2.product_id
 WHERE user_id=$1;`;
      const data = [user_id];
      pool
