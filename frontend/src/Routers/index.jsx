@@ -9,7 +9,7 @@ import VerifyEmail from "../pages/VerifyEmail";
 import CompletedRegister from "../pages/CompleteRegister";
 import Main from "../Layouts/Main";
 import Contact from "../pages/Contact";
-import FAQ from "../pages/FAQ";
+
 
 export const router = createBrowserRouter(
   [
@@ -31,7 +31,7 @@ export const router = createBrowserRouter(
           element: <CompletedRegister />,
         },
         { path: "/Contact", element: <Contact /> },
-        { path: "/FAQ", element: <FAQ /> },
+
         { path: "*", element: <NotFound /> },
       ],
     },
