@@ -3,6 +3,7 @@ import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
+import { addToCart } from "../../components/redux/reducers/product/product";
 
 export const Home = () => {
   const [message, setMessage] = useState("");
@@ -33,6 +34,26 @@ export const Home = () => {
       setMessage("Error happened while Get Data, please try again");
     }
   };
+  //////////////////////////////////////////////
+  const addToMyCart = (productId) => {
+
+    axios.get(`http://localhost:5000/products/${productId}`)
+    .then((response)=>{
+        dispatch(addToCart(response.data.product));
+
+      console.log(response.data)
+
+    })
+    .catch((error)=>{
+      console.log(err)
+
+    })
+
+    
+  };
+console.log(products)
+
+  /////////////////////////////////////////////
 
   useEffect(() => {
     getAllProducts();
@@ -45,13 +66,12 @@ export const Home = () => {
           <h3 className="product-title">{product.title}</h3>
           <p className="product-description">{product.description}</p>
           <div className="product-price">{product.price} JD</div>
-          <button className="add-to-cart-btn">Add to Cart</button>
+          <button onClick={()=>{addToMyCart(product.id)}} className="add-to-cart-btn">Add to Cart</button>
         </div>
       </div>
     );
   });
 
-  console.log(products);
 
   return <div className="container">{showAllProducts}</div>;
 };

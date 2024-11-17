@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
 
 const Navbar = () => {
+  const Navigate=useNavigate()
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   //const history = useNavigate();
@@ -46,7 +47,7 @@ const Navbar = () => {
       {/* Cart & Login */}
       <div className="navbar-icons">
         <a href="#cart">
-          <FaShoppingCart />
+          <FaShoppingCart onClick={()=>{Navigate("/Cart")}} />
         </a>
         {isLoggedIn ? (
           <Link to="/users/login" className="login-btn" onClick={handleLogout}>
