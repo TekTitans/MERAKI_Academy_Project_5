@@ -1,16 +1,6 @@
-
 import { Route, Routes } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import "./index.css";
-import Navbar from "./components/navbar/Navbar";
-import { Home } from "./pages/home/Home";
-import Details from "./pages/productdetails/Details";
-import ResetPassword from "./pages/ResetPassword";
-import VerifyEmail from "./pages/VerifyEmail";
-import CompletedRegister from "./pages/CompleteRegister";
+import { GoogleOAuthProvider } from "@react-oauth/google"
 
 function App() {
   return (
@@ -36,8 +26,7 @@ function App() {
         </Routes>
       </div>
     </GoogleOAuthProvider>
-
-  );
+  )
 }
 
 export default App;
