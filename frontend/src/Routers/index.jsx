@@ -9,6 +9,7 @@ import VerifyEmail from "../pages/VerifyEmail";
 import CompletedRegister from "../pages/CompleteRegister";
 import Main from "../Layouts/Main";
 import Contact from "../pages/Contact";
+import Cart from "../pages/cart/Cart"
 
 
 export const router = createBrowserRouter(
@@ -18,6 +19,8 @@ export const router = createBrowserRouter(
       element: <Main />,
       children: [
         { path: "/", element: <Home /> },
+        { path: "/cart", element: <Cart /> },
+
         { path: "/users", element: <Register /> },
         { path: "/users/login", element: <Login /> },
         {

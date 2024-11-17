@@ -47,7 +47,7 @@ const addToCart = async (req, res) => {
  
 
 const removeFromCart=async(req,res)=>{
-  const userId =1// req.token.userId;
+  const userId = req.token.userId;
   const  productId = req.params.id;
   try {
     const checkQuery =
@@ -85,12 +85,16 @@ const removeFromCart=async(req,res)=>{
 
 
 const getCartItems=(req,res)=>{
-    const user_id=7;
+    const user_id= req.token.userId;
     
 
     // const user_id = u_id//req.token.userId;
  
-     const query = `SELECT * FROM cart WHERE user_id=$1 ;`;
+     const query = `SELECT price ,quantity ,title,description 
+FROM cart
+FULL OUTER JOIN orders
+ON cart.order_id= orders.id JOIN products on cart.product_id=products.id
+WHERE user_id=$1;`;
      const data = [user_id];
      pool
        .query(query, data)

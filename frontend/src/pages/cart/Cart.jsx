@@ -4,31 +4,32 @@ import { useDispatch, useSelector } from "react-redux";
 
 
 import axios from "axios";
-//import "./Cart.css"
 const Cart=()=>{
-    const [numOfItems,setNumOfitems]=useState(0)
-    const cart = useSelector((state) => {
-
-        return state.product.cart;
+    const [myCart,setMyCart]=useState({})
+    const token = useSelector((state) => {
+        return state.auth.token;
       });
-useEffect(()=>{
-    
-},[])
+    const  headers= {
+        Authorization: `Bearer ${token}`,
+      }
+    const uId = useSelector((state) => {
+        return state.auth.userId;
+      });
+    useEffect(() => {
+        axios
+          .get(`http://localhost:5000/cart`,{headers})
+          .then((response) => {
+            console.log(response.data.result);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }, []);
 
 
-
-    const renderCart=cart.map((elem,index)=>{
-    
-        return(
-            <div key={index}>
-                <p>{numOfItems}</p>
-                {elem.title}
-                </div>
-        )
-    })
-    console.log(cart)
     return(
-        <h1>{renderCart}</h1>
+        
+        <h1>cart</h1>
     )
     
 }

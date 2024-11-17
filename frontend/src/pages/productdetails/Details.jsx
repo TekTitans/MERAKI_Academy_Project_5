@@ -46,7 +46,7 @@ return 0
     axios
     .post(` http://localhost:5000/cart/${pId}`,{},{headers})
     .then((response)=>{
-      console.log(response)
+      console.log(response.data)
 
     })
     .catch((error)=>{
