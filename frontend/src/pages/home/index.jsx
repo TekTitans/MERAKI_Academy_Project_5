@@ -5,10 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 
-export const Home = () => {
+const Home = () => {
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
-  const [size, setSize] = useState(5);
   const products = useSelector((state) => {
     console.log();
 
@@ -17,12 +16,12 @@ export const Home = () => {
 
   const getAllProducts = async () => {
     try {
-      const result = await axios.get(
-        `http://localhost:5000/products?size=${size}`
-      );
+      const result = await axios.get("http://localhost:5000/products/");
+      console.log(result);
 
       if (result.data.success) {
         const allProducts = result.data.result;
+        // console.log(products);
 
         dispatch(setProducts(allProducts));
       } else {
@@ -35,13 +34,10 @@ export const Home = () => {
       setMessage("Error happened while Get Data, please try again");
     }
   };
-  const handleSize = () => {
-    setSize(size + 5);
-    console.log(size);
-  };
+
   useEffect(() => {
     getAllProducts();
-  }, [products]);
+  }, []);
 
   const showAllProducts = products?.map((product, index) => {
     return (
@@ -56,12 +52,9 @@ export const Home = () => {
     );
   });
 
-  return (
-    <div className="container">
-      {showAllProducts}
-      <button className="pagination" onClick={handleSize}>
-        Show More
-      </button>{" "}
-    </div>
-  );
+  console.log(products);
+
+  return <div className="container">{showAllProducts}</div>;
 };
+
+export default Home;

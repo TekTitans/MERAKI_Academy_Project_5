@@ -1,4 +1,3 @@
-const e = require("express");
 const pool = require("../models/db.js");
 
 const createProduct = async (req, res) => {
@@ -147,12 +146,10 @@ const removeProduct = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const pageSize = parseInt(req.query.size) || 10;
+  const query = `SELECT * FROM products;`;
 
-  const query = `SELECT * FROM products LIMIT $1 ;`;
-  const data = [pageSize];
   try {
-    const result = await pool.query(query, data);
+    const result = await pool.query(query);
 
     res.json({
       success: true,
@@ -167,35 +164,6 @@ const getAllProducts = async (req, res) => {
     });
   }
 };
-
-// const getAllProducts = async (req, res) => {
-//   try {
-//     const page = parseInt(req.query.page) || 1; // Current page (default is 1)
-//     const pageSize = parseInt(req.query.size) || 10; // Items per page (default is 10)
-//     const offset = (page - 1) * pageSize; // Calculate the offset
-
-//     // Fetch products for the current page
-//     const products = await pool.query(
-//       "SELECT * FROM products LIMIT $1 OFFSET $2",
-//       [pageSize, offset]
-//     );
-
-//     // Fetch total product count
-//     const  count  = await pool.query(
-//       "SELECT COUNT(*) AS count FROM products"
-//     );
-
-//     // Send response
-//     res.json({
-//       "products":products.rows,
-//       totalPages: Math.ceil(count / pageSize),
-//       currentPage: page,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to fetch products" });
-//   }
-// };
 
 const getProductById = async (req, res) => {
   const productId = req.params.pId;
@@ -247,37 +215,6 @@ const getSellerProduct = async (req, res) => {
   }
 };
 
-const getProductsByCategory = async (req, res) => {
-  const category_id = req.params.cId;
-  const query = `SELECT * FROM products WHERE category_id = $1 `;
-  const data = [category_id];
-
-  try {
-    const result = await pool.query(query, data);
-    console.log(result.rows.length);
-
-    if (result.rows.length == 0) {
-      res.json({
-        success: false,
-        message: "no product with this category",
-      });
-    } else {
-      res.json({
-        success: true,
-        message: "product Details",
-        product: result.rows,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      err: error,
-    });
-  }
-};
 module.exports = {
   createProduct,
   updateProduct,
@@ -285,5 +222,4 @@ module.exports = {
   getAllProducts,
   getProductById,
   getSellerProduct,
-  getProductsByCategory,
 };

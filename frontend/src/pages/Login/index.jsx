@@ -120,7 +120,7 @@ const Login = () => {
         setIsCompletedRegister(res.data.isComplete);
 
         if (res.data.isComplete) {
-          history("/Home");
+          history("/");
         } else {
           history(`/google-complete-register/${res.data.userId}`);
         }
@@ -138,7 +138,7 @@ const Login = () => {
   }, [isLoggedIn, isCompletedRegister, history]);
 
   const handleRegisterClick = () => {
-    history("/register");
+    history("/users");
   };
 
   return (

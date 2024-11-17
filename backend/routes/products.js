@@ -8,7 +8,6 @@ const {
   getAllProducts,
   getProductById,
   getSellerProduct,
-  getProductsByCategory,
 } = require("../controllers/products");
 
 const productRouter = express.Router();
@@ -19,5 +18,4 @@ productRouter.delete("/:pId", auth, authz("delete_product"), removeProduct);
 productRouter.get("/", getAllProducts);
 productRouter.get("/:pId", getProductById);
 productRouter.get("/seller", auth, getSellerProduct);
-productRouter.get("/category/:cId", getProductsByCategory);
 module.exports = productRouter;
