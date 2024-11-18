@@ -4,14 +4,14 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
+import { Search } from "../Serach";
 
 export const Home = () => {
+  const [isSerached, setIsSerached] = useState(false);
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const [size, setSize] = useState(5);
   const products = useSelector((state) => {
-    console.log();
-
     return state.product.products;
   });
 
@@ -41,7 +41,7 @@ export const Home = () => {
   };
   useEffect(() => {
     getAllProducts();
-  }, [products]);
+  }, []);
 
   const showAllProducts = products?.map((product, index) => {
     return (
@@ -55,10 +55,11 @@ export const Home = () => {
       </div>
     );
   });
+  //console.log(isSerached);
 
   return (
     <div className="container">
-      {showAllProducts}
+      {isSerached ? <Search /> : showAllProducts}
       <button className="pagination" onClick={handleSize}>
         Show More
       </button>

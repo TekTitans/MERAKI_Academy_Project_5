@@ -5,7 +5,7 @@ const pool = require("../models/db");
 const addToCart = async (req, res) => {
   const quantity=1
 
-    const userId =1// req.token.userId;
+    const userId = 1// req.token.userId;
     const  productId = req.params.id;
     try {
       const productQuery = "SELECT * FROM products WHERE id = $1";
