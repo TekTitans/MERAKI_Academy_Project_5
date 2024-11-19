@@ -149,7 +149,7 @@ const ProfilePage = () => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="profile">
+    <div className="profile-page">
       <div className="profile__header">
         <h2>Profile Page</h2>
         {message && <p className="profile__message">{message}</p>}
@@ -267,49 +267,56 @@ const ProfilePage = () => {
           </div>
         </form>
       ) : (
-        <div className="profile__details">
-          {userData.profilePicture ? (
-            <img
-              src={userData.profilePicture}
-              alt="Profile"
-              className="profile__picture"
-            />
-          ) : (
-            <div className="profile__picture-icon">
-              <FaUserAlt size={50} />
+        <div className="profile_Layout">
+          <div className="profile__picture-container">
+            
+            {userData.profilePicture ? (
+              <img
+                src={userData.profilePicture}
+                alt="Profile"
+                className="profile__picture"
+              />
+            ) : (
+              <div className="profile__picture-icon">
+                <FaUserAlt size={50} />
+              </div>
+            )}
+          </div>
+          <div className="profile__details">
+          <div className="details__titles">
+              <p>First Name:</p>
+              <p>Last Name:</p>
+              <p>Email:</p>
+              <p>User Name:</p>
+              <p>Country:</p>
+              <p>Address:</p>
+              <p>Location:</p>
+              <p>Social Media:</p>
+              <p>Bio:</p>
+              <p>Role:</p>
             </div>
-          )}
-          <p>
-            <strong>First Name:</strong> {userData.firstName}
-          </p>
-          <p>
-            <strong>Last Name:</strong> {userData.lastName}
-          </p>
-          <p>
-            <strong>Email:</strong> {userData.email}
-          </p>
-          <p>
-            <strong>User Name:</strong> {userData.userName}
-          </p>
-          <p>
-            <strong>Country:</strong> {userData.country}
-          </p>
-          <p>
-            <strong>Address:</strong> {userData.address}
-          </p>
-          <p>
-            <strong>Location:</strong> {userData.location}
-          </p>
-          <p>
-            <strong>Social Media:</strong>{" "}
-            <a href={userData.socialMedia}>{userData.socialMedia}</a>
-          </p>
-          <p>
-            <strong>Bio:</strong> {userData.bio}
-          </p>
-          <p>
-            <strong>Role:</strong> {userData.role}
-          </p>
+            <div className="details__info">
+              <p>{userData.firstName}</p>
+              <p>{userData.lastName}</p>
+              <p>{userData.email}</p>
+              <p>{userData.userName}</p>
+              <p>{userData.country}</p>
+              <p>{userData.address}</p>
+              <p>{userData.location}</p>
+              <p>
+                <a
+                  href={userData.socialMedia}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {userData.socialMedia}
+                </a>
+              </p>
+              <p>{userData.bio}</p>
+              <p>{userData.role}</p>
+            </div>
+           
+          </div>
           <button className="btn btn-edit" onClick={() => setIsEditing(true)}>
             Edit Profile
           </button>
