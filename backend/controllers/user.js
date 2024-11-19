@@ -487,8 +487,8 @@ const getProfile = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  const { userId } = req.token;
-  const { firstName, lastName, country, location, profile_image } = req.body;
+  const { userId } = req.token; 
+  const { firstName, lastName, country, address, location, profile_image, bio, social_media } = req.body;
 
   const fields = [];
   const values = [];
@@ -506,6 +506,10 @@ const updateProfile = async (req, res) => {
     fields.push(`country = $${index++}`);
     values.push(country);
   }
+  if (address) {
+    fields.push(`address = $${index++}`);
+    values.push(address);
+  }
   if (location) {
     fields.push(`location = $${index++}`);
     values.push(location);
@@ -513,6 +517,14 @@ const updateProfile = async (req, res) => {
   if (profile_image) {
     fields.push(`profile_image = $${index++}`);
     values.push(profile_image);
+  }
+  if (bio) {
+    fields.push(`bio = $${index++}`);
+    values.push(bio);
+  }
+  if (social_media) {
+    fields.push(`social_media = $${index++}`);
+    values.push(social_media);
   }
 
   if (fields.length === 0) {
@@ -524,9 +536,7 @@ const updateProfile = async (req, res) => {
 
   values.push(userId);
 
-  const query = `UPDATE users SET ${fields.join(
-    ", "
-  )} WHERE id = $${index} RETURNING *`;
+  const query = `UPDATE users SET ${fields.join(", ")} WHERE id = $${index} RETURNING *`;
 
   try {
     const result = await pool.query(query, values);
@@ -544,6 +554,7 @@ const updateProfile = async (req, res) => {
       });
     }
   } catch (err) {
+    console.error("Error updating profile:", err.message);
     res.status(500).json({
       success: false,
       message: "Server error",
