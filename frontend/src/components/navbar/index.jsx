@@ -4,35 +4,19 @@ import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
-import { setProducts } from "../redux/reducers/product/product";
-
-import axios from "axios";
+import { setSearch } from "../redux/reducers/product/product";
 
 const Navbar = () => {
-  const [name, setName] = useState("");
-  const [isSearched, setIsSearched] = useState(false);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const products = useSelector((state) => {
-    return state.product.products;
-  });
+
+  const handleSearch = (e) => {
+    dispatch(setSearch(e.target.value));
+  };
 
   const toggleMenu = () => setIsOpen(!isOpen);
-  const handleSearch = () => {
-    axios
-      .get(`http://localhost:5000/products/serach/${name}`)
-      .then((respone) => {
-        console.log(respone.data.product);
-        dispatch(setProducts(respone.data.product));
-        setIsSearched(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  //console.log(products);
 
   const handleLogout = () => {
     dispatch(setLogout());
@@ -63,11 +47,10 @@ const Navbar = () => {
         <form>
           <input
             type="text"
-            onClick={handleSearch}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
             placeholder="Search..."
+            onChange={(e) => {
+              handleSearch(e);
+            }}
           />
         </form>
       </div>
