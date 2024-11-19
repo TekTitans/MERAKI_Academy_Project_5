@@ -2,22 +2,54 @@ import React, { useEffect, useState } from "react";
 import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts } from "../../components/redux/reducers/product/product";
-import { Link } from "react-router-dom";
+import {
+  setProducts,
+  setcatid,
+} from "../../components/redux/reducers/product/product";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Home = () => {
+  const catId = useSelector((state) => {
+    return state.product.catid;
+  });
 
   const search = useSelector((state) => {
     return state.product.search;
   });
+  const Navigate = useNavigate();
   const [filterProducts, setFilterProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const [size, setSize] = useState(5);
   const products = useSelector((state) => {
     return state.product.products;
   });
+  useEffect(() => {
+    axios
+      .get(` http://localhost:5000/category`)
+      .then((result) => {
+        setCategories(result.data.category);
+        //setcatid(result.data.category.id);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
 
+  const allcategories = categories?.map((elem, index) => {
+    return (
+      <div className="categoryCard" key={index}>
+        <button
+          onClick={() => {
+            Navigate(`/category/${elem.id}`);
+          }}
+        >
+          {elem.name}
+        </button>
+      </div>
+    );
+  });
   const getAllProducts = async () => {
     try {
       const result = await axios.get(
@@ -49,6 +81,13 @@ export const Home = () => {
   useEffect(() => {
     getAllProducts();
   }, [products]);
+
+  // useEffect(() => {
+  //   const catFilter = products.filter((product) => {
+  //     product.category_id === 1;
+  //   });
+  //   console.log(catFilter);
+  // }, []);
   useEffect(() => {
     const filtered = products.filter((product) =>
       product.title.toLowerCase().includes(search.toLowerCase())
@@ -68,9 +107,10 @@ export const Home = () => {
       </div>
     );
   });
-
   return (
     <>
+      <div className="categories">{allcategories}</div>
+
       <div className="container">{showAllProducts}</div>
       <button className="pagination" onClick={handleSize}>
         Show More

@@ -4,24 +4,23 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Link, useParams } from "react-router-dom";
-import "./style.css";
+import "./details.css";
 
 export const Details = () => {
   const token = useSelector((state) => {
     return state.auth.token;
   });
-  const  headers= {
+  const headers = {
     Authorization: `Bearer ${token}`,
-  }
+  };
 
-  const Navigate=useNavigate()
+  const Navigate = useNavigate();
   const { pId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [reviews, setReviews] = useState({});
   const [product, setProduct] = useState({});
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-
 
   useEffect(() => {
     setIsLoading(true);
@@ -36,28 +35,28 @@ export const Details = () => {
         console.log(err);
       });
   }, []);
+  const createReview = ()=>{
+    axios.post(`http://localhost:5000/`)
+  }
   ///////////////////////////////////////////////////
-  const addToCart=()=>{
-    console.log(token)
-    console.log("this is token")
+  const addToCart = () => {
+    console.log(token);
+    console.log("this is token");
 
-    if(isLoggedIn===false){
-      Navigate("/users/login")
-return 0
+    if (isLoggedIn === false) {
+      Navigate("/users/login");
+      return 0;
     }
     axios
-    .post(` http://localhost:5000/cart/${pId}`,{},{headers})
-    .then((response)=>{
-      console.log(response.data)
-
-    })
-    .catch((error)=>{
-      console.log(error)
-
-    })
-      
-    }
-  console.log(token)
+      .post(` http://localhost:5000/cart/${pId}`, {}, { headers })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  console.log(token);
 
   useEffect(() => {
     axios
@@ -66,7 +65,6 @@ return 0
         if (response.data.success) {
           console.log(response.data);
           setReviews(response.data.result);
-
           setMsg(response.data.message);
         }
       })
@@ -78,20 +76,24 @@ return 0
   console.log(reviews);
 
   return (
-
-
     <>
       <div className="container">
         <div>{product.title}</div>
         <div>{product.price}</div>
         <div>{product.description}</div>
-      <button onClick={()=>{addToCart()}}>add to cart</button>
+        <button
+          onClick={() => {
+            addToCart();
+          }}
+        >
+          add to cart
+        </button>
       </div>
       <h2>Reviews</h2>
       <div className="container">
         <div>{reviews.comment}</div>
         <div>{reviews.rating}</div>
-        <div>{msg}</div>
+        <div><button>Add Review</button></div>
       </div>
     </>
   );

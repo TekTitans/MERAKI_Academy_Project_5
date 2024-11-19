@@ -1,61 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import "./style.css";
 import { setProducts } from "../redux/reducers/product/product";
 const Category = () => {
+  const { id } = useParams();
+  // const Navigate = useNavigate();
+  const catId = useSelector((state) => {
+    return state.product.catid;
+  });
   const dispatch = useDispatch();
-  const [categories, setCategories] = useState([]);
+  // const [categories, setCategories] = useState([]);
   const products = useSelector((state) => {
     return state.product.products;
   });
-
-  //   const handleFilter = (id) => {
-  //     console.log(products);
-  //     dispatch(filterdProduct(id));
-  //     setProducts(filterdProduct);
-  //   };
-
   const handleFilter = (id) => {
     axios
       .get(`http://localhost:5000/products/category/${id}`)
       .then((response) => {
         console.log(response.data.product);
-
-        setProducts(response.data.product);
+        dispatch(setProducts(response.data.product));
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
   useEffect(() => {
-    axios
-      .get(` http://localhost:5000/category`)
-      .then((result) => {
-       // console.log(result.data.category);
-        setCategories(result.data.category);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    handleFilter(id);
   }, []);
-  const allcategories = categories?.map((elem, index) => {
+
+  const showAllProducts = products?.map((product, index) => {
     return (
-      <div className="categoryCard" key={index}>
-        <button
-          onClick={() => {
-            handleFilter(elem.id);
-          }}
-        >
-          {elem.name}
-        </button>
+      <div key={index} className="product-card">
+        <div className="product-info">
+          <h3 className="product-title">{product.title}</h3>
+          <p className="product-description">{product.description}</p>
+          <div className="product-price">{product.price} JD</div>
+          <Link to={`/details/${product.id}`}>Details</Link>
+        </div>
       </div>
     );
   });
- // console.log(products);
 
-  return <div className="categories">{allcategories}</div>;
+  return <div className="container">{showAllProducts}</div>;
 };
 
 export default Category;

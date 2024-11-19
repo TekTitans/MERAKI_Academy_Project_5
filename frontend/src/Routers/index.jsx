@@ -9,10 +9,11 @@ import VerifyEmail from "../pages/VerifyEmail";
 import CompletedRegister from "../pages/CompleteRegister";
 import Main from "../Layouts/Main";
 import Contact from "../pages/Contact";
-import Cart from "../pages/cart/Cart"
+import Cart from "../pages/cart/Cart";
 import ProfilePage from "../pages/ProfilePage";
 
 import { Search } from "../pages/Serach";
+import Category from "../components/category";
 
 export const router = createBrowserRouter(
   [
@@ -40,6 +41,7 @@ export const router = createBrowserRouter(
 
         { path: "*", element: <NotFound /> },
         { path: "/search", element: <Search /> },
+        { path: "/category/:id", element: <Category /> },
       ],
     },
   ],

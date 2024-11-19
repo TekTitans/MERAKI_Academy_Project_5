@@ -8,7 +8,6 @@ export default function Main() {
     <div className="root-layout">
       <header>
         <Navbar />
-        <Category />
       </header>
       <main className="main-content">
         <Outlet />

@@ -6,8 +6,6 @@
   gap: 20px;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: white !important;
-
-
 }
 .product-card {
   width: 300px;
@@ -86,4 +84,8 @@
   border: 0;
   background-color: white;
   margin: auto;
+}
+.categories {
+  display: flex;
+  justify-content: center;
 }
