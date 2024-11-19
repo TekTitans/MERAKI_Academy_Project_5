@@ -6,6 +6,8 @@ import "./style.css";
 export const Details = () => {
   const { pId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [reviews, setReviews] = useState({});
   const [product, setProduct] = useState({});
 
   useEffect(() => {
@@ -22,12 +24,38 @@ export const Details = () => {
       });
   }, []);
 
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/review/${pId}`)
+      .then((response) => {
+        if (response.data.success) {
+          console.log(response.data);
+          setReviews(response.data.result);
+
+          setMsg(response.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setMsg(err.response.data.message);
+      });
+  }, []);
+  console.log(reviews);
+
   return (
-    <div className="container">
-      <div>{product.title}</div>
-      <div>{product.price}</div>
-      <div>{product.description}</div>
-    </div>
+    <>
+      <div className="container">
+        <div>{product.title}</div>
+        <div>{product.price}</div>
+        <div>{product.description}</div>
+      </div>
+      <h2>Reviews</h2>
+      <div className="container">
+        <div>{reviews.comment}</div>
+        <div>{reviews.rating}</div>
+        <div>{msg}</div>
+      </div>
+    </>
   );
 };
 

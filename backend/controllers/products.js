@@ -280,11 +280,10 @@ const getProductsByCategory = async (req, res) => {
 
 const getProductByName = async (req, res) => {
   const name = req.params.title;
-  const query = `SELECT * FROM products WHERE title = $1 `;
-  const data = [name];
+  const query = `SELECT * FROM products WHERE title LIKE '%${name}%' `;
 
   try {
-    const result = await pool.query(query, data);
+    const result = await pool.query(query);
     if (result.rows.length == 0) {
       res.json({
         success: false,
