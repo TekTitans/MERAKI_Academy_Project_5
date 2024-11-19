@@ -9,6 +9,8 @@ import VerifyEmail from "../pages/VerifyEmail";
 import CompletedRegister from "../pages/CompleteRegister";
 import Main from "../Layouts/Main";
 import Contact from "../pages/Contact";
+import ProfilePage from "../pages/ProfilePage";
+
 import { Search } from "../pages/Serach";
 
 export const router = createBrowserRouter(
@@ -31,6 +33,8 @@ export const router = createBrowserRouter(
           element: <CompletedRegister />,
         },
         { path: "/Contact", element: <Contact /> },
+        { path: "/Profile", element: <ProfilePage /> },
+
         { path: "*", element: <NotFound /> },
         { path: "/search", element: <Search /> },
       ],

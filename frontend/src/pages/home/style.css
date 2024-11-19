@@ -6,6 +6,8 @@
   gap: 20px;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: white !important;
+
+
 }
 .product-card {
   width: 300px;
