@@ -156,120 +156,125 @@ const ProfilePage = () => {
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleProfileSubmit} className="profile__form">
-          <div className="form-group">
-            <label>First Name:</label>
-            <input
-              type="text"
-              name="firstName"
-              value={userData.firstName}
-              onChange={handleChange}
-              aria-required="true"
-            />
-            {formErrors.firstName && (
-              <small className="error">{formErrors.firstName}</small>
-            )}
-          </div>
-          <div className="form-group">
-            <label>Last Name:</label>
-            <input
-              type="text"
-              name="lastName"
-              value={userData.lastName}
-              onChange={handleChange}
-              aria-required="true"
-            />
-            {formErrors.lastName && (
-              <small className="error">{formErrors.lastName}</small>
-            )}
-          </div>
-          <div className="form-group">
-            <label>Email:</label>
-            <input type="text" name="email" value={userData.email} disabled />
-          </div>
-          <div className="form-group">
-            <label>User Name:</label>
-            <input
-              type="text"
-              name="userName"
-              value={userData.userName}
-              disabled
-            />
-          </div>
-          <div className="form-group">
-            <label>Country:</label>
-            <input
-              type="text"
-              name="country"
-              value={userData.country}
-              onChange={handleChange}
-              aria-required="true"
-            />
-          </div>
-          <div className="form-group">
-            <label>Address:</label>
-            <input
-              type="text"
-              name="address"
-              value={userData.address}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Location:</label>
-            <input
-              type="text"
-              name="location"
-              value={userData.location}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Social Media:</label>
-            <input
-              type="text"
-              name="socialMedia"
-              value={userData.socialMedia}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Bio:</label>
-            <textarea name="bio" value={userData.bio} onChange={handleChange} />
-          </div>
-          <div className="form-group">
-            <label>Profile Picture:</label>
-            <input type="file" onChange={handleFileChange} />
-            {userData.profilePicture ? (
-              <img
-                src={userData.profilePicture}
-                alt="Preview"
-                className="profile__picture-preview"
+        <div className="profile_Layout_Edit">
+          <form onSubmit={handleProfileSubmit} className="profile__form">
+            <div className="form-group">
+              <label>First Name:</label>
+              <input
+                type="text"
+                name="firstName"
+                value={userData.firstName}
+                onChange={handleChange}
+                aria-required="true"
               />
-            ) : (
-              <div className="profile__picture-icon">
-                <FaUserAlt size={50} />
-              </div>
-            )}
-          </div>
-          <div className="buttons">
-            <button type="submit" className="btn btn-save">
-              {isSaving ? "Saving..." : "Save Changes"}
-            </button>
-            <button
-              type="button"
-              className="btn btn-cancel"
-              onClick={handleCancelEdit}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+              {formErrors.firstName && (
+                <small className="error">{formErrors.firstName}</small>
+              )}
+            </div>
+            <div className="form-group">
+              <label>Last Name:</label>
+              <input
+                type="text"
+                name="lastName"
+                value={userData.lastName}
+                onChange={handleChange}
+                aria-required="true"
+              />
+              {formErrors.lastName && (
+                <small className="error">{formErrors.lastName}</small>
+              )}
+            </div>
+            <div className="form-group">
+              <label>Email:</label>
+              <input type="text" name="email" value={userData.email} disabled />
+            </div>
+            <div className="form-group">
+              <label>User Name:</label>
+              <input
+                type="text"
+                name="userName"
+                value={userData.userName}
+                disabled
+              />
+            </div>
+            <div className="form-group">
+              <label>Country:</label>
+              <input
+                type="text"
+                name="country"
+                value={userData.country}
+                onChange={handleChange}
+                aria-required="true"
+              />
+            </div>
+            <div className="form-group">
+              <label>Address:</label>
+              <input
+                type="text"
+                name="address"
+                value={userData.address}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Location:</label>
+              <input
+                type="text"
+                name="location"
+                value={userData.location}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Social Media:</label>
+              <input
+                type="text"
+                name="socialMedia"
+                value={userData.socialMedia}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Bio:</label>
+              <textarea
+                name="bio"
+                value={userData.bio}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Profile Picture:</label>
+              <input type="file" onChange={handleFileChange} />
+              {userData.profilePicture ? (
+                <img
+                  src={userData.profilePicture}
+                  alt="Preview"
+                  className="profile__picture-preview"
+                />
+              ) : (
+                <div className="profile__picture-icon">
+                  <FaUserAlt size={50} />
+                </div>
+              )}
+            </div>
+            <div className="buttons">
+              <button type="submit" className="btn btn-save">
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                type="button"
+                className="btn btn-cancel"
+                onClick={handleCancelEdit}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       ) : (
         <div className="profile_Layout">
           <div className="profile__picture-container">
-            
             {userData.profilePicture ? (
               <img
                 src={userData.profilePicture}
@@ -283,7 +288,7 @@ const ProfilePage = () => {
             )}
           </div>
           <div className="profile__details">
-          <div className="details__titles">
+            <div className="details__titles">
               <p>First Name:</p>
               <p>Last Name:</p>
               <p>Email:</p>
@@ -315,7 +320,6 @@ const ProfilePage = () => {
               <p>{userData.bio}</p>
               <p>{userData.role}</p>
             </div>
-           
           </div>
           <button className="btn btn-edit" onClick={() => setIsEditing(true)}>
             Edit Profile

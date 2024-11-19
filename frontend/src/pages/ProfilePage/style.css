@@ -1,15 +1,14 @@
 .profile-page {
   font-family: "Roboto", sans-serif;
   margin: 0 auto;
-  padding: 40px 20px;
-  max-width: 1200px;
+  padding: 2rem 1rem;
   background-color: #f9fafb;
   color: #333;
 }
 
 .profile__header {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 2rem;
 }
 
 .profile__header h2 {
@@ -106,7 +105,6 @@
   text-decoration: underline;
 }
 
-.profile__form label,
 .profile__details p {
   display: flex;
   justify-content: space-between;
@@ -114,14 +112,27 @@
   margin-bottom: 20px;
 }
 .details__titles p {
-    font-weight: bold;
-    color: #007bff;
-    text-align: right;
-    padding-right: 10px;
-    font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+  text-align: right;
+  padding-right: 10px;
+}
 
-  }
-
+.profile_Layout_Edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+.profile__form label {
+  color: #007bff;
+  font-size: 1.25rem;
+}
 .profile__form input,
 .profile__form textarea,
 .profile__form select {
@@ -130,7 +141,6 @@
   font-size: 1.05rem;
   border: 2px solid #ddd;
   border-radius: 8px;
-  margin-top: 8px;
   background-color: #f9f9f9;
   transition: border 0.3s ease, background-color 0.3s ease;
 }
@@ -141,29 +151,6 @@
   border-color: #007bff;
   background-color: #fff;
   outline: none;
-}
-
-.profile__form {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 20px;
-}
-
-.profile__form label {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.profile__form label {
-  font-weight: bold;
-}
-
-.profile__form input,
-.profile__form select,
-.profile__form textarea {
-  grid-column: 2 / 3;
 }
 
 .profile__picture-preview {
@@ -184,8 +171,6 @@
 .buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 40px;
-  gap: 20px;
 }
 
 .btn {
@@ -239,8 +224,7 @@
     font-size: 2.3rem;
   }
 
-  .profile__form,
-  .profile__details {
+  .profile__form {
     padding: 30px;
     max-width: 100%;
     grid-template-columns: 1fr;
@@ -261,6 +245,8 @@
   .buttons {
     flex-direction: column;
     gap: 10px;
+    width: 50%;
+    justify-self: center;
   }
 }
 
