@@ -28,6 +28,10 @@ const ProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -82,12 +86,40 @@ const ProfilePage = () => {
     setUserData({ ...userData, [name]: value });
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    if (!oldPassword || !newPassword) {
+      setPasswordError("Both old and new passwords are required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/users/update-password",
+        { oldPassword, newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessage(response.data.message);
+      setOldPassword("");
+      setNewPassword("");
+    } catch (err) {
+      setPasswordError(
+        err.response ? err.response.data.message : "Error updating password"
+      );
+    }
+  };
+
   const handleFileChange = async (e) => {
+    setIsUploading(true);
+    setUploadError("");
+
+    console.log("isUploading :", isUploading);
     const file = e.target.files[0];
     if (file) {
       const formData = new FormData();
       formData.append("profile_image", file);
-      setIsUploading(true);
 
       try {
         const res = await axios.put(
@@ -165,14 +197,13 @@ const ProfilePage = () => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+    setIsSaving(false);
     setUserData((prevState) => ({
       ...prevState,
       profilePicture: prevState.profilePicture || "",
     }));
     setFormErrors({});
   };
-
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="profile-page">
@@ -251,7 +282,6 @@ const ProfilePage = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-group">
               <label>Social Media:</label>
               <input
@@ -262,40 +292,58 @@ const ProfilePage = () => {
               />
             </div>
             <div className="form-group">
-              <label>Bio:</label>
-              <textarea
-                name="bio"
-                value={userData.bio}
-                onChange={handleChange}
+              <label>Old Password:</label>
+              <input
+                type="password"
+                name="oldPassword"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
               />
             </div>
             <div className="form-group">
+              <label>New Password:</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              {passwordError && (
+                <small className="error">{passwordError}</small>
+              )}
+            </div>
+            <div className="buttons">
+              <button
+                type="button"
+                onClick={handlePasswordChange}
+                className="btn btn-save"
+              >
+                Change Password
+              </button>
+            </div>
+
+            <div className="form-group">
               <label>Profile Picture:</label>
               <input type="file" onChange={handleFileChange} />
-              {userData.profilePicture ? (
-                <img
-                  src={userData.profilePicture}
-                  alt="Preview"
-                  className="profile__picture-preview"
-                />
-              ) : (
-                <div className="profile__picture-icon">
-                  <FaUserAlt size={50} />
-                </div>
-              )}
-              {isUploading && (
-                <div
-                  class="profile__picture-overlay"
-                  id="profilePictureOverlay"
-                >
+              {uploadError && <small className="error">{uploadError}</small>}
+              <div className="profile__picture-container">
+                {userData.profilePicture ? (
                   <img
                     src={userData.profilePicture}
                     alt="Profile Picture"
-                    class="profile__picture"
+                    className="profile__picture"
                   />
-                  <div class="spinner"></div>
-                </div>
-              )}
+                ) : (
+                  <div className="profile__picture-icon">
+                    <FaUserAlt size={50} />
+                  </div>
+                )}
+                {isUploading && (
+                  <div className="profile__spinner">
+                    <RingLoader color="#36d7b7" size={100} />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="buttons">
               <button type="submit" className="btn btn-save">
@@ -321,7 +369,6 @@ const ProfilePage = () => {
                   alt="Profile Picture"
                   class="profile__picture"
                 />
-                <div class="spinner"></div>
               </div>
             ) : (
               <div className="profile__picture-icon">

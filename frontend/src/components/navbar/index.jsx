@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
 import { RiAccountCircleFill } from "react-icons/ri";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
@@ -36,10 +37,10 @@ const Navbar = () => {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <a href="#contact">Contact Us</a>
+        <Link to="/Contact">Contact us</Link>
         </li>
         <li>
-          <a href="#about">About</a>
+        <Link to="/About">About</Link>
         </li>
       </ul>
 
