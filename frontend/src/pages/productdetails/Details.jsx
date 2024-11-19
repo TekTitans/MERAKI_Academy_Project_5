@@ -77,8 +77,43 @@ return 0
   }, []);
   console.log(reviews);
 
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/review/${pId}`)
+      .then((response) => {
+        if (response.data.success) {
+          console.log(response.data);
+          setReviews(response.data.result);
+
+          setMsg(response.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setMsg(err.response.data.message);
+      });
+  }, []);
+  console.log(reviews);
+
   return (
 
+    <>
+      <div className="container">
+        <div>{product.title}</div>
+        <div>{product.price}</div>
+        <div>{product.description}</div>
+        <button onClick={()=>{addToCart()}}>add to cart</button>
+
+      </div>
+      <h2>Reviews</h2>
+      <div className="container">
+        <div>{reviews.comment}</div>
+        <div>{reviews.rating}</div>
+        <div>{msg}</div>
+      </div>
+    </>
+  );
+};
 
     <>
       <div className="container">
