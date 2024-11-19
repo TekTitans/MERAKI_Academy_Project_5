@@ -97,21 +97,19 @@ const Cart = () => {
           ))}
         </tbody>
       </table>
-      <h1>Total: {totalAmount}</h1>
-      <table className="cartTable">
-      <thead>
-      <tr>
-        <th>
-          your order
-        </th>
-      </tr>
-     
-  
+=      <table  className="cartTable">
+    <tr>
+        <th colspan="2">your order</th>
+    </tr>
+    <tr>
+        <td>first row</td>
+        <td> second row</td>
+    </tr>
+    <tr>
+        <td colspan="2">Total: {totalAmount}</td>
+    </tr>
+</table>
 
-      </thead>
-
-
-      </table>
     </div>
   );
 };
