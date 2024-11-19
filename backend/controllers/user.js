@@ -601,10 +601,10 @@ const updatePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const userId = req.token.userId;
 
-  if (!oldPassword || !newPassword) {
+  if (!newPassword) {
     return res.status(400).json({
       success: false,
-      message: "Please provide both old and new passwords.",
+      message: "Please provide new password.",
     });
   }
 

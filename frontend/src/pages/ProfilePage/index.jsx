@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { FaUserAlt } from "react-icons/fa";
 import "./style.css";
 import { RingLoader } from "react-spinners";
+import { setLogout } from "../../components/redux/reducers/auth";
+import { Link, useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const { token } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const history = useNavigate();
 
   const [userData, setUserData] = useState({
     firstName: "",
@@ -29,9 +35,13 @@ const ProfilePage = () => {
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [passChange, setPassChange] = useState(false);
+
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [isDeactivating, setIsDeactivating] = useState(false);
+  const [deactivatingMsg, setDeactivatingMsg] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -71,6 +81,34 @@ const ProfilePage = () => {
     fetchUserData();
   }, [token]);
 
+  const handleDeactivateAccount = async () => {
+    if (!window.confirm("Are you sure you want to deactivate your account?")) {
+      return;
+    }
+
+    setIsDeactivating(true);
+    try {
+      const response = await axios.put(
+        "http://localhost:5000/users/deactivate-profile",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setDeactivatingMsg(
+        response.data.message || "Account deactivated successfully"
+      );
+    } catch (error) {
+      setDeactivatingMsg("Failed to deactivate account. Please try again.");
+      console.error("Error deactivating account:", error);
+    } finally {
+      setIsDeactivating(false);
+      dispatch(setLogout());
+      history("/");
+    }
+  };
+
   const validateForm = () => {
     const errors = {};
     if (!userData.firstName.trim()) errors.firstName = "First name is required";
@@ -90,14 +128,14 @@ const ProfilePage = () => {
     e.preventDefault();
     setPasswordError("");
 
-    if (!oldPassword || !newPassword) {
-      setPasswordError("Both old and new passwords are required.");
+    if (!newPassword) {
+      setPasswordError("New password is required.");
       return;
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/users/update-password",
+      const response = await axios.put(
+        "http://localhost:5000/users/change-password",
         { oldPassword, newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -292,36 +330,79 @@ const ProfilePage = () => {
               />
             </div>
             <div className="form-group">
-              <label>Old Password:</label>
+              <label>Bio:</label>
               <input
-                type="password"
-                name="oldPassword"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
+                type="text"
+                name="Bio"
+                value={userData.bio}
+                onChange={handleChange}
               />
             </div>
-            <div className="form-group">
-              <label>New Password:</label>
-              <input
-                type="password"
-                name="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              {passwordError && (
-                <small className="error">{passwordError}</small>
-              )}
-            </div>
-            <div className="buttons">
-              <button
-                type="button"
-                onClick={handlePasswordChange}
-                className="btn btn-save"
-              >
-                Change Password
-              </button>
-            </div>
-
+            {passChange ? (
+              <>
+                <div className="buttons">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPassChange(false);
+                    }}
+                    className="btn btn-save"
+                  >
+                    Close Change Password
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="buttons">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPassChange(true);
+                  }}
+                  className="btn btn-save"
+                >
+                  Change Password
+                </button>
+              </div>
+            )}
+            {passChange && (
+              <>
+                <div className="pass_container">
+                  <div className="form-group">
+                    <label>Old Password:</label>
+                    <input
+                      type="password"
+                      name="oldPassword"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>New Password:</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    {passwordError ? (
+                      <small className="error">{passwordError}</small>
+                    ) : (
+                      <small className="pass_msg">{message}</small>
+                    )}
+                  </div>
+                  <div className="buttons">
+                    <button
+                      type="button"
+                      onClick={handlePasswordChange}
+                      className="btn btn-save"
+                    >
+                      Change Password
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
             <div className="form-group">
               <label>Profile Picture:</label>
               <input type="file" onChange={handleFileChange} />
@@ -415,9 +496,19 @@ const ProfilePage = () => {
               <p>{userData.role}</p>
             </div>
           </div>
-          <button className="btn btn-edit" onClick={() => setIsEditing(true)}>
-            Edit Profile
-          </button>
+          <div className="buttons_Profile">
+            <button className="btn btn-edit" onClick={() => setIsEditing(true)}>
+              Edit Profile
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={handleDeactivateAccount}
+              disabled={isDeactivating}
+            >
+              {isDeactivating ? "Deactivating..." : "Deactivate Account"}
+            </button>
+          </div>
+          <small className="error">{deactivatingMsg}</small>
         </div>
       )}
     </div>
