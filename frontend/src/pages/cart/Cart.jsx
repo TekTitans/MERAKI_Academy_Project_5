@@ -39,6 +39,20 @@ const Cart = () => {
         console.log(error);
       });
   };
+  ///////////////////////////////////////////////
+  const removeFromCart=(id)=>{
+    axios
+    .delete(` http://localhost:5000/cart/${id}`,{headers})
+    .then((response)=>{
+      console.log(response.data);
+
+    })
+    .catch((error)=>{
+      console.log(error);
+
+    })
+
+  }
 
   const totalAmount = myCart?.reduce(
     (acc, elem) => acc + elem.price * elem.quantity,
@@ -61,7 +75,7 @@ const Cart = () => {
             <tr key={index}>
              <td>{elem.title}</td>
               <td>{elem.price}</td>
-              <td><button>remove</button>
+              <td><button onClick={()=>{removeFromCart(elem.product_id)}}>remove</button>
                 {" "}
                 <input
                   onChange={(e) => {
