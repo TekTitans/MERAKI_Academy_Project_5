@@ -90,7 +90,6 @@ export const Details = () => {
     return (
       <div key={reviwe.id}>
         <div>{reviwe.comment}</div>
-        <div>{reviwe.avgrating}</div>
       </div>
     );
   });
@@ -141,6 +140,7 @@ export const Details = () => {
       <h2>Reviews</h2>
       <div className="container">
         {rev}
+        {reviews[0]?.avgrating}
 
         <div>
           <button onClick={createReview}>Add Review</button>
