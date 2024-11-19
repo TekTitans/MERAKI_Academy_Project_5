@@ -20,6 +20,7 @@ export const Details = () => {
   const [msg, setMsg] = useState("");
   const [reviews, setReviews] = useState({});
   const [product, setProduct] = useState({});
+const [quantity,setQuantity]=useState(1)
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   useEffect(() => {
@@ -45,15 +46,20 @@ export const Details = () => {
       return 0;
     }
     axios
-      .post(` http://localhost:5000/cart/${pId}`, {}, { headers })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  console.log(token);
+    .post(` http://localhost:5000/cart/${pId}`,{quantity},{headers})
+    .then((response)=>{
+      console.log(response.data)
+
+    })
+    .catch((error)=>{
+      
+      console.log(error)
+
+    })
+      
+    }
+  console.log(token)
+
 
   useEffect(() => {
     axios
@@ -92,18 +98,16 @@ export const Details = () => {
   console.log(reviews);
 
   return (
+
     <>
       <div className="container">
         <div>{product.title}</div>
         <div>{product.price}</div>
         <div>{product.description}</div>
-        <button
-          onClick={() => {
-            addToCart();
-          }}
-        >
-          add to cart
-        </button>
+      <button onClick={()=>{addToCart()}}>add to cart</button>
+      <input  onChange={(e)=>{if(e.target.value<1||!true){setQuantity(1)}else{setQuantity(e.target.value)};  console.log(e.target.value)
+}} type="number" value={quantity} min={1}/>
+
       </div>
       <h2>Reviews</h2>
       <div className="container">

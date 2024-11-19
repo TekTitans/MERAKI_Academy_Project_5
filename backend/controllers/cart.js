@@ -4,8 +4,8 @@ const pool = require("../models/db");
 
 const addToCart = async (req, res) => {
 
-    quantity=req.body.quantity||1
-    //
+    quantity=req.body.quantity
+    
 
  
 
@@ -21,8 +21,10 @@ const addToCart = async (req, res) => {
           message: "Product not found.",
         });
       }
+      const check="SELECT * FROM cart WHERE product_id = $1";
+      const checkResult= await pool.query(check, [productId]);
       
-      if (req.body.quantity) {
+      if (checkResult.rows.length===1) {
         const modify =
         "UPDATE cart SET quantity = $3 WHERE user_id = $1 AND product_id = $2";
          await pool.query(modify, [userId, productId,quantity]);
@@ -31,14 +33,14 @@ const addToCart = async (req, res) => {
           success: false,
           message: "Product quantity is modified in your cart.",
         });
-      }
+      }else{
       const insertQuery =
         "INSERT INTO cart (user_id, product_id, quantity) VALUES ($1, $2, $3)";
       await pool.query(insertQuery, [userId, productId, quantity]);
       res.status(200).json({
         success: true,
         message: "Product added to cart successfully.",
-      });
+      })};
     } catch (error) {
       console.error("Error adding to cart:", error);
       res.status(500).json({
