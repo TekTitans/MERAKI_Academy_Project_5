@@ -148,7 +148,6 @@ const removeProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   const pageSize = parseInt(req.query.size) || 10;
-
   const query = `SELECT * FROM products LIMIT $1 ;`;
   const data = [pageSize];
   try {
@@ -278,6 +277,35 @@ const getProductsByCategory = async (req, res) => {
     });
   }
 };
+
+const getProductByName = async (req, res) => {
+  const name = req.params.title;
+  const query = `SELECT * FROM products WHERE title LIKE '%${name}%' `;
+
+  try {
+    const result = await pool.query(query);
+    if (result.rows.length == 0) {
+      res.json({
+        success: false,
+        message: "no product with this title",
+      });
+    } else {
+      res.json({
+        success: true,
+        message: "product Details",
+        product: result.rows,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      err: error,
+    });
+  }
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -286,4 +314,5 @@ module.exports = {
   getProductById,
   getSellerProduct,
   getProductsByCategory,
+  getProductByName,
 };

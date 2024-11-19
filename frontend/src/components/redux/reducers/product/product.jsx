@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Search } from "../../../../pages/Serach";
+import { act } from "react";
 
 export const productSlice = createSlice({
   name: "product",
   initialState: {
     products: [],
-    cart:[]
+    cart: [],
+    search: "",
   },
   reducers: {
     setProducts: (state, action) => {
@@ -14,10 +17,14 @@ export const productSlice = createSlice({
       state.products.push(action.payload);
     },
     setCart: (state, action) => {
-      state.cart=action.payload;
+      state.cart = action.payload;
+    },
+    setSearch: (state, action) => {
+      state.search = action.payload;
     },
   },
 });
 
-export const { setProducts, addProduct,setCart } = productSlice.actions;
+export const { setProducts, addProduct, setCart, setSearch } =
+  productSlice.actions;
 export default productSlice.reducer;

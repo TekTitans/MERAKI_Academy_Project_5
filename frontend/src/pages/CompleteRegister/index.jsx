@@ -73,7 +73,7 @@ const CompletedRegister = () => {
           country: "",
           role_id: 3,
         });
-        history("/Home");
+        history("/");
       } else {
         throw new Error(result.data.message || "Registration failed");
       }

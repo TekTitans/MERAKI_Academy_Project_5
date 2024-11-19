@@ -1,12 +1,11 @@
-
 import React, { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
 import { RiAccountCircleFill } from "react-icons/ri";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setLogin, setUserId, setLogout } from "../redux/reducers/auth";
-import Login from "../../pages/Login";
+import { setLogout } from "../redux/reducers/auth";
+import { setSearch } from "../redux/reducers/product/product";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -14,9 +13,13 @@ const Navbar = () => {
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleSearch = (e) => {
+    dispatch(setSearch(e.target.value));
+  };
+
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const handleLogout = (e) => {
+  const handleLogout = () => {
     dispatch(setLogout());
   };
 
@@ -30,7 +33,7 @@ const Navbar = () => {
       {/* Navbar Links */}
       <ul className={`navbar-links ${isOpen ? "open" : ""}`}>
         <li>
-          <a onClick={()=>{history("/")}} href="#home">Home</a>
+          <Link to="/">Home</Link>
         </li>
         <li>
           <a href="#contact">Contact Us</a>
@@ -42,7 +45,15 @@ const Navbar = () => {
 
       {/* Search Bar */}
       <div className="navbar-search">
-        <input type="text" placeholder="Search..." />
+        <form>
+          <input
+            type="text"
+            placeholder="Search..."
+            onChange={(e) => {
+              handleSearch(e);
+            }}
+          />
+        </form>
       </div>
 
       {/* Cart & Login */}

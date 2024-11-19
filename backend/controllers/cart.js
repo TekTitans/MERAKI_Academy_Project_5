@@ -10,6 +10,7 @@ const addToCart = async (req, res) => {
  
 
     const userId = req.token.userId;
+
     const  productId = req.params.id;
     try {
       const productQuery = "SELECT * FROM products WHERE id = $1";
