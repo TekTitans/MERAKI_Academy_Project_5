@@ -28,6 +28,7 @@ const ProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -83,11 +84,14 @@ const ProfilePage = () => {
   };
 
   const handleFileChange = async (e) => {
+    setIsUploading(true);
+    setUploadError("");
+
+    console.log("isUploading :", isUploading);
     const file = e.target.files[0];
     if (file) {
       const formData = new FormData();
       formData.append("profile_image", file);
-      setIsUploading(true);
 
       try {
         const res = await axios.put(
@@ -165,6 +169,7 @@ const ProfilePage = () => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+    setIsSaving(false);
     setUserData((prevState) => ({
       ...prevState,
       profilePicture: prevState.profilePicture || "",
@@ -172,7 +177,6 @@ const ProfilePage = () => {
     setFormErrors({});
   };
 
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="profile-page">
@@ -262,40 +266,27 @@ const ProfilePage = () => {
               />
             </div>
             <div className="form-group">
-              <label>Bio:</label>
-              <textarea
-                name="bio"
-                value={userData.bio}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
               <label>Profile Picture:</label>
               <input type="file" onChange={handleFileChange} />
-              {userData.profilePicture ? (
-                <img
-                  src={userData.profilePicture}
-                  alt="Preview"
-                  className="profile__picture-preview"
-                />
-              ) : (
-                <div className="profile__picture-icon">
-                  <FaUserAlt size={50} />
-                </div>
-              )}
-              {isUploading && (
-                <div
-                  class="profile__picture-overlay"
-                  id="profilePictureOverlay"
-                >
+              {uploadError && <small className="error">{uploadError}</small>}
+              <div className="profile__picture-container">
+                {userData.profilePicture ? (
                   <img
                     src={userData.profilePicture}
                     alt="Profile Picture"
-                    class="profile__picture"
+                    className="profile__picture"
                   />
-                  <div class="spinner"></div>
-                </div>
-              )}
+                ) : (
+                  <div className="profile__picture-icon">
+                    <FaUserAlt size={50} />
+                  </div>
+                )}
+                {isUploading && (
+                  <div className="profile__spinner">
+                    <RingLoader color="#36d7b7" size={100} />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="buttons">
               <button type="submit" className="btn btn-save">
@@ -321,7 +312,6 @@ const ProfilePage = () => {
                   alt="Profile Picture"
                   class="profile__picture"
                 />
-                <div class="spinner"></div>
               </div>
             ) : (
               <div className="profile__picture-icon">
