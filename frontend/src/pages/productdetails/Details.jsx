@@ -10,11 +10,11 @@ export const Details = () => {
   const token = useSelector((state) => {
     return state.auth.token;
   });
-  const  headers= {
+  const headers = {
     Authorization: `Bearer ${token}`,
-  }
+  };
 
-  const Navigate=useNavigate()
+  const Navigate = useNavigate();
   const { pId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [msg, setMsg] = useState("");
@@ -37,13 +37,13 @@ const [quantity,setQuantity]=useState(1)
       });
   }, []);
   ///////////////////////////////////////////////////
-  const addToCart=()=>{
-    console.log(token)
-    console.log("this is token")
+  const addToCart = () => {
+    console.log(token);
+    console.log("this is token");
 
-    if(isLoggedIn===false){
-      Navigate("/users/login")
-return 0
+    if (isLoggedIn === false) {
+      Navigate("/users/login");
+      return 0;
     }
     axios
     .post(` http://localhost:5000/cart/${pId}`,{quantity},{headers})
@@ -59,6 +59,7 @@ return 0
       
     }
   console.log(token)
+
 
   useEffect(() => {
     axios
@@ -98,7 +99,6 @@ return 0
 
   return (
 
-   
     <>
       <div className="container">
         <div>{product.title}</div>
@@ -107,6 +107,7 @@ return 0
       <button onClick={()=>{addToCart()}}>add to cart</button>
       <input  onChange={(e)=>{if(e.target.value<1||!true){setQuantity(1)}else{setQuantity(e.target.value)};  console.log(e.target.value)
 }} type="number" value={quantity} min={1}/>
+
       </div>
       <h2>Reviews</h2>
       <div className="container">
