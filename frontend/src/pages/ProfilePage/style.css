@@ -38,6 +38,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   margin: 0 auto;
+  padding-left: 3rem;
 }
 .profile__picture {
   width: 200px;
@@ -88,6 +89,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
 }
 .profile__details p {
   margin: 20px 0;
@@ -168,6 +170,53 @@
   border-color: #1abc9c;
 }
 
+.profile__loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  @keyframes spin {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+  
+  .profile__picture-overlay {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+  
+  .profile__picture-overlay .spinner {
+    visibility: hidden;
+  }
+  
+  .profile__picture-overlay.uploading .spinner {
+    visibility: visible;
+  }
+  
+  .profile__picture-overlay.uploading img {
+    opacity: 0.5;
+  }
+  
+
 .buttons {
   display: flex;
   justify-content: space-between;
@@ -215,6 +264,8 @@
   background-color: #0056b3;
 }
 
+
+  
 @media (max-width: 768px) {
   .profile-page {
     padding: 20px 10px;
