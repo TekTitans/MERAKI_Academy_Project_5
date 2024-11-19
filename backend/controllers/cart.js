@@ -3,7 +3,11 @@ const pool = require("../models/db");
 
 
 const addToCart = async (req, res) => {
-  const quantity=1
+
+    quantity=req.body.quantity||1
+    //
+
+ 
 
     const userId = req.token.userId;
     const  productId = req.params.id;
@@ -16,17 +20,15 @@ const addToCart = async (req, res) => {
           message: "Product not found.",
         });
       }
-      const checkQuery =
-        "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2";
-      const checkResult = await pool.query(checkQuery, [userId, productId]);
-      if (checkResult.rows.length > 0) {
-        const addMore =
-        "UPDATE cart SET quantity = quantity + 1 WHERE user_id = $1 AND product_id = $2";
-         await pool.query(addMore, [userId, productId]);
+      
+      if (req.body.quantity) {
+        const modify =
+        "UPDATE cart SET quantity = $3 WHERE user_id = $1 AND product_id = $2";
+         await pool.query(modify, [userId, productId,quantity]);
 
         return res.status(200).json({
           success: false,
-          message: "Product is is increased in your cart.",
+          message: "Product quantity is modified in your cart.",
         });
       }
       const insertQuery =

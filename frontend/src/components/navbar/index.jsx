@@ -30,7 +30,7 @@ const Navbar = () => {
       {/* Navbar Links */}
       <ul className={`navbar-links ${isOpen ? "open" : ""}`}>
         <li>
-          <a href="#home">Home</a>
+          <a onClick={()=>{history("/")}} href="#home">Home</a>
         </li>
         <li>
           <a href="#contact">Contact Us</a>

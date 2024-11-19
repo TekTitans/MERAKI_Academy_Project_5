@@ -55,7 +55,7 @@ return 0
     })
       
     }
-  
+  console.log(token)
 
   return (
     <div className="container">
