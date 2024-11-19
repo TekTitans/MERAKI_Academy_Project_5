@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { FaUserAlt } from "react-icons/fa";
 import "./style.css";
+import { RingLoader } from "react-spinners";
 
 const ProfilePage = () => {
   const { token } = useSelector((state) => state.auth);
@@ -26,6 +27,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,14 +82,38 @@ const ProfilePage = () => {
     setUserData({ ...userData, [name]: value });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setUserData({ ...userData, profilePicture: reader.result });
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("profile_image", file);
+      setIsUploading(true);
+
+      try {
+        const res = await axios.put(
+          "http://localhost:5000/users/profile",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const updatedProfilePicture = URL.createObjectURL(file);
+
+        setUserData((prevState) => ({
+          ...prevState,
+          profilePicture: updatedProfilePicture,
+        }));
+
+        console.log("Profile updated:", res.data);
+      } catch (error) {
+        console.error("Error uploading profile image:", error);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -257,6 +283,19 @@ const ProfilePage = () => {
                   <FaUserAlt size={50} />
                 </div>
               )}
+              {isUploading && (
+                <div
+                  class="profile__picture-overlay"
+                  id="profilePictureOverlay"
+                >
+                  <img
+                    src={userData.profilePicture}
+                    alt="Profile Picture"
+                    class="profile__picture"
+                  />
+                  <div class="spinner"></div>
+                </div>
+              )}
             </div>
             <div className="buttons">
               <button type="submit" className="btn btn-save">
@@ -276,14 +315,22 @@ const ProfilePage = () => {
         <div className="profile_Layout">
           <div className="profile__picture-container">
             {userData.profilePicture ? (
-              <img
-                src={userData.profilePicture}
-                alt="Profile"
-                className="profile__picture"
-              />
+              <div class="profile__picture-overlay" id="profilePictureOverlay">
+                <img
+                  src={userData.profilePicture}
+                  alt="Profile Picture"
+                  class="profile__picture"
+                />
+                <div class="spinner"></div>
+              </div>
             ) : (
               <div className="profile__picture-icon">
                 <FaUserAlt size={50} />
+              </div>
+            )}
+            {isUploading && (
+              <div className="profile__loader">
+                <RingLoader color="#36D7B7" size={50} />
               </div>
             )}
           </div>
