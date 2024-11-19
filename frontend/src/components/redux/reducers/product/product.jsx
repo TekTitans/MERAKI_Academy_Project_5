@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Search } from "../../../../pages/Serach";
-import { act } from "react";
 
 export const productSlice = createSlice({
   name: "product",
@@ -8,6 +6,7 @@ export const productSlice = createSlice({
     products: [],
     cart: [],
     search: "",
+    catid: 0,
   },
   reducers: {
     setProducts: (state, action) => {
@@ -22,9 +21,12 @@ export const productSlice = createSlice({
     setSearch: (state, action) => {
       state.search = action.payload;
     },
+    setcatid: (state, action) => {
+      state.catid = action.payload;
+    },
   },
 });
 
-export const { setProducts, addProduct, setCart, setSearch } =
+export const { setProducts, addProduct, setCart, setSearch, setcatid } =
   productSlice.actions;
 export default productSlice.reducer;

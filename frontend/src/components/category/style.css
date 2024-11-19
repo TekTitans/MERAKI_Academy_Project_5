@@ -3,3 +3,12 @@
     justify-content: center;
 
 }
+.container {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    border-radius: 3px;
+    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: white !important;
+  }

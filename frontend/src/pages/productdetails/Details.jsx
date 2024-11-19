@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Link, useParams } from "react-router-dom";
-import "./style.css";
+import "./details.css";
 
 export const Details = () => {
   const token = useSelector((state) => {
@@ -36,6 +36,9 @@ const [quantity,setQuantity]=useState(1)
         console.log(err);
       });
   }, []);
+  const createReview = ()=>{
+    axios.post(`http://localhost:5000/`)
+  }
   ///////////////////////////////////////////////////
   const addToCart = () => {
     console.log(token);
@@ -46,6 +49,8 @@ const [quantity,setQuantity]=useState(1)
       return 0;
     }
     axios
+
+
     .post(` http://localhost:5000/cart/${pId}`,{quantity},{headers})
     .then((response)=>{
       console.log(response.data)
@@ -68,7 +73,6 @@ const [quantity,setQuantity]=useState(1)
         if (response.data.success) {
           console.log(response.data);
           setReviews(response.data.result);
-
           setMsg(response.data.message);
         }
       })
@@ -78,6 +82,7 @@ const [quantity,setQuantity]=useState(1)
       });
   }, []);
   console.log(reviews);
+
 
   useEffect(() => {
     axios
@@ -104,6 +109,7 @@ const [quantity,setQuantity]=useState(1)
         <div>{product.title}</div>
         <div>{product.price}</div>
         <div>{product.description}</div>
+
       <button onClick={()=>{addToCart()}}>add to cart</button>
       <input  onChange={(e)=>{if(e.target.value<1||!true){setQuantity(1)}else{setQuantity(e.target.value)};  console.log(e.target.value)
 }} type="number" value={quantity} min={1}/>
@@ -113,7 +119,7 @@ const [quantity,setQuantity]=useState(1)
       <div className="container">
         <div>{reviews.comment}</div>
         <div>{reviews.rating}</div>
-        <div>{msg}</div>
+        <div><button>Add Review</button></div>
       </div>
     </>
   );

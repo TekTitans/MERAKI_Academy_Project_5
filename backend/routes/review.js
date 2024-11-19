@@ -7,16 +7,14 @@ const {
   createSellerReviews,
   getSellerReviews,
   updateSellerReviews,
-  removeSellerReviews
-
-  
+  removeSellerReviews,
 } = require("../controllers/review");
 
-
+const auth = require("../middleware/authentication");
 
 const reviewRouter = express.Router();
 
-reviewRouter.post("/", createReview);
+reviewRouter.post("/:pId", auth, createReview);
 reviewRouter.put("/:id", updateReview);
 reviewRouter.delete("/:id", removeReview);
 reviewRouter.get("/:id", getProductReviews);
@@ -24,12 +22,5 @@ reviewRouter.post("/seller/:id", createSellerReviews);
 reviewRouter.get("/seller/:id", getSellerReviews);
 reviewRouter.put("/seller/:id", updateSellerReviews);
 reviewRouter.delete("/seller/:id", removeSellerReviews);
-
-
-
-
-
-
-
 
 module.exports = reviewRouter;
