@@ -29,6 +29,9 @@ const ProfilePage = () => {
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -81,6 +84,31 @@ const ProfilePage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    if (!oldPassword || !newPassword) {
+      setPasswordError("Both old and new passwords are required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/users/update-password",
+        { oldPassword, newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessage(response.data.message);
+      setOldPassword("");
+      setNewPassword("");
+    } catch (err) {
+      setPasswordError(
+        err.response ? err.response.data.message : "Error updating password"
+      );
+    }
   };
 
   const handleFileChange = async (e) => {
@@ -177,7 +205,6 @@ const ProfilePage = () => {
     setFormErrors({});
   };
 
-
   return (
     <div className="profile-page">
       <div className="profile__header">
@@ -255,7 +282,6 @@ const ProfilePage = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div className="form-group">
               <label>Social Media:</label>
               <input
@@ -265,6 +291,37 @@ const ProfilePage = () => {
                 onChange={handleChange}
               />
             </div>
+            <div className="form-group">
+              <label>Old Password:</label>
+              <input
+                type="password"
+                name="oldPassword"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>New Password:</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              {passwordError && (
+                <small className="error">{passwordError}</small>
+              )}
+            </div>
+            <div className="buttons">
+              <button
+                type="button"
+                onClick={handlePasswordChange}
+                className="btn btn-save"
+              >
+                Change Password
+              </button>
+            </div>
+
             <div className="form-group">
               <label>Profile Picture:</label>
               <input type="file" onChange={handleFileChange} />
