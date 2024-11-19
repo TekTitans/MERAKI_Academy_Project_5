@@ -6,6 +6,7 @@ import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 
 export const Home = () => {
+
   const search = useSelector((state) => {
     return state.product.search;
   });

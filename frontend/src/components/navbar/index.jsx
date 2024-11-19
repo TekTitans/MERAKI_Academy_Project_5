@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
+import { RiAccountCircleFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
@@ -58,7 +59,7 @@ const Navbar = () => {
       {/* Cart & Login */}
       <div className="navbar-icons">
         <a href="#cart">
-          <FaShoppingCart />
+          <FaShoppingCart onClick={()=>{history("/cart")}} />
         </a>
         {isLoggedIn ? (
           <Link to="/users/login" className="login-btn" onClick={handleLogout}>

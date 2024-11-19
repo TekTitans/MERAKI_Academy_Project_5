@@ -3,9 +3,14 @@ const pool = require("../models/db");
 
 
 const addToCart = async (req, res) => {
-  const quantity=1
 
-    const userId = 1// req.token.userId;
+    quantity=req.body.quantity||1
+    //
+
+ 
+
+    const userId = req.token.userId;
+
     const  productId = req.params.id;
     try {
       const productQuery = "SELECT * FROM products WHERE id = $1";
@@ -16,17 +21,15 @@ const addToCart = async (req, res) => {
           message: "Product not found.",
         });
       }
-      const checkQuery =
-        "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2";
-      const checkResult = await pool.query(checkQuery, [userId, productId]);
-      if (checkResult.rows.length > 0) {
-        const addMore =
-        "UPDATE cart SET quantity = quantity + 1 WHERE user_id = $1 AND product_id = $2";
-         await pool.query(addMore, [userId, productId]);
+      
+      if (req.body.quantity) {
+        const modify =
+        "UPDATE cart SET quantity = $3 WHERE user_id = $1 AND product_id = $2";
+         await pool.query(modify, [userId, productId,quantity]);
 
         return res.status(200).json({
           success: false,
-          message: "Product is is increased in your cart.",
+          message: "Product quantity is modified in your cart.",
         });
       }
       const insertQuery =
@@ -47,7 +50,7 @@ const addToCart = async (req, res) => {
  
 
 const removeFromCart=async(req,res)=>{
-  const userId =1// req.token.userId;
+  const userId = req.token.userId;
   const  productId = req.params.id;
   try {
     const checkQuery =
@@ -85,12 +88,23 @@ const removeFromCart=async(req,res)=>{
 
 
 const getCartItems=(req,res)=>{
-    const user_id=7;
+    const user_id= req.token.userId;
     
 
     // const user_id = u_id//req.token.userId;
  
-     const query = `SELECT * FROM cart WHERE user_id=$1 ;`;
+     const query = `SELECT 
+    t1.price, 
+    t1.description, 
+    t2.quantity,
+    t1.title
+FROM 
+    products t1
+FULL OUTER JOIN 
+    cart t2
+ON 
+    t1.id = t2.product_id
+WHERE user_id=$1;`;
      const data = [user_id];
      pool
        .query(query, data)
@@ -109,7 +123,7 @@ const getCartItems=(req,res)=>{
            err: err,
          });
        });
- 
+ //
 
 
 };
