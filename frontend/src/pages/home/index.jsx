@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,12 +6,14 @@ import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 
 export const Home = () => {
+  const search = useSelector((state) => {
+    return state.product.search;
+  });
+  const [filterProducts, setFilterProducts] = useState([]);
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const [size, setSize] = useState(5);
   const products = useSelector((state) => {
-    console.log();
-
     return state.product.products;
   });
 
@@ -25,6 +27,7 @@ export const Home = () => {
         const allProducts = result.data.result;
 
         dispatch(setProducts(allProducts));
+        setFilterProducts(allProducts);
       } else {
         throw Error;
       }
@@ -35,15 +38,24 @@ export const Home = () => {
       setMessage("Error happened while Get Data, please try again");
     }
   };
+
   const handleSize = () => {
     setSize(size + 5);
-    console.log(size);
+    if (size > products.length) {
+      setSize(size - 5);
+    }
   };
   useEffect(() => {
     getAllProducts();
   }, [products]);
+  useEffect(() => {
+    const filtered = products.filter((product) =>
+      product.title.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilterProducts(filtered);
+  }, [search, products]);
 
-  const showAllProducts = products?.map((product, index) => {
+  const showAllProducts = filterProducts?.map((product, index) => {
     return (
       <div key={index} className="product-card">
         <div className="product-info">
@@ -57,12 +69,12 @@ export const Home = () => {
   });
 
   return (
-    <div className="container">
-      {showAllProducts}
+    <>
+      <div className="container">{showAllProducts}</div>
       <button className="pagination" onClick={handleSize}>
         Show More
       </button>
-    </div>
+    </>
   );
 };
 export default Home;

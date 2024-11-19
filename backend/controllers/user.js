@@ -6,6 +6,8 @@ const nodemailer = require("nodemailer");
 const saltRounds = parseInt(process.env.SALT);
 const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
+const cloudinary = require("cloudinary").v2;
+const { uploadToCloudinary } = require("../services/cloudinary");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -488,31 +490,83 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const { userId } = req.token;
-  const { firstName, lastName, country, location, profile_image } = req.body;
+  const { firstName, lastName, country, address, location, bio, social_media } = req.body;
 
   const fields = [];
   const values = [];
   let index = 1;
 
+  if (req.file) {
+    const fileSizeLimit = 5 * 1024 * 1024;  
+    const allowedTypes = ['image/jpeg', 'image/png'];
+
+    if (req.file.size > fileSizeLimit) {
+      return res.status(400).json({ success: false, message: "File is too large" });
+    }
+
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({ success: false, message: "Invalid file type" });
+    }
+  }
+
+  if (req.file) {
+    try {
+      const uploadResponse = await uploadToCloudinary(req.file.buffer);
+      const profileImageUrl = uploadResponse.url;  
+      const trimmedProfileImageUrl = profileImageUrl.length > 500 ? profileImageUrl.substring(0, 500) : profileImageUrl;
+  
+      console.log('Trimmed Profile Image URL:', trimmedProfileImageUrl);
+  
+      fields.push(`profile_image = $${index++}`);
+      values.push(trimmedProfileImageUrl);
+    } catch (error) {
+      console.error("Error uploading profile image:", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  }
+  
+
   if (firstName) {
+    const trimmedFirstName = firstName.length > 500 ? firstName.substring(0, 500) : firstName;
+    console.log('Trimmed First Name:', trimmedFirstName);
     fields.push(`first_name = $${index++}`);
-    values.push(firstName);
+    values.push(trimmedFirstName);
   }
   if (lastName) {
+    const trimmedLastName = lastName.length > 500 ? lastName.substring(0, 500) : lastName;
+    console.log('Trimmed Last Name:', trimmedLastName);
     fields.push(`last_name = $${index++}`);
-    values.push(lastName);
+    values.push(trimmedLastName);
   }
   if (country) {
+    const trimmedCountry = country.length > 500 ? country.substring(0, 500) : country;
+    console.log('Trimmed Country:', trimmedCountry);
     fields.push(`country = $${index++}`);
-    values.push(country);
+    values.push(trimmedCountry);
+  }
+  if (address) {
+    const trimmedAddress = address.length > 500 ? address.substring(0, 500) : address;
+    console.log('Trimmed Address:', trimmedAddress);
+    fields.push(`address = $${index++}`);
+    values.push(trimmedAddress);
   }
   if (location) {
+    const trimmedLocation = location.length > 500 ? location.substring(0, 500) : location;
+    console.log('Trimmed Location:', trimmedLocation);
     fields.push(`location = $${index++}`);
-    values.push(location);
+    values.push(trimmedLocation);
   }
-  if (profile_image) {
-    fields.push(`profile_image = $${index++}`);
-    values.push(profile_image);
+  if (bio) {
+    const trimmedBio = bio.length > 500 ? bio.substring(0, 500) : bio;
+    console.log('Trimmed Bio:', trimmedBio);
+    fields.push(`bio = $${index++}`);
+    values.push(trimmedBio);
+  }
+  if (social_media) {
+    const trimmedSocialMedia = social_media.length > 500 ? social_media.substring(0, 500) : social_media;
+    console.log('Trimmed Social Media:', trimmedSocialMedia);
+    fields.push(`social_media = $${index++}`);
+    values.push(trimmedSocialMedia);
   }
 
   if (fields.length === 0) {
@@ -524,13 +578,10 @@ const updateProfile = async (req, res) => {
 
   values.push(userId);
 
-  const query = `UPDATE users SET ${fields.join(
-    ", "
-  )} WHERE id = $${index} RETURNING *`;
+  const query = `UPDATE users SET ${fields.join(", ")} WHERE id = $${index} RETURNING *`;
 
   try {
     const result = await pool.query(query, values);
-
     if (result.rows.length > 0) {
       res.status(200).json({
         success: true,
@@ -538,17 +589,11 @@ const updateProfile = async (req, res) => {
         user: result.rows[0],
       });
     } else {
-      res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      res.status(404).json({ success: false, message: "User not found" });
     }
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: err.message,
-    });
+    console.error("Error updating profile:", err.message);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 };
 
@@ -960,6 +1005,7 @@ module.exports = {
   verifyEmail,
   login,
   getProfile,
+  uploadToCloudinary,
   updateProfile,
   updatePassword,
   deactivateUser,
