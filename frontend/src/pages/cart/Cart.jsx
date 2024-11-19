@@ -3,15 +3,19 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import "./cart.css";
 
+
+
 const Cart = () => {
-  const [total, setTotal] = useState(0);
+  
   const [myCart, setMyCart] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const uId = useSelector((state) => state.auth.userId);
   
-  const headers = {
+ 
+  const  headers= {
     Authorization: `Bearer ${token}`,
-  };
+  }
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   useEffect(() => {
     axios
@@ -23,6 +27,28 @@ const Cart = () => {
         console.log(err);
       });
   }, []);
+  ///////////////////////////////////////////////////////////////
+  const addToCart=()=>{
+    console.log(token)
+    console.log("this is token")
+
+    if(isLoggedIn===false){
+      Navigate("/users/login")
+return 0
+    }
+    axios
+    .post(` http://localhost:5000/cart/${pId}`,{quantity},{headers})
+    .then((response)=>{
+      console.log(response.data)
+
+    })
+    .catch((error)=>{
+      
+      console.log(error)
+
+    })
+      
+    }
 
   const totalAmount = myCart?.reduce((acc, elem) => acc + elem.price * elem.quantity, 0);
 
@@ -42,7 +68,8 @@ const Cart = () => {
             <tr key={index}>
               <td>{elem.title}</td>
               <td>{elem.price}</td>
-              <td>{elem.quantity}</td>
+              <td> <input type="number" defaultValue={elem.quantity} m/></td>
+              
               <td>{elem.price * elem.quantity}.00</td>
             </tr>
           ))}
