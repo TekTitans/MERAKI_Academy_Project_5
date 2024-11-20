@@ -19,68 +19,6 @@ export const Home = () => {
     return state.product.products;
   });
 
-
-  useEffect(() => {
-    axios
-      .get(` http://localhost:5000/category`)
-      .then((result) => {
-        setCategories(result.data.category);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, []);
-
-  const allcategories = categories?.map((elem, index) => {
-    return (
-      <div className="categoryCard" key={index}>
-        <button
-          onClick={() => {
-            Navigate(`/category/${elem.id}`);
-          }}
-        >
-          {elem.name}
-        </button>
-      </div>
-    );
-  });
-  const getAllProducts = async () => {
-    try {
-      const result = await axios.get(
-        `http://localhost:5000/products?size=${size}`
-      );
-      if (result.data.success) {
-        const allProducts = result.data.products;
-
-        dispatch(setProducts(allProducts));
-        setFilterProducts(allProducts);
-      } else {
-        throw Error;
-      }
-    } catch (error) {
-      if (!error.response.data.success) {
-        return setMessage(error.response.data.message);
-      }
-      setMessage("Error happened while Get Data, please try again");
-    }
-  };
-
-  const handleSize = () => {
-    setSize(size + 5);
-    if (size > products.length) {
-      setSize(size - 5);
-    }
-  };
-  useEffect(() => {
-    getAllProducts();
-  }, [products]);
-
-  // useEffect(() => {
-  //   const catFilter = products.filter((product) => {
-  //     product.category_id === 1;
-  //   });
-  //   console.log(catFilter);
-  // }, []);
   useEffect(() => {
     const filtered = products?.filter((product) =>
       product.title.toLowerCase().includes(search.toLowerCase())
@@ -88,26 +26,10 @@ export const Home = () => {
     setFilterProducts(filtered);
   }, [search, products]);
 
-  const showAllProducts = filterProducts?.map((product, index) => {
-    return (
-      <div key={index} className="product-card">
-        <div className="product-info">
-          <h3 className="product-title">{product.title}</h3>
-          <p className="product-description">{product.description}</p>
-          <div className="product-price">{product.price} JD</div>
-          <Link to={`/details/${product.id}`}>Details</Link>
-        </div>
-      </div>
-    );
-  });
+
   return (
     <>
-      <div className="categories">{allcategories}</div>
-
-      <div className="container">{showAllProducts}</div>
-      <button className="pagination" onClick={handleSize}>
-        Show More
-      </button>
+<h1>Home</h1>
     </>
   );
 };
