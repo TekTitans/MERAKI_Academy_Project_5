@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
 import { RiAccountCircleFill } from "react-icons/ri";
-
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
@@ -13,6 +12,7 @@ const Navbar = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const { userName } = useSelector((state) => state.auth);
 
   const handleSearch = (e) => {
     dispatch(setSearch(e.target.value));
@@ -25,63 +25,60 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      {/* Logo */}
-      <div className="navbar-logo">
-        <h2>BrandLogo</h2>
-      </div>
+    <div className="navbar_container">
+      <nav className="navbar">
+        <div className="nav-lift">
+          <div className="navbar-logo">
+            <h2>BrandLogo</h2>
+          </div>
 
-      {/* Navbar Links */}
-      <ul className={`navbar-links ${isOpen ? "open" : ""}`}>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-        <Link to="/Contact">Contact us</Link>
-        </li>
-        <li>
-        <Link to="/About">About</Link>
-        </li>
-      </ul>
+          <div className={`navbar-links ${isOpen ? "active" : ""}`}>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/Contact">Contact Us</Link>
+              </li>
+              <li>
+                <Link to="/About">About</Link>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-      {/* Search Bar */}
-      <div className="navbar-search">
-        <form>
-          <input
-            type="text"
-            placeholder="Search..."
-            onChange={(e) => {
-              handleSearch(e);
-            }}
-          />
-        </form>
-      </div>
+        <div className="navbar-icons">
+          <div className="navbar-search">
+            <input
+              type="text"
+              placeholder="Search..."
+              onChange={handleSearch}
+            />
+          </div>
+          <a  className="cart-icon">
+            <FaShoppingCart onClick={() => history("/cart")} />
+          </a>
 
-      {/* Cart & Login */}
-      <div className="navbar-icons">
-        <a href="#cart">
-          <FaShoppingCart onClick={()=>{history("/cart")}} />
-        </a>
-        {isLoggedIn ? (
-          <Link to="/users/login" className="login-btn" onClick={handleLogout}>
-            Logout
+          {isLoggedIn && (
+            <div className="navbar-user" onClick={() => history("/Profile")}>
+              <span className="navbar-username" >{userName}</span>
+            </div>
+          )}
+
+          <Link
+            to={isLoggedIn ? "/users/login" : "/users/login"}
+            className="login-btn"
+            onClick={isLoggedIn ? handleLogout : null}
+          >
+            {isLoggedIn ? "Logout" : "Login"}
           </Link>
-        ) : (
-          <Link to="/users/login" className="login-btn">
-            Login
-          </Link>
-        )}
 
-        {/* <a href="#login" className="login-btn">
-          Login
-        </a> */}
-      </div>
-
-      {/* Mobile Menu Toggle */}
-      <button className="navbar-toggle" onClick={toggleMenu}>
-        {isOpen ? <FaTimes /> : <FaBars />}
-      </button>
-    </nav>
+          <button className="navbar-toggle" onClick={toggleMenu}>
+            {isOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+      </nav>
+    </div>
   );
 };
 
