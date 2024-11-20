@@ -19,8 +19,8 @@ const Category = () => {
     axios
       .get(`http://localhost:5000/products/category/${id}`)
       .then((response) => {
-        console.log(response.data.product);
-        dispatch(setProducts(response.data.product));
+        console.log(response.data.products);
+        dispatch(setProducts(response.data.products));
       })
       .catch((err) => {
         console.log(err);
