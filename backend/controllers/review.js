@@ -81,7 +81,10 @@ const getProductReviews = (req, res) => {
 
   // const user_id = u_id//req.token.userId;
 
-  const query = `SELECT * FROM reviews WHERE product_id=$1 ;`;
+  const query = `SELECT *,CAST(ROUND(AVG(rating) OVER (PARTITION BY product_id), 2) AS DECIMAL(10, 2)) AS avgrating 
+FROM reviews 
+WHERE product_id = $1;; `;
+
   const data = [product_id];
   pool
     .query(query, data)

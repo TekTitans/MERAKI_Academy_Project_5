@@ -5,10 +5,6 @@ const pool = require("../models/db");
 const addToCart = async (req, res) => {
 
     quantity=req.body.quantity
-    
-
- 
-
     const userId = req.token.userId;
 
     const  productId = req.params.id;
