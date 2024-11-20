@@ -333,7 +333,7 @@ const ProfilePage = () => {
               <label>Bio:</label>
               <input
                 type="text"
-                name="Bio"
+                name="bio"
                 value={userData.bio}
                 onChange={handleChange}
               />
@@ -444,7 +444,7 @@ const ProfilePage = () => {
         <div className="profile_Layout">
           <div className="profile__picture-container">
             {userData.profilePicture ? (
-              <div class="profile__picture-overlay" id="profilePictureOverlay">
+              <div class="profile__picture" id="profilePicture">
                 <img
                   src={userData.profilePicture}
                   alt="Profile Picture"
@@ -456,11 +456,7 @@ const ProfilePage = () => {
                 <FaUserAlt size={50} />
               </div>
             )}
-            {isUploading && (
-              <div className="profile__loader">
-                <RingLoader color="#36D7B7" size={50} />
-              </div>
-            )}
+          
           </div>
           <div className="profile__details">
             <div className="details__titles">

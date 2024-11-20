@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setLogin, setUserId } from "../../components/redux/reducers/auth";
+import {
+  setLogin,
+  setUserId,
+  setUserName,
+} from "../../components/redux/reducers/auth";
 import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
@@ -24,7 +28,9 @@ const Login = () => {
   const validateEmail = (email) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
   const validatePassword = (password) =>
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+      password
+    );
 
   const login = async (e) => {
     e.preventDefault();
@@ -64,8 +70,10 @@ const Login = () => {
       if (result.data) {
         dispatch(setLogin(result.data.token));
         dispatch(setUserId(result.data.userId));
+        dispatch(setUserName(result.data.userName));
         setMessage("");
         setStatus(true);
+        console.log(result.data);
       } else {
         throw new Error("Login failed");
       }
@@ -118,6 +126,8 @@ const Login = () => {
         dispatch(setLogin(res.data.token));
         dispatch(setUserId(res.data.userId));
         setIsCompletedRegister(res.data.isComplete);
+        dispatch(setUserName(res.data.userName));
+        console.log(res.data);
 
         if (res.data.isComplete) {
           history("/");
@@ -133,7 +143,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isLoggedIn && isCompletedRegister) {
-      history("/Home");
+      history("/");
     }
   }, [isLoggedIn, isCompletedRegister, history]);
 
@@ -194,14 +204,14 @@ const Login = () => {
               Register Here
             </button>
           </div>
-        <div className="Google_Login_Container">
-      <div className="google-login-wrapper">
-        <GoogleLogin
-          onSuccess={handleGoogleLoginSuccess}
-          onError={handleGoogleLoginFailure}
-        />
-      </div>
-    </div>
+          <div className="Google_Login_Container">
+            <div className="google-login-wrapper">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={handleGoogleLoginFailure}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

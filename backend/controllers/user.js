@@ -270,6 +270,7 @@ const login = (req, res) => {
                     success: true,
                     message: "Valid login credentials and account reactivated",
                     userId: user.id,
+                    userName: user.username,
                   });
                 })
                 .catch((err) => {
@@ -380,6 +381,7 @@ const googleLogin = async (req, res) => {
       userId: user.id,
       isComplete,
       isNewUser,
+      userName: user.username,
     });
   } catch (error) {
     console.error("Google login error:", error);
@@ -490,33 +492,41 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const { userId } = req.token;
-  const { firstName, lastName, country, address, location, bio, social_media } = req.body;
+  const { firstName, lastName, country, address, location, bio, social_media } =
+    req.body;
 
   const fields = [];
   const values = [];
   let index = 1;
 
   if (req.file) {
-    const fileSizeLimit = 5 * 1024 * 1024;  
-    const allowedTypes = ['image/jpeg', 'image/png'];
+    const fileSizeLimit = 5 * 1024 * 1024;
+    const allowedTypes = ["image/jpeg", "image/png"];
 
     if (req.file.size > fileSizeLimit) {
-      return res.status(400).json({ success: false, message: "File is too large" });
+      return res
+        .status(400)
+        .json({ success: false, message: "File is too large" });
     }
 
     if (!allowedTypes.includes(req.file.mimetype)) {
-      return res.status(400).json({ success: false, message: "Invalid file type" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid file type" });
     }
   }
 
   if (req.file) {
     try {
       const uploadResponse = await uploadToCloudinary(req.file.buffer);
-      const profileImageUrl = uploadResponse.url;  
-      const trimmedProfileImageUrl = profileImageUrl.length > 500 ? profileImageUrl.substring(0, 500) : profileImageUrl;
-  
-      console.log('Trimmed Profile Image URL:', trimmedProfileImageUrl);
-  
+      const profileImageUrl = uploadResponse.url;
+      const trimmedProfileImageUrl =
+        profileImageUrl.length > 500
+          ? profileImageUrl.substring(0, 500)
+          : profileImageUrl;
+
+      console.log("Trimmed Profile Image URL:", trimmedProfileImageUrl);
+
       fields.push(`profile_image = $${index++}`);
       values.push(trimmedProfileImageUrl);
     } catch (error) {
@@ -524,47 +534,52 @@ const updateProfile = async (req, res) => {
       return res.status(500).json({ success: false, message: error.message });
     }
   }
-  
 
   if (firstName) {
-    const trimmedFirstName = firstName.length > 500 ? firstName.substring(0, 500) : firstName;
-    console.log('Trimmed First Name:', trimmedFirstName);
+    const trimmedFirstName =
+      firstName.length > 500 ? firstName.substring(0, 500) : firstName;
+    console.log("Trimmed First Name:", trimmedFirstName);
     fields.push(`first_name = $${index++}`);
     values.push(trimmedFirstName);
   }
   if (lastName) {
-    const trimmedLastName = lastName.length > 500 ? lastName.substring(0, 500) : lastName;
-    console.log('Trimmed Last Name:', trimmedLastName);
+    const trimmedLastName =
+      lastName.length > 500 ? lastName.substring(0, 500) : lastName;
+    console.log("Trimmed Last Name:", trimmedLastName);
     fields.push(`last_name = $${index++}`);
     values.push(trimmedLastName);
   }
   if (country) {
-    const trimmedCountry = country.length > 500 ? country.substring(0, 500) : country;
-    console.log('Trimmed Country:', trimmedCountry);
+    const trimmedCountry =
+      country.length > 500 ? country.substring(0, 500) : country;
+    console.log("Trimmed Country:", trimmedCountry);
     fields.push(`country = $${index++}`);
     values.push(trimmedCountry);
   }
   if (address) {
-    const trimmedAddress = address.length > 500 ? address.substring(0, 500) : address;
-    console.log('Trimmed Address:', trimmedAddress);
+    const trimmedAddress =
+      address.length > 500 ? address.substring(0, 500) : address;
+    console.log("Trimmed Address:", trimmedAddress);
     fields.push(`address = $${index++}`);
     values.push(trimmedAddress);
   }
   if (location) {
-    const trimmedLocation = location.length > 500 ? location.substring(0, 500) : location;
-    console.log('Trimmed Location:', trimmedLocation);
+    const trimmedLocation =
+      location.length > 500 ? location.substring(0, 500) : location;
+    console.log("Trimmed Location:", trimmedLocation);
     fields.push(`location = $${index++}`);
     values.push(trimmedLocation);
   }
   if (bio) {
     const trimmedBio = bio.length > 500 ? bio.substring(0, 500) : bio;
-    console.log('Trimmed Bio:', trimmedBio);
+    console.log("Trimmed Bio:", trimmedBio);
     fields.push(`bio = $${index++}`);
     values.push(trimmedBio);
   }
   if (social_media) {
-    const trimmedSocialMedia = social_media.length > 500 ? social_media.substring(0, 500) : social_media;
-    console.log('Trimmed Social Media:', trimmedSocialMedia);
+    const trimmedSocialMedia =
+      social_media.length > 500 ? social_media.substring(0, 500) : social_media;
+    console.log("Trimmed Social Media:", trimmedSocialMedia);
     fields.push(`social_media = $${index++}`);
     values.push(trimmedSocialMedia);
   }
@@ -578,7 +593,9 @@ const updateProfile = async (req, res) => {
 
   values.push(userId);
 
-  const query = `UPDATE users SET ${fields.join(", ")} WHERE id = $${index} RETURNING *`;
+  const query = `UPDATE users SET ${fields.join(
+    ", "
+  )} WHERE id = $${index} RETURNING *`;
 
   try {
     const result = await pool.query(query, values);
@@ -593,7 +610,9 @@ const updateProfile = async (req, res) => {
     }
   } catch (err) {
     console.error("Error updating profile:", err.message);
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 };
 
