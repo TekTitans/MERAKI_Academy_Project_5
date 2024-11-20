@@ -55,9 +55,8 @@ export const Home = () => {
       const result = await axios.get(
         `http://localhost:5000/products?size=${size}`
       );
-
       if (result.data.success) {
-        const allProducts = result.data.result;
+        const allProducts = result.data.products;
 
         dispatch(setProducts(allProducts));
         setFilterProducts(allProducts);

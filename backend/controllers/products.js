@@ -147,23 +147,22 @@ const removeProduct = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
-  const size = parseInt(req.query.size) || 8;  
-  const offset = (page - 1) * size; 
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 8;
+  const offset = (page - 1) * size;
 
   const query = `SELECT * FROM products LIMIT $1 OFFSET $2`;
-  const data = [size, offset];  
-  const countQuery = `SELECT COUNT(*) FROM products`;  
+  const data = [size, offset];
+  const countQuery = `SELECT COUNT(*) FROM products`;
   const countData = [];
 
   try {
-   
     const result = await pool.query(query, data);
-    
+
     const countResult = await pool.query(countQuery, countData);
-    
-    const totalProducts = parseInt(countResult.rows[0].count);  
-    const totalPages = Math.ceil(totalProducts / size); 
+
+    const totalProducts = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalProducts / size);
 
     if (result.rows.length == 0) {
       res.json({
@@ -174,9 +173,9 @@ const getAllProducts = async (req, res) => {
       res.json({
         success: true,
         message: "All products retrieved successfully",
-        totalPages: totalPages,  
-        totalProducts: totalProducts,  
-        products: result.rows,  
+        totalPages: totalPages,
+        totalProducts: totalProducts,
+        products: result.rows,
       });
     }
   } catch (error) {
@@ -187,7 +186,6 @@ const getAllProducts = async (req, res) => {
     });
   }
 };
-
 
 // const getAllProducts = async (req, res) => {
 //   try {
@@ -245,8 +243,8 @@ const getProductById = async (req, res) => {
 
 const getSellerProduct = async (req, res) => {
   const seller_id = req.token.userId;
-  const query = `SELECT * FROM products WHERE id = $1`;
 
+  const query = `SELECT * FROM products WHERE id = $1`;
   const data = [seller_id];
   try {
     const result = await pool.query(query, data);
@@ -254,10 +252,14 @@ const getSellerProduct = async (req, res) => {
       res.json({
         success: true,
         message: "seller products Details",
-        product: result.rows,
+        products: result.rows,
       });
     } else {
-      throw new Error("Error happened while updating Category");
+      res.json({
+        success: true,
+        message: "seller has no products",
+        products: result.rows,
+      });
     }
   } catch (error) {
     res.status(500).json({
@@ -286,15 +288,13 @@ const getProductsByCategory = async (req, res) => {
     const totalProducts = parseInt(countResult.rows[0].count);
     const totalPages = Math.ceil(totalProducts / size);
 
-   
-      res.json({
-        success: true,
-        message: "Products retrieved successfully",
-        totalPages: totalPages,
-        totalProducts: totalProducts,
-        products: result.rows,
-      });
-    
+    res.json({
+      success: true,
+      message: "Products retrieved successfully",
+      totalPages: totalPages,
+      totalProducts: totalProducts,
+      products: result.rows,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
