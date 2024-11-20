@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 
@@ -13,10 +13,21 @@ const Products = () => {
   const [pageSize] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const search = useSelector((state) => {
+    return state.product.search;
+  });
+  const products = useSelector((state) => {
+    return state.product.products;
+  });
 
   const dispatch = useDispatch();
-
+  useEffect(() => {
+    const filtered = products?.filter((product) =>
+      product.title.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilterProducts(filtered);
+  }, [search, products]);
   useEffect(() => {
     axios
       .get(`http://localhost:5000/category`)

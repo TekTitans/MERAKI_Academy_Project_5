@@ -2,17 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setProducts,
-  setcatid,
-} from "../../components/redux/reducers/product/product";
+import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link, useNavigate } from "react-router-dom";
 
 export const Home = () => {
-  const catId = useSelector((state) => {
-    return state.product.catid;
-  });
-
   const search = useSelector((state) => {
     return state.product.search;
   });
@@ -25,12 +18,13 @@ export const Home = () => {
   const products = useSelector((state) => {
     return state.product.products;
   });
+
+
   useEffect(() => {
     axios
       .get(` http://localhost:5000/category`)
       .then((result) => {
         setCategories(result.data.category);
-        //setcatid(result.data.category.id);
       })
       .catch((err) => {
         console.log(err.message);
@@ -57,7 +51,7 @@ export const Home = () => {
       );
 
       if (result.data.success) {
-        const allProducts = result.data.result;
+        const allProducts = result.data.products;
 
         dispatch(setProducts(allProducts));
         setFilterProducts(allProducts);
@@ -89,7 +83,7 @@ export const Home = () => {
   //   console.log(catFilter);
   // }, []);
   useEffect(() => {
-    const filtered = products.filter((product) =>
+    const filtered = products?.filter((product) =>
       product.title.toLowerCase().includes(search.toLowerCase())
     );
     setFilterProducts(filtered);
