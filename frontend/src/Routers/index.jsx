@@ -14,6 +14,7 @@ import ProfilePage from "../pages/ProfilePage";
 
 import { Search } from "../pages/Serach";
 import Category from "../components/category";
+import Products from "../pages/Products";
 
 export const router = createBrowserRouter(
   [
@@ -42,6 +43,7 @@ export const router = createBrowserRouter(
         { path: "*", element: <NotFound /> },
         { path: "/search", element: <Search /> },
         { path: "/category/:id", element: <Category /> },
+        { path: "/products", element: <Products /> },
       ],
     },
   ],

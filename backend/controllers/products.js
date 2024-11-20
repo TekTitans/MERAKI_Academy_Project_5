@@ -147,17 +147,38 @@ const removeProduct = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const pageSize = parseInt(req.query.size) || 10;
-  const query = `SELECT * FROM products LIMIT $1 ;`;
-  const data = [pageSize];
-  try {
-    const result = await pool.query(query, data);
+  const page = parseInt(req.query.page) || 1; 
+  const size = parseInt(req.query.size) || 8;  
+  const offset = (page - 1) * size; 
 
-    res.json({
-      success: true,
-      message: "All products",
-      result: result.rows,
-    });
+  const query = `SELECT * FROM products LIMIT $1 OFFSET $2`;
+  const data = [size, offset];  
+  const countQuery = `SELECT COUNT(*) FROM products`;  
+  const countData = [];
+
+  try {
+   
+    const result = await pool.query(query, data);
+    
+    const countResult = await pool.query(countQuery, countData);
+    
+    const totalProducts = parseInt(countResult.rows[0].count);  
+    const totalPages = Math.ceil(totalProducts / size); 
+
+    if (result.rows.length == 0) {
+      res.json({
+        success: false,
+        message: "No products found",
+      });
+    } else {
+      res.json({
+        success: true,
+        message: "All products retrieved successfully",
+        totalPages: totalPages,  
+        totalProducts: totalProducts,  
+        products: result.rows,  
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -166,6 +187,7 @@ const getAllProducts = async (req, res) => {
     });
   }
 };
+
 
 // const getAllProducts = async (req, res) => {
 //   try {
@@ -248,28 +270,32 @@ const getSellerProduct = async (req, res) => {
 
 const getProductsByCategory = async (req, res) => {
   const category_id = req.params.cId;
-  const query = `SELECT * FROM products WHERE category_id = $1 `;
-  const data = [category_id];
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 5;
+  const offset = (page - 1) * size;
+
+  const query = `SELECT * FROM products WHERE category_id = $1 LIMIT $2 OFFSET $3`;
+  const data = [category_id, size, offset];
+  const countQuery = `SELECT COUNT(*) FROM products WHERE category_id = $1`;
+  const countData = [category_id];
 
   try {
     const result = await pool.query(query, data);
-    console.log(result.rows.length);
+    const countResult = await pool.query(countQuery, countData);
 
-    if (result.rows.length == 0) {
-      res.json({
-        success: false,
-        message: "no product with this category",
-      });
-    } else {
+    const totalProducts = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalProducts / size);
+
+   
       res.json({
         success: true,
-        message: "product Details",
-        product: result.rows,
+        message: "Products retrieved successfully",
+        totalPages: totalPages,
+        totalProducts: totalProducts,
+        products: result.rows,
       });
-    }
+    
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({
       success: false,
       message: "Server error",
