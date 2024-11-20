@@ -7,9 +7,7 @@ import { setProducts } from "../redux/reducers/product/product";
 const Category = () => {
   const { id } = useParams();
   // const Navigate = useNavigate();
-  const catId = useSelector((state) => {
-    return state.product.catid;
-  });
+
   const dispatch = useDispatch();
   // const [categories, setCategories] = useState([]);
   const products = useSelector((state) => {
@@ -19,7 +17,7 @@ const Category = () => {
     axios
       .get(`http://localhost:5000/products/category/${id}`)
       .then((response) => {
-        console.log(response.data.products);
+
         dispatch(setProducts(response.data.products));
       })
       .catch((err) => {
