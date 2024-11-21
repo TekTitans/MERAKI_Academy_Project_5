@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
+import "./placeorder.css";
+
 
 
 
@@ -26,6 +28,18 @@ const PlaceOrder=()=>{
         (acc, elem) => acc + elem.price * elem.quantity,
         0
       );
+      const createOrder=()=>{
+        axios
+        .post(`http://localhost:5000/order`,{},{headers})
+        .then((response)=>{
+          console.log(response.data)
+
+        })
+        .catch((error)=>{
+          console.log(error)
+
+        })
+      }
 
 
     return (<div>
@@ -55,12 +69,15 @@ const PlaceOrder=()=>{
             </tr>
           ))}
         </tbody>
+        <tfoot>
+
         <tr>
           <th colSpan="4">{totalAmount}.00</th>
         </tr>
+        </tfoot>
       </table> 
       <div className="placeorder">
-      <button>place order</button>
+      <button onClick={()=>{createOrder()}}>place order</button>
       </div>
       
          </div>)

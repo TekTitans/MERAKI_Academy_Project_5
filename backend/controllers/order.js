@@ -5,7 +5,7 @@ const pool = require("../models/db");
 const createOrder=async(req,res)=>{
     
         const userId = req.token.userId;
-        const { shippingAddress} = req.body;
+        const  shippingAddress = "amman";
         try {
           const cartQuery =
             "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";

@@ -5,7 +5,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import "./cart.css";
 
 const Cart = () => {
-  const [myCart, setMyCart] = useState([]);
   const [localCart, setLocalCart] = useState([]);
   const [debounceTimer, setDebounceTimer] = useState(null);
 
@@ -16,31 +15,34 @@ const Cart = () => {
   };
   const navigate = useNavigate();
 
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  }
+
   useEffect(() => {
     axios
       .get("http://localhost:5000/cart", { headers })
       .then((response) => {
-        setMyCart(response.data.result);
         setLocalCart(response.data.result);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Error fetching cart data:", err);
       });
-  }, []);
+  }, [headers]);
 
   const sendQuantityUpdate = (id, quantity) => {
     axios
       .post(`http://localhost:5000/cart/${id}`, { quantity }, { headers })
       .then((response) => {
-        console.log("UPDATED", response.data);
+        console.log("Updated cart item:", response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error updating cart item:", error);
       });
   };
 
   const handleQuantityChange = (e, elem) => {
-    const newQuantity = Math.max(1, e.target.value);
+    const newQuantity = Math.max(1, parseInt(e.target.value) || 1);
     const updatedCart = localCart.map((item) =>
       item.id === elem.id ? { ...item, quantity: newQuantity } : item
     );
@@ -65,7 +67,7 @@ const Cart = () => {
         setLocalCart(updatedCart);
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error removing item from cart:", error);
       });
   };
 
@@ -106,18 +108,24 @@ const Cart = () => {
       </table>
 
       <table className="cartTable">
-        <tr>
-          <th colSpan="2">Your Order</th>
-        </tr>
-        <tr>
-          <td>Total</td>
-          <td>{totalAmount}.00</td>
-        </tr>
-        <tr>
-          <td colSpan="2">
-            <button onClick={()=>{navigate("/placeOrder")}}>Checkout</button>
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th colSpan="2">Your Order</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total</td>
+            <td>{totalAmount}.00</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan="2">
+              <button onClick={() => navigate("/placeOrder")}>Checkout</button>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   );
