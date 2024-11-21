@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../redux/reducers/product/product";
 import axios from "axios";
-import { FaUserAlt } from "react-icons/fa";
-import "./style.css";
+import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
-const AddProduct = ({ handleCancelAdd }) => {
+import "./style.css";
+
+const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -19,12 +20,11 @@ const AddProduct = ({ handleCancelAdd }) => {
     subcategory_id: "",
   });
 
+  const [imagePreview, setImagePreview] = useState("");
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
-  const [message, setMessage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ const AddProduct = ({ handleCancelAdd }) => {
         const response = await axios.get("http://localhost:5000/category/");
         setCategories(response.data.category);
       } catch (error) {
-        console.error("Error fetching categories", error);
+        console.error("Error fetching categories:", error);
       }
     };
 
@@ -45,7 +45,7 @@ const AddProduct = ({ handleCancelAdd }) => {
         const response = await axios.get("http://localhost:5000/subcateogry");
         setSubcategories(response.data.subCategory);
       } catch (error) {
-        console.error("Error fetching subcategories", error);
+        console.error("Error fetching subcategories:", error);
       }
     };
 
@@ -68,48 +68,46 @@ const AddProduct = ({ handleCancelAdd }) => {
   };
 
   const handleFileChange = async (e) => {
-    setIsUploading(true);
-    setUploadError("");
-
-    console.log("isUploading :", isUploading);
     const file = e.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("product_image", file);
+    if (!file) return;
 
-      try {
-        const res = await axios.post(
-          "http://localhost:5000/products",
-          formattedProduct,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+    setIsUploading(true);
+    setMessage(null);
 
-        const updatedProductPicture = URL.createObjectURL(file);
+    const formData = new FormData();
+    formData.append("product_image", file);
 
-        setProduct((prevState) => ({
-          ...prevState,
-          product_image: updatedProductPicture,
-        }));
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/products/upload_Image",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-        console.log("Product updated:", res.data);
-      } catch (error) {
-        console.error("Error uploading Product image:", error);
-      } finally {
-        setIsUploading(false);
-      }
+      setImagePreview(URL.createObjectURL(file));
+      setProduct((prevState) => ({
+        ...prevState,
+        product_image: res.data.url,
+      }));
+    } catch (error) {
+      console.error("Error uploading product image:", error);
+      showMessage("Failed to upload image. Try again.", "error");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!token) {
-      setMessage({ text: "Authentication token is missing.", type: "error" });
+    if (!product.title || !product.price || !product.category_id) {
+      showMessage("Please fill all required fields.", "error");
+
       return;
     }
 
@@ -119,7 +117,6 @@ const AddProduct = ({ handleCancelAdd }) => {
     const sizeOptionsArray = product.size_options
       ? product.size_options.split(",").map((opt) => opt.trim())
       : [];
-
     const formattedProduct = {
       ...product,
       stock_status: product.stock_status.toLowerCase(),
@@ -142,7 +139,8 @@ const AddProduct = ({ handleCancelAdd }) => {
           },
         }
       );
-      setMessage({ text: "Product added successfully!", type: "success" });
+
+      showMessage("Product added successfully!", "success");
       dispatch(addProduct(response.data.product));
       setProduct({
         title: "",
@@ -156,14 +154,11 @@ const AddProduct = ({ handleCancelAdd }) => {
         category_id: "",
         subcategory_id: "",
       });
+      setImagePreview("");
+      handleCancelAdd();
     } catch (error) {
-      console.error("Error adding product", error);
-      setMessage({
-        text:
-          error.response?.data?.err?.detail ||
-          "Failed to add product. Please try again.",
-        type: "error",
-      });
+      console.error("Error adding product:", error);
+      showMessage("Failed to add product. Please try again.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -171,20 +166,10 @@ const AddProduct = ({ handleCancelAdd }) => {
 
   useEffect(() => {
     if (message) {
-      const timer = setTimeout(() => setMessage(null), 3000);
+      const timer = setTimeout(() => setMessage(null), 5000);
       return () => clearTimeout(timer);
     }
   }, [message]);
-
-  const handleInternalCancelAdd = () => {
-    handleCancelAdd();
-    setIsSaving(false);
-    setProduct((prevState) => ({
-      ...prevState,
-      product_image: prevState.product_image || "",
-    }));
-    setMessage(null);
-  };
 
   return (
     <div className="add-product-container">
@@ -247,39 +232,31 @@ const AddProduct = ({ handleCancelAdd }) => {
           onChange={handleChange}
           placeholder="Size Options"
         />
+        <input type="file" onChange={handleFileChange} />
+        <div className="product__picture-container">
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="Product Preview"
+              className="product_image"
+            />
+          ) : (
+            <div className="product_image-icon">
+              <FaImage size={50} />
+            </div>
+          )}
+          {isUploading && (
+            <div className="profile__spinner">
+              <RingLoader color="#36d7b7" size={100} />
+            </div>
+          )}
+        </div>
         <select
           name="category_id"
           value={product.category_id}
           onChange={handleChange}
           required
         >
-          <input
-            type="text"
-            name="product_image"
-            value={product.product_image}
-            onChange={handleChange}
-            placeholder="Product Image URL"
-          />
-          <input type="file" onChange={handleFileChange} />
-          {uploadError && <small className="error">{uploadError}</small>}
-          <div className="profile__picture-container">
-            {product.product_image ? (
-              <img
-                src={product.product_image}
-                alt="Product Picture"
-                className="product_image"
-              />
-            ) : (
-              <div className="product_image-icon">
-                <FaUserAlt size={50} />
-              </div>
-            )}
-            {isUploading && (
-              <div className="profile__spinner">
-                <RingLoader color="#36d7b7" size={100} />
-              </div>
-            )}
-          </div>
           <option value="" disabled>
             Select Category
           </option>
@@ -307,8 +284,12 @@ const AddProduct = ({ handleCancelAdd }) => {
             </option>
           ))}
         </select>
-        <button type="submit" className="submit-button">
-          Add Product
+        <button
+          type="submit"
+          className="submit-button"
+          disabled={isSaving || isUploading}
+        >
+          {isSaving ? "Saving..." : "Add Product"}
         </button>
       </form>
     </div>

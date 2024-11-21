@@ -5,10 +5,19 @@ import "./style.css";
 
 const SellerDashboard = () => {
   const [isaddProduct, setIsaddProduct] = useState(false);
+  const [message, setMessage] = useState({
+    text: "",
+    type: "",
+  });
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
 
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
   const handleCancelAdd = () => {
     setIsaddProduct(false);
-    console.log("Cancelled adding product and navigated back.");
   };
   return (
     <div className="seller-dashboard-container">
@@ -18,7 +27,12 @@ const SellerDashboard = () => {
           <button className="add_back-button" onClick={handleCancelAdd}>
             Back
           </button>
-          <AddProduct handleCancelAdd={handleCancelAdd} />
+          <AddProduct
+            handleCancelAdd={handleCancelAdd}
+            message={message}
+            setMessage={setMessage}
+            showMessage={showMessage}
+          />
         </div>
       ) : (
         <div className="seller-products-section">
@@ -30,7 +44,11 @@ const SellerDashboard = () => {
           >
             Add New Product
           </button>
-          <SellerProducts />
+          <SellerProducts
+            message={message}
+            setMessage={setMessage}
+            showMessage={showMessage}
+          />
         </div>
       )}
     </div>

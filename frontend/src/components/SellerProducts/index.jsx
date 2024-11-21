@@ -8,7 +8,7 @@ import {
 } from "../redux/reducers/product/product";
 import "./style.css";
 
-const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
+const SellerProducts = ({ message, setMessage,showMessage }) => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -26,17 +26,7 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.product.products);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState({
-    text: "",
-    type: "",
-  });
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
 
-    setTimeout(() => {
-      setMessage(null);
-    }, 3000);
-  };
   const { token } = useSelector((state) => state.auth);
 
   useEffect(() => {
