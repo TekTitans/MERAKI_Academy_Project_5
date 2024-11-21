@@ -58,7 +58,7 @@ const addToCart = async (req, res) => {
       const checkQuery =
         "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2";
       const checkResult = await pool.query(checkQuery, [userId, productId]);
-      if (checkResult.rows[0].quantity === 1) {
+      if (checkResult.rows[0]) {
         const deleteItem =
         "delete from cart  WHERE user_id = $1 AND product_id = $2";
          await pool.query(deleteItem, [userId, productId]);
@@ -68,14 +68,7 @@ const addToCart = async (req, res) => {
           message: "item deleted sucsessfully.",
         });
       }
-      else if(checkResult.rows[0].quantity > 1){
-      const increaseQuery =
-      "UPDATE cart SET quantity = quantity - 1 WHERE user_id = $1 AND product_id = $2";
-      await pool.query(increaseQuery, [userId, productId]);
-      res.status(200).json({
-        success: true,
-        message: "Product decreased successfully.",
-      })};
+     
     } catch (error) {
       console.error("Error adding to cart:", error);
       res.status(500).json({
