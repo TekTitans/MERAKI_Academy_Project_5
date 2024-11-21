@@ -306,27 +306,28 @@ const getProductById = async (req, res) => {
 const getSellerProduct = async (req, res) => {
   const seller_id = req.token.userId;
 
-  const page = parseInt(req.query.page) || 1; 
-  const limit = parseInt(req.query.limit) || 10; 
-
-  const offset = (page - 1) * limit;
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 8;
+  const offset = (page - 1) * size;
 
   const query = `SELECT * FROM products WHERE seller_id = $1 LIMIT $2 OFFSET $3`;
-  const data = [seller_id, limit, offset];
+  const data = [seller_id, size, offset];
+  const countQuery = `SELECT COUNT(*) FROM products WHERE seller_id = $1`;
+  const countData = [seller_id];
 
   try {
     const result = await pool.query(query, data);
+    const countResult = await pool.query(countQuery, countData);
+    const totalProducts = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalProducts / size);
 
     if (result.rows.length !== 0) {
       res.json({
         success: true,
         message: "Seller's product details",
+        totalPages: totalPages,
+        totalProducts: totalProducts,
         products: result.rows,
-        pagination: {
-          page,
-          limit,
-          totalProducts: result.rowCount,
-        },
       });
     } else {
       res.json({

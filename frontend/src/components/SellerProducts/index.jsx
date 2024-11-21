@@ -31,35 +31,40 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { token } = useSelector((state) => state.auth);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(12);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchProducts = async (page = 1) => {
+    if (!token) {
+      console.error("No token found.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/products/seller",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.products) {
+        dispatch(setProducts(response.data.products));
+      }
+      setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching seller products", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      if (!token) {
-        console.error("No token found.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/products/seller",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.data.products) {
-          dispatch(setProducts(response.data.products));
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching seller products", error);
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
   }, [dispatch, token]);
 
@@ -203,13 +208,34 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
     });
   };
 
+  const paginationControls = (
+    <div className="pagination-controls">
+      <button
+        className="pagination-button"
+        onClick={() => fetchProducts(currentPage - 1)}
+        disabled={currentPage === 1 || products.length === 0}
+      >
+        Previous
+      </button>
+      <span className="pagination-info">
+        Page {currentPage} of {totalPages}
+      </span>
+      <button
+        className="pagination-button"
+        onClick={() => fetchProducts(currentPage + 1)}
+        disabled={currentPage === totalPages || products.length === 0}
+      >
+        Next
+      </button>
+    </div>
+  );
+
   return (
     <div className="product-management-page">
       <h1 className="page-title">Product Management</h1>
       {message?.text && (
         <div className={`message ${message.type} show`}>{message.text}</div>
       )}
-
       {editProduct ? (
         <div className="product-edit-form-container">
           <form onSubmit={handleUpdate} className="product-edit-form">
@@ -389,6 +415,7 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
           </div>
         </div>
       )}
+      {paginationControls}
     </div>
   );
 };
