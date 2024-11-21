@@ -33,10 +33,9 @@ const ProductManagement = () => {
   const showMessage = (text, type) => {
     setMessage({ text, type });
 
-    // Clear the message after 3 seconds
     setTimeout(() => {
       setMessage(null);
-    }, 3000); // 3000 milliseconds (3 seconds)
+    }, 3000); 
   };
   const { token } = useSelector((state) => state.auth);
 
@@ -183,10 +182,8 @@ const ProductManagement = () => {
   return (
     <div className="product-management-page">
       <h1 className="page-title">Product Management</h1>
-      {message && (
-        <div className={`message ${message.type} ${message ? "show" : ""}`}>
-          {message.text}
-        </div>
+      {message?.text && (
+        <div className={`message ${message.type} show`}>{message.text}</div>
       )}
 
       {editProduct ? (
@@ -194,7 +191,7 @@ const ProductManagement = () => {
           <form onSubmit={handleUpdate} className="product-edit-form">
             <h2>Edit Product</h2>
             <button
-              className="back-button"
+              className="edit_back-button"
               onClick={() => setEditProduct(null)}
             >
               Back to Product List
@@ -289,7 +286,7 @@ const ProductManagement = () => {
               />
             </div>
 
-            <button type="submit" className="action-button">
+            <button type="submit" className="edit_action-button">
               Update Product
             </button>
           </form>
