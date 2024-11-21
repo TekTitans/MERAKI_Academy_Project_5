@@ -7,8 +7,9 @@ import {
   removeProduct,
 } from "../redux/reducers/product/product";
 import "./style.css";
-
-const SellerProducts = ({ message, setMessage,showMessage }) => {
+import { FaImage } from "react-icons/fa";
+import { RingLoader } from "react-spinners";
+const SellerProducts = ({ message, setMessage, showMessage }) => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -24,9 +25,11 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
   });
 
   const dispatch = useDispatch();
+  const [imagePreview, setImagePreview] = useState("");
   const products = useSelector((state) => state.product.products);
   const [loading, setLoading] = useState(true);
-
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { token } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -62,19 +65,11 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
 
   const validateForm = () => {
     if (!product.title || !product.price || !product.stock_quantity) {
-      showMessage(
-        error.response?.data?.message ||
-          "Title, Price, and Stock Quantity are required.",
-        "error"
-      );
+      showMessage("Title, Price, and Stock Quantity are required.", "error");
       return false;
     }
     if (isNaN(product.price) || isNaN(product.stock_quantity)) {
-      showMessage(
-        error.response?.data?.message ||
-          "Price and Stock Quantity must be numbers.",
-        "error"
-      );
+      showMessage("Price and Stock Quantity must be numbers.", "error");
       return false;
     }
     return true;
@@ -86,6 +81,41 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
       ...product,
       [name]: value,
     });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setMessage(null);
+
+    const formData = new FormData();
+    formData.append("product_image", file);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/products/upload_Image",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setImagePreview(URL.createObjectURL(file));
+      setProduct((prevState) => ({
+        ...prevState,
+        product_image: res.data.url,
+      }));
+    } catch (error) {
+      console.error("Error uploading product image:", error);
+      showMessage("Failed to upload image. Try again.", "error");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -111,6 +141,7 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
       category_id: parseInt(product.category_id, 10),
       subcategory_id: parseInt(product.subcategory_id, 10),
     };
+    setIsSaving(true);
 
     try {
       const response = await axios.put(
@@ -129,7 +160,7 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
         title: "",
         description: "",
         price: "",
-        stock_status: "In Stock",
+        stock_status: "in_stock",
         stock_quantity: "",
         color_options: "",
         size_options: "",
@@ -137,12 +168,15 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
         category_id: "",
         subcategory_id: "",
       });
-      showMessage("Product updated successfully!", "success");
+      setImagePreview("");
+      setIsUploading(false);
     } catch (error) {
       showMessage(
         error.response?.data?.message || "Failed to update product.",
         "error"
       );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -274,10 +308,29 @@ const SellerProducts = ({ message, setMessage,showMessage }) => {
                 placeholder="Size Options (comma separated)"
                 className="input-field"
               />
+              <input type="file" onChange={handleFileChange} />
+              <div className="product__picture-container">
+                {imagePreview || product.product_image ? (
+                  <img
+                    src={imagePreview || product.product_image}
+                    alt="Product Preview"
+                    className="product_image"
+                  />
+                ) : (
+                  <div className="product_image-icon">
+                    <FaImage size={50} />
+                  </div>
+                )}
+                {isUploading && (
+                  <div className="profile__spinner">
+                    <RingLoader color="#36d7b7" size={100} />
+                  </div>
+                )}
+              </div>
             </div>
 
             <button type="submit" className="edit_action-button">
-              Update Product
+              {isSaving ? "Updating..." : "Update Product"}
             </button>
           </form>
         </div>

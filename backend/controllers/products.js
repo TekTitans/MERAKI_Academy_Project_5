@@ -306,21 +306,33 @@ const getProductById = async (req, res) => {
 const getSellerProduct = async (req, res) => {
   const seller_id = req.token.userId;
 
-  const query = `SELECT * FROM products WHERE seller_id = $1`;
-  const data = [seller_id];
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
+
+  const offset = (page - 1) * limit;
+
+  const query = `SELECT * FROM products WHERE seller_id = $1 LIMIT $2 OFFSET $3`;
+  const data = [seller_id, limit, offset];
+
   try {
     const result = await pool.query(query, data);
+
     if (result.rows.length !== 0) {
       res.json({
         success: true,
-        message: "seller products Details",
+        message: "Seller's product details",
         products: result.rows,
+        pagination: {
+          page,
+          limit,
+          totalProducts: result.rowCount,
+        },
       });
     } else {
       res.json({
         success: true,
-        message: "seller has no products",
-        products: result.rows,
+        message: "Seller has no products",
+        products: [],
       });
     }
   } catch (error) {
