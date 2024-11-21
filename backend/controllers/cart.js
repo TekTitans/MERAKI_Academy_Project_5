@@ -47,40 +47,33 @@ const addToCart = async (req, res) => {
   };
  
 
-const removeFromCart=async(req,res)=>{
-  const userId = req.token.userId;
-  const  productId = req.params.id;
-  try {
-    const checkQuery =
-      "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2";
-    const checkResult = await pool.query(checkQuery, [userId, productId]);
-    if (checkResult.rows[0].quantity === 1) {
-      const deleteItem =
-      "delete from cart  WHERE user_id = $1 AND product_id = $2";
-       await pool.query(deleteItem, [userId, productId]);
-
-      return res.status(200).json({
+  const removeFromCart=async(req,res)=>{ 
+    const userId = req.token.userId;
+    const  productId = req.params.id;
+    try {
+      const checkQuery =
+        "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2";
+      const checkResult = await pool.query(checkQuery, [userId, productId]);
+      if (checkResult.rows[0]) {
+        const deleteItem =
+        "delete from cart  WHERE user_id = $1 AND product_id = $2";
+         await pool.query(deleteItem, [userId, productId]);
+  
+        return res.status(200).json({
+          success: false,
+          message: "item deleted sucsessfully.",
+        });
+      }
+     
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      res.status(500).json({
         success: false,
-        message: "item deleted sucsessfully.",
+        message: "Server error. Please try again later.",
       });
     }
-    else if(checkResult.rows[0].quantity > 1){
-    const increaseQuery =
-    "UPDATE cart SET quantity = quantity - 1 WHERE user_id = $1 AND product_id = $2";
-    await pool.query(increaseQuery, [userId, productId]);
-    res.status(200).json({
-      success: true,
-      message: "Product decreased successfully.",
-    })};
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error. Please try again later.",
-    });
-  }
-};
-
+  };
+  
 
 
 
@@ -92,10 +85,12 @@ const getCartItems=(req,res)=>{
     // const user_id = u_id//req.token.userId;
  
      const query = `SELECT 
-    t1.price, 
+    t1.price,
+    t1.id, 
     t1.description, 
     t2.quantity,
-    t1.title
+    t1.title,
+    t2.product_id
 FROM 
     products t1
 FULL OUTER JOIN 

@@ -52,6 +52,8 @@ export const Details = () => {
   const addToCart = () => {
     console.log(token);
     console.log("this is token");
+    Navigate("/")
+
 
     if (isLoggedIn === false) {
       Navigate("/users/login");
