@@ -9,6 +9,7 @@ import {
 import "./style.css";
 import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 const SellerProducts = ({ message, setMessage, showMessage }) => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
@@ -210,23 +211,29 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
 
   const paginationControls = (
     <div className="pagination-controls">
-      <button
-        className="pagination-button"
-        onClick={() => fetchProducts(currentPage - 1)}
-        disabled={currentPage === 1 || products.length === 0}
+      <div
+        className={`pagination-arrow ${
+          currentPage === 1 || totalPages === 0 ? "disabled" : ""
+        }`}
+        onClick={() => currentPage > 1 && fetchProducts(currentPage - 1)}
+        aria-disabled={currentPage === 1}
       >
-        Previous
-      </button>
+        <FaArrowLeft size={20} />
+      </div>
       <span className="pagination-info">
         Page {currentPage} of {totalPages}
       </span>
-      <button
-        className="pagination-button"
-        onClick={() => fetchProducts(currentPage + 1)}
-        disabled={currentPage === totalPages || products.length === 0}
+      <div
+        className={`pagination-arrow ${
+          currentPage === totalPages || totalPages === 0 ? "disabled" : ""
+        }`}
+        onClick={() =>
+          currentPage < totalPages && fetchProducts(currentPage + 1)
+        }
+        aria-disabled={currentPage === totalPages}
       >
-        Next
-      </button>
+        <FaArrowRight size={20} />
+      </div>
     </div>
   );
 
