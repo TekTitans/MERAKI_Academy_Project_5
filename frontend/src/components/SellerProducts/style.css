@@ -14,10 +14,10 @@
 }
 
 .product-edit-form-container {
-  background-color: #fff;
+  background-color: #f8f8f8;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   max-width: 800px;
   margin: 0 auto;
 }
@@ -27,6 +27,7 @@
   margin-bottom: 20px;
   color: #333;
   text-align: center;
+  font-weight: bold;
 }
 .form-group {
   margin-bottom: 15px;
@@ -138,36 +139,36 @@
   margin-bottom: 10px;
   padding: 8px 10px;
   border-radius: 5px;
-  background-color: #f8f9fa; 
-  border: 1px solid #e0e0e0; 
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
 }
 
 .product-stock {
-  background-color: #d4edda; 
-  border-color: #c3e6cb; 
+  background-color: #d4edda;
+  border-color: #c3e6cb;
 }
 
 .product-colors {
-  background-color: #e2e3e5; 
-  border-color: #d6d8db; 
+  background-color: #e2e3e5;
+  border-color: #d6d8db;
 }
 
 .product-sizes {
-  background-color: #fff3cd; 
-  border-color: #ffeeba; 
+  background-color: #fff3cd;
+  border-color: #ffeeba;
 }
 
 .product-stock span,
 .product-colors span,
 .product-sizes span {
-  font-weight: bold; 
+  font-weight: bold;
   color: #333;
 }
 
 .product-stock .status {
-  color: #28a745; 
+  color: #28a745;
   font-weight: bold;
 }
 
@@ -196,21 +197,83 @@
 }
 
 .edit-button {
-  background-color: #4caf50;
-  color: #fff;
+  background: linear-gradient(135deg, #4caf50, #6fd83e);
+  color: #ffffff;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  font-family: "Arial", sans-serif;
+  margin: 20px auto; 
+  max-width: 200px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .edit-button:hover {
-  background-color: #45a049;
+  background: linear-gradient(135deg, #6fd83e, #4caf50);
+  transform: scale(1.05);
 }
 
 .delete-button {
-  background-color: #f44336;
-  color: #fff;
+  background: linear-gradient(135deg, #df564d, #9b0a07);
+  color: #ffffff;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  font-family: "Arial", sans-serif;
+  margin: 20px auto; 
+  max-width: 200px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .delete-button:hover {
-  background-color: #e53935;
+  background: linear-gradient(135deg, #9b0a07, #df564d);
+  transform: scale(1.05);
+}
+
+.edit_back-button {
+  background: linear-gradient(135deg, #977c7c, #746e6e);
+  color: #ffffff;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  font-family: "Arial", sans-serif;
+  margin: 20px auto; 
+  max-width: 200px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.edit_back-button:hover {
+  background: linear-gradient(135deg, #746e6e, #977c7c);
+  transform: scale(1.05);
+}
+
+.edit_action-button {
+  background: linear-gradient(135deg, #4caf50, #6fd83e);
+  color: #ffffff;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  font-family: "Arial", sans-serif;
+  margin: 20px auto;
+  max-width: 200px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.edit_action-button:hover {
+  background: linear-gradient(135deg, #6fd83e, #4caf50);
+  transform: scale(1.05);
 }
 
 .no-products-message {
@@ -230,31 +293,34 @@
 }
 
 .message {
+  display: none; 
+  opacity: 0;
   padding: 12px 20px;
   margin: 15px 0;
   border-radius: 8px;
-  font-size: 16px; 
+  font-size: 16px;
   text-align: center;
   font-family: "Arial", sans-serif;
   opacity: 0;
-  transform: translateY(10px); 
+  transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .message.show {
+  display: block; 
   opacity: 1;
   transform: translateY(0);
 }
 
 .message.success {
-  background: linear-gradient(135deg, #6fd83e, #4caf50); 
+  background: linear-gradient(135deg, #6fd83e, #4caf50);
   color: white;
   opacity: 50%;
 }
 
 .message.error {
-  background: linear-gradient(135deg, #f77c7c, #f44336); 
+  background: linear-gradient(135deg, #f77c7c, #f44336);
   color: white;
   opacity: 50%;
 }

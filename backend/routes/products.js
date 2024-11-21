@@ -1,6 +1,8 @@
 const express = require("express");
 const auth = require("../middleware/authentication");
 const authz = require("../middleware/authorization");
+const upload = require("../middleware/upload");  
+
 const {
   createProduct,
   updateProduct,
@@ -15,7 +17,13 @@ const {
 const productRouter = express.Router();
 
 productRouter.post("/", auth, authz("create_product"), createProduct);
-productRouter.put("/:pId", auth, authz("update_product"), updateProduct);
+productRouter.put(
+  "/:pId",
+  auth,
+  authz("update_product"),
+  upload.single("product_image"),
+  updateProduct
+);
 productRouter.delete("/:pId", auth, authz("delete_product"), removeProduct);
 productRouter.get("/", getAllProducts);
 productRouter.get("/seller", auth, getSellerProduct);
