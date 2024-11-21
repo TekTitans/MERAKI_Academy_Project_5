@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const productSlice = createSlice({
-  name: "product",
+  name: 'product',
   initialState: {
     products: [],
     cart: [],
-    search: "",
+    search: '',
     catid: 0,
   },
   reducers: {
@@ -14,6 +14,16 @@ export const productSlice = createSlice({
     },
     addProduct: (state, action) => {
       state.products.push(action.payload);
+    },
+    updateProduct: (state, action) => {
+      const updatedProduct = action.payload;
+      state.products = state.products.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      );
+    },
+    removeProduct: (state, action) => {
+      const productId = action.payload;
+      state.products = state.products.filter((product) => product.id !== productId);
     },
     setCart: (state, action) => {
       state.cart = action.payload;
@@ -27,6 +37,14 @@ export const productSlice = createSlice({
   },
 });
 
-export const { setProducts, addProduct, setCart, setSearch, setcatid } =
-  productSlice.actions;
+export const {
+  setProducts,
+  addProduct,
+  updateProduct,
+  removeProduct,
+  setCart,
+  setSearch,
+  setcatid,
+} = productSlice.actions;
+
 export default productSlice.reducer;

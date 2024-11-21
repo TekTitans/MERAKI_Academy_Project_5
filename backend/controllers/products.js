@@ -14,7 +14,6 @@ const createProduct = async (req, res) => {
     color_options,
     size_options,
     product_image,
-
     category_id,
     subcategory_id,
   } = req.body;
@@ -71,17 +70,23 @@ const updateProduct = async (req, res) => {
     subcategory_id,
   } = req.body;
 
+  console.log("productId :", productId);
+  console.log("seller_id :", seller_id);
+  console.log("req.body :", req.body);
+
   const query = `UPDATE products SET
-                 title=COALESCE($1,title),
-                 description = COALESCE($2,description),
-                 price =COALESCE($3,price),
-                 stock_status=COALESCE($4,stock_status),
-                 stock_quantity=COALESCE($5,stock_quantity),
-                 color_options=COALESCE($6,color_options),
-                 size_options=COALESCE($7,size_options),
-                 product_image=COALESCE($8,product_image),
-                 category_id=COALESCE($9,category_id),
-                 subcategory_id=COALESCE($10,subcategory_id) WHERE id = ${productId} AND seller_id = ${seller_id} RETURNING *;`;
+                 title = COALESCE($1, title),
+                 description = COALESCE($2, description),
+                 price = COALESCE($3, price),
+                 stock_status = COALESCE($4, stock_status),
+                 stock_quantity = COALESCE($5, stock_quantity),
+                 color_options = COALESCE($6, color_options),
+                 size_options = COALESCE($7, size_options),
+                 product_image = COALESCE($8, product_image),
+                 category_id = COALESCE($9, category_id),
+                 subcategory_id = COALESCE($10, subcategory_id)
+                 WHERE id = $11 AND seller_id = $12
+                 RETURNING *;`;
 
   const data = [
     title,
@@ -94,54 +99,68 @@ const updateProduct = async (req, res) => {
     product_image,
     category_id,
     subcategory_id,
+    productId, 
+    seller_id, 
   ];
+
   try {
     const result = await pool.query(query, data);
+    console.log("result :", result);
 
-    if (result.rows.length !== 0) {
+    if (result.rowCount > 0) {
       res.json({
         success: true,
-        message: "product Updated",
-        category: result.rows[0],
+        message: "Product updated successfully",
+        product: result.rows[0],
       });
     } else {
-      throw new Error("Error happened while updating Category");
+      res.status(404).json({
+        success: false,
+        message: "Product not found or you are not authorized to update this product",
+      });
     }
   } catch (error) {
-    console.log(error);
+    console.error("Error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Server error",
-      err: error,
+      message: "Server error while updating product",
+      err: error.message,
     });
   }
 };
 
+
 const removeProduct = async (req, res) => {
   const productId = req.params.pId;
-
   const seller_id = req.token.userId;
+  console.log("productId :", productId);
+  console.log("seller_id :", seller_id);
 
   const query = `DELETE FROM products WHERE id = $1 AND seller_id = $2;`;
-
   const data = [productId, seller_id];
 
   try {
     const result = await pool.query(query, data);
-    if (result.rows.length !== 0) {
+    console.log("result :", result);
+    if (result.rowCount > 0) {
       res.json({
         success: true,
-        message: "product Deleted",
+        message: "Product deleted successfully",
       });
     } else {
-      throw new Error("Error happened while updating Category");
+      res.status(404).json({
+        success: false,
+        message:
+          "Product not found or you are not authorized to delete this product.",
+      });
     }
   } catch (error) {
+    console.error("Error deleting product:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
-      err: error,
+      message: "Server error while deleting product",
+      err: error.message,
     });
   }
 };
@@ -244,7 +263,7 @@ const getProductById = async (req, res) => {
 const getSellerProduct = async (req, res) => {
   const seller_id = req.token.userId;
 
-  const query = `SELECT * FROM products WHERE id = $1`;
+  const query = `SELECT * FROM products WHERE seller_id = $1`;
   const data = [seller_id];
   try {
     const result = await pool.query(query, data);
