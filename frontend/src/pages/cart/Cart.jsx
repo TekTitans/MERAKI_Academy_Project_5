@@ -1,64 +1,75 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
 import "./cart.css";
 
 const Cart = () => {
   const [myCart, setMyCart] = useState([]);
-  const [togle, setTogle] = useState(false);
+  const [localCart, setLocalCart] = useState([]);
+  const [debounceTimer, setDebounceTimer] = useState(null);
 
   const token = useSelector((state) => state.auth.token);
-  const uId = useSelector((state) => state.auth.userId);
-
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/cart`, { headers })
+      .get("http://localhost:5000/cart", { headers })
       .then((response) => {
         setMyCart(response.data.result);
+        setLocalCart(response.data.result);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [myCart]);
-  ///////////////////////////////////////////////////////////////
-  const addToCart = (id, quantity) => {
+  }, []);
 
-    if (isLoggedIn === false) {
-      Navigate("/users/login");
-      return 0;
-    }
+  const sendQuantityUpdate = (id, quantity) => {
     axios
-      .post(` http://localhost:5000/cart/${id}`, { quantity }, { headers })
+      .post(`http://localhost:5000/cart/${id}`, { quantity }, { headers })
       .then((response) => {
-        console.log(response.data);
+        console.log("UPDATED", response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  ///////////////////////////////////////////////
-  const removeFromCart=(id)=>{
+
+  const handleQuantityChange = (e, elem) => {
+    const newQuantity = Math.max(1, e.target.value);
+    const updatedCart = localCart.map((item) =>
+      item.id === elem.id ? { ...item, quantity: newQuantity } : item
+    );
+    setLocalCart(updatedCart);
+
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+
+    const timer = setTimeout(() => {
+      sendQuantityUpdate(elem.id, newQuantity);
+    }, 500);
+
+    setDebounceTimer(timer);
+  };
+
+  const removeFromCart = (id) => {
     axios
-    .delete(` http://localhost:5000/cart/${id}`,{headers})
-    .then((response)=>{
-      console.log(response.data);
-      setMyCart(myCart.filter(elem => elem.id !== id));
+      .delete(`http://localhost:5000/cart/${id}`, { headers })
+      .then((response) => {
+        const updatedCart = localCart.filter((item) => item.id !== id);
+        setLocalCart(updatedCart);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-
-    })
-    .catch((error)=>{
-      console.log(error);
-
-    })
-
-  }
-
-  const totalAmount = myCart?.reduce(
+  const totalAmount = localCart?.reduce(
     (acc, elem) => acc + elem.price * elem.quantity,
     0
   );
@@ -75,45 +86,39 @@ const Cart = () => {
           </tr>
         </thead>
         <tbody>
-          {myCart?.map((elem, index) => (
+          {localCart?.map((elem, index) => (
             <tr key={index}>
-             <td>{elem.title}</td>
+              <td>{elem.title}</td>
               <td>{elem.price}</td>
-              <td><button onClick={()=>{removeFromCart(elem.product_id);setTogle(!togle)}}>remove</button>
-                {" "}
+              <td>
+                <button onClick={() => removeFromCart(elem.id)}>remove</button>
                 <input
-                  onChange={(e) => {
-                    {
-                      if (e.target.value < 1 || !true) {
-                        e.target.value = 1;
-                      }
-                    }
-                    addToCart(elem.id, e.target.value);
-                  }}
                   type="number"
-                  defaultValue={elem.quantity}
+                  value={elem.quantity}
                   min={1}
+                  onChange={(e) => handleQuantityChange(e, elem)}
                 />
               </td>
-
               <td>{elem.price * elem.quantity}.00</td>
             </tr>
           ))}
         </tbody>
       </table>
-=      <table  className="cartTable">
-    <tr>
-        <th colspan="2">your order</th>
-    </tr>
-    <tr>
-        <td>total</td>
-        <td>{totalAmount}.00</td>
-    </tr>
-    <tr>
-        <td colspan="2"><button>checkout</button></td>
-    </tr>
-</table>
 
+      <table className="cartTable">
+        <tr>
+          <th colSpan="2">Your Order</th>
+        </tr>
+        <tr>
+          <td>Total</td>
+          <td>{totalAmount}.00</td>
+        </tr>
+        <tr>
+          <td colSpan="2">
+            <button onClick={()=>{navigate("/placeOrder")}}>Checkout</button>
+          </td>
+        </tr>
+      </table>
     </div>
   );
 };

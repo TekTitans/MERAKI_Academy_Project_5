@@ -16,7 +16,7 @@ import { Search } from "../pages/Serach";
 import Category from "../components/category";
 import Products from "../pages/Products";
 import SellerDashboard from "../pages/SellerDashboard";
-
+import PlaceOrder from "../pages/place order/PlaceOrder";
 export const router = createBrowserRouter(
   [
     {
@@ -25,6 +25,8 @@ export const router = createBrowserRouter(
       children: [
         { path: "/", element: <Home /> },
         { path: "/cart", element: <Cart /> },
+        { path: "/placeOrder", element: <PlaceOrder /> },
+
 
         { path: "/users", element: <Register /> },
         { path: "/users/login", element: <Login /> },
