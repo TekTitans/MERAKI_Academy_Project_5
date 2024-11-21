@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../redux/reducers/product/product";
 import axios from "axios";
-import "./style.css"
-const AddProduct = () => {
+import { FaUserAlt } from "react-icons/fa";
+import "./style.css";
+import { RingLoader } from "react-spinners";
+const AddProduct = ({ handleCancelAdd }) => {
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -20,7 +22,11 @@ const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
-  const [message, setMessage] = useState(null); 
+  const [message, setMessage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
 
@@ -61,6 +67,44 @@ const AddProduct = () => {
     }
   };
 
+  const handleFileChange = async (e) => {
+    setIsUploading(true);
+    setUploadError("");
+
+    console.log("isUploading :", isUploading);
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("product_image", file);
+
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/products",
+          formattedProduct,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const updatedProductPicture = URL.createObjectURL(file);
+
+        setProduct((prevState) => ({
+          ...prevState,
+          product_image: updatedProductPicture,
+        }));
+
+        console.log("Product updated:", res.data);
+      } catch (error) {
+        console.error("Error uploading Product image:", error);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,6 +131,7 @@ const AddProduct = () => {
       size_options: sizeOptionsArray,
     };
 
+    setIsSaving(true);
     try {
       const response = await axios.post(
         "http://localhost:5000/products",
@@ -119,6 +164,8 @@ const AddProduct = () => {
           "Failed to add product. Please try again.",
         type: "error",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -129,9 +176,21 @@ const AddProduct = () => {
     }
   }, [message]);
 
+  const handleInternalCancelAdd = () => {
+    handleCancelAdd();
+    setIsSaving(false);
+    setProduct((prevState) => ({
+      ...prevState,
+      product_image: prevState.product_image || "",
+    }));
+    setMessage(null);
+  };
+
   return (
     <div className="add-product-container">
-      {message && <div className={`message ${message.type}`}>{message.text}</div>}
+      {message && (
+        <div className={`message ${message.type}`}>{message.text}</div>
+      )}
       <form onSubmit={handleSubmit} className="product-form">
         <input
           type="text"
@@ -188,19 +247,39 @@ const AddProduct = () => {
           onChange={handleChange}
           placeholder="Size Options"
         />
-        <input
-          type="text"
-          name="product_image"
-          value={product.product_image}
-          onChange={handleChange}
-          placeholder="Product Image URL"
-        />
         <select
           name="category_id"
           value={product.category_id}
           onChange={handleChange}
           required
         >
+          <input
+            type="text"
+            name="product_image"
+            value={product.product_image}
+            onChange={handleChange}
+            placeholder="Product Image URL"
+          />
+          <input type="file" onChange={handleFileChange} />
+          {uploadError && <small className="error">{uploadError}</small>}
+          <div className="profile__picture-container">
+            {product.product_image ? (
+              <img
+                src={product.product_image}
+                alt="Product Picture"
+                className="product_image"
+              />
+            ) : (
+              <div className="product_image-icon">
+                <FaUserAlt size={50} />
+              </div>
+            )}
+            {isUploading && (
+              <div className="profile__spinner">
+                <RingLoader color="#36d7b7" size={100} />
+              </div>
+            )}
+          </div>
           <option value="" disabled>
             Select Category
           </option>

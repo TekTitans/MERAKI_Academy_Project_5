@@ -4,28 +4,28 @@ import AddProduct from "../../components/AddProduct";
 import "./style.css";
 
 const SellerDashboard = () => {
-  const [addProduct, setAddProduct] = useState(false);
+  const [isaddProduct, setIsaddProduct] = useState(false);
+
+  const handleCancelAdd = () => {
+    setIsaddProduct(false);
+    console.log("Cancelled adding product and navigated back.");
+  };
   return (
     <div className="seller-dashboard-container">
       <h1>Seller Dashboard</h1>
-      {addProduct ? (
+      {isaddProduct ? (
         <div className="add-product-section">
-          <button
-            className="add_back-button"
-            onClick={() => {
-              setAddProduct(false);
-            }}
-          >
+          <button className="add_back-button" onClick={handleCancelAdd}>
             Back
           </button>
-          <AddProduct />
+          <AddProduct handleCancelAdd={handleCancelAdd} />
         </div>
       ) : (
         <div className="seller-products-section">
           <button
             className="SDB_Add"
             onClick={() => {
-              setAddProduct(true);
+              setIsaddProduct(true);
             }}
           >
             Add New Product

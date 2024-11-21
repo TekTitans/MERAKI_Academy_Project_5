@@ -1,9 +1,10 @@
 const e = require("express");
 const pool = require("../models/db.js");
+const cloudinary = require("cloudinary").v2;
+const { uploadToCloudinary } = require("../services/cloudinary");
 
 const createProduct = async (req, res) => {
   const seller_id = req.token.userId;
-  //console.log(seller_id);
 
   const {
     title,
@@ -17,6 +18,42 @@ const createProduct = async (req, res) => {
     category_id,
     subcategory_id,
   } = req.body;
+
+  if (req.file) {
+    const fileSizeLimit = 5 * 1024 * 1024;
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (req.file.size > fileSizeLimit) {
+      return res
+        .status(400)
+        .json({ success: false, message: "File is too large" });
+    }
+
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid file type" });
+    }
+  }
+
+  if (req.file) {
+    try {
+      const uploadResponse = await uploadToCloudinary(req.file.buffer);
+      const productImageUrl = uploadResponse.url;
+      const trimmedPrductImageUrl =
+        productImageUrl.length > 500
+          ? productImageUrl.substring(0, 500)
+          : productImageUrl;
+
+      console.log("Trimmed Profile Image URL:", trimmedPrductImageUrl);
+
+      product_image = trimmedPrductImageUrl;
+      
+    } catch (error) {
+      console.error("Error uploading profile image:", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  }
 
   const query = `INSERT INTO products( title,
   description,
@@ -99,8 +136,8 @@ const updateProduct = async (req, res) => {
     product_image,
     category_id,
     subcategory_id,
-    productId, 
-    seller_id, 
+    productId,
+    seller_id,
   ];
 
   try {
@@ -116,7 +153,8 @@ const updateProduct = async (req, res) => {
     } else {
       res.status(404).json({
         success: false,
-        message: "Product not found or you are not authorized to update this product",
+        message:
+          "Product not found or you are not authorized to update this product",
       });
     }
   } catch (error) {
@@ -129,7 +167,6 @@ const updateProduct = async (req, res) => {
     });
   }
 };
-
 
 const removeProduct = async (req, res) => {
   const productId = req.params.pId;

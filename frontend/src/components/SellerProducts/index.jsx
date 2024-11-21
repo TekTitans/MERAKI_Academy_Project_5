@@ -8,7 +8,7 @@ import {
 } from "../redux/reducers/product/product";
 import "./style.css";
 
-const ProductManagement = () => {
+const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -35,7 +35,7 @@ const ProductManagement = () => {
 
     setTimeout(() => {
       setMessage(null);
-    }, 3000); 
+    }, 3000);
   };
   const { token } = useSelector((state) => state.auth);
 
@@ -350,4 +350,4 @@ const ProductManagement = () => {
   );
 };
 
-export default ProductManagement;
+export default SellerProducts;
