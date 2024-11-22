@@ -1,0 +1,119 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.seller-orders {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.seller-orders h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.orders-table th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.orders-table tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+.orders-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.orders-table td {
+  color: #555;
+}
+
+.orders-table .status {
+  font-weight: bold;
+}
+
+.orders-table .status.pending {
+  color: #ffc107;
+}
+
+.orders-table .status.completed {
+  color: #28a745;
+}
+
+.orders-table .status.cancelled {
+  color: #dc3545;
+}
+
+.orders-table .status.shipped {
+  color: #17a2b8;
+}
+
+.orders-table .status.failed {
+  color: #6c757d;
+}
+
+.seller-orders .loading,
+.seller-orders .error {
+  font-size: 1.2rem;
+  text-align: center;
+  color: #007bff;
+  margin-top: 20px;
+}
+
+.seller-orders .error {
+  color: #dc3545;
+}
+
+.seller-orders .empty-state {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+  .seller-orders {
+    padding: 15px;
+  }
+
+  .orders-table th,
+  .orders-table td {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+
+  .seller-orders h2 {
+    font-size: 1.5rem;
+  }
+}
