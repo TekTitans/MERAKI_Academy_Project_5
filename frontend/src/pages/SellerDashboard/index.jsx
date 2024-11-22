@@ -1,38 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SellerProducts from "../../components/SellerProducts";
 import AddProduct from "../../components/AddProduct";
 import "./style.css";
 
 const SellerDashboard = () => {
-  const [isaddProduct, setIsaddProduct] = useState(false);
+  const [activeSection, setActiveSection] = useState("manageProduct"); // manageProduct, addProduct, myOrders
+  const [message, setMessage] = useState(null);
 
-  const handleCancelAdd = () => {
-    setIsaddProduct(false);
-    console.log("Cancelled adding product and navigated back.");
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case "addProduct":
+        return (
+          <AddProduct
+            handleCancelAdd={() => setActiveSection("manageProduct")}
+            message={message}
+            setMessage={setMessage}
+            showMessage={showMessage}
+          />
+        );
+      case "manageProduct":
+        return (
+          <SellerProducts
+            message={message}
+            setMessage={setMessage}
+            showMessage={showMessage}
+          />
+        );
+      case "myOrders":
+        return (
+          <div className="product-management-page">
+            <h2 className="page-title">Orders</h2>
+          </div>
+        );
+      case "myReviews":
+        return (
+          <div className="product-management-page">
+            <h2 className="page-title">Reviews</h2>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="seller-dashboard-container">
-      <h1>Seller Dashboard</h1>
-      {isaddProduct ? (
-        <div className="add-product-section">
-          <button className="add_back-button" onClick={handleCancelAdd}>
-            Back
-          </button>
-          <AddProduct handleCancelAdd={handleCancelAdd} />
-        </div>
-      ) : (
-        <div className="seller-products-section">
+      <div className="SDB_Navbar">
+        <h1>Seller Dashboard</h1>
+        <div className="SDB_Btns">
           <button
-            className="SDB_Add"
-            onClick={() => {
-              setIsaddProduct(true);
-            }}
+            className="SDB"
+            onClick={() => setActiveSection("manageProduct")}
           >
-            Add New Product
+            Products Management
           </button>
-          <SellerProducts />
+          <button
+            className="SDB"
+            onClick={() => setActiveSection("addProduct")}
+          >
+            Add Product
+          </button>
+          <button className="SDB" onClick={() => setActiveSection("myOrders")}>
+            Orders
+          </button>
+          <button className="SDB" onClick={() => setActiveSection("myReviews")}>
+            Reviews{" "}
+          </button>
         </div>
-      )}
+      </div>
+      <div className="seller-products-section">{renderSection()}</div>
     </div>
   );
 };
