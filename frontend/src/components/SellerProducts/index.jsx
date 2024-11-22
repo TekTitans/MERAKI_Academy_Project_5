@@ -392,29 +392,29 @@ const SellerProducts = ({
               <div className="loading-spinner">Loading...</div>
             ) : products.length > 0 ? (
               products.map((prod) => (
-                <div key={prod.id} className="product-card">
+                <div key={prod.id} className="SDB_product-card">
                   <img
                     src={
                       prod.product_image || "https://via.placeholder.com/150"
                     }
                     alt={prod.title}
-                    className="product-image"
+                    className="SDB_product-image"
                     onError={(e) =>
                       (e.target.src = "https://via.placeholder.com/150")
                     }
                   />
-                  <div className="product-info">
-                    <h3 className="product-title">{prod.title}</h3>
-                    <p className="product-description">{prod.description}</p>
-                    <p className="product-price">${prod.price}</p>
-                    <p className="product-stock">
+                  <div className="SDB_product-info">
+                    <h3 className="SDB_product-title">{prod.title}</h3>
+                    <p className="SDB_product-description">{prod.description}</p>
+                    <p className="SDB_product-price">${prod.price}</p>
+                    <p className="SDB_product-stock">
                       Stock Status: {prod.stock_status} | Quantity:{" "}
                       {prod.stock_quantity}
                     </p>
-                    <p className="product-colors">
+                    <p className="SDB_product-colors">
                       Colors: {prod.color_options.join(", ")}
                     </p>
-                    <p className="product-sizes">
+                    <p className="SDB_product-sizes">
                       Sizes: {prod.size_options.join(", ")}
                     </p>
                     <div className="product-actions">
