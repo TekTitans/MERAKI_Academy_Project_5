@@ -10,14 +10,14 @@
   font-family: "Arial", sans-serif;
   max-width: 1200px;
   margin: 0 auto;
-  height: 65vh;
+  height: 100%;
 }
 
 .product__image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: auto
+  width: auto;
 }
 
 .product__form-container {
@@ -31,7 +31,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-
 }
 
 .product-form input,
@@ -171,4 +170,51 @@
 
 .file-input {
   display: none;
+}
+
+@media (max-width: 768px) {
+
+  .product-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .add-product-container {
+    height: auto;
+    width: auto;
+  }
+
+  .product-form input,
+  .product-form select,
+  .product-form textarea {
+    width: 100%;
+  }
+
+  .image-upload {
+    width: 12rem;
+    height: 12rem;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .product__image-container,
+  .product__form-container {
+    width: 100%;
+    margin: 0;
+  }
+
+  .image-upload {
+    max-width: 200px;
+    height: 200px;
+  }
+
+  .submit-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
 }
