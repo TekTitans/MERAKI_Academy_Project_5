@@ -386,8 +386,8 @@ const SellerProducts = ({
           </form>
         </div>
       ) : (
-        <div className="products-list">
-          <div className="products-grid">
+        <div className="SDB_product-list">
+          <div className="SDB_product-grid">
             {loading ? (
               <div className="loading-spinner">Loading...</div>
             ) : products.length > 0 ? (

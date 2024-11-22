@@ -81,12 +81,24 @@
   background-color: #e53935;
 }
 
+.SDB_product-list {
+  margin: 0 auto;
+  padding: 0 1rem; 
+  max-width: 100%; 
+  overflow-x: hidden; 
+}
+
+
 .SDB_product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   justify-items: center;
+  width: 100%; 
+  box-sizing: border-box; 
 }
+
+
 
 .SDB_product-card {
   background-color: white;
@@ -407,9 +419,11 @@
     object-fit: contain;
   }
 
-  .products-grid {
-    gap: 15px;
+  .SDB_product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 1rem;
   }
+  
 
   .SDB_product-image {
     width: 100%;
@@ -445,6 +459,8 @@
 }
 
 @media (max-width: 480px) {
+
+  
   .product-title {
     font-size: 16px;
   }
