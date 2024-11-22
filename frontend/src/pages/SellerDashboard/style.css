@@ -1,88 +1,76 @@
 .seller-dashboard-container {
-    width:vw;
-    height: vh;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .seller-dashboard-container h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 28px;
-    font-weight: bold;
-  }
-  
-  .SDB_Add {
-    display: block;
-    background: linear-gradient(135deg, #4caf50, #6fd83e);
-    color: #ffffff;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
-    font-family: 'Arial', sans-serif;
-    margin: 20px auto; 
-    max-width: 200px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-  
-  .SDB_Add:hover {
-    background: linear-gradient(135deg, #6fd83e, #4caf50);
-    transform: scale(1.05);
-  }
-    
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Arial", sans-serif;
+}
+.SDB_Navbar {
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+.SDB_Navbar h1{
+  font-size: 2.3rem;
+  font-weight: bold;
+  width: 40%;
 
-  .add_back-button {
-    display: block;
-    background: linear-gradient(135deg, #977c7c, #746e6e);
-    color: #ffffff;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
-    font-family: "Arial", sans-serif;
-    margin: 20px auto; 
-    max-width: 200px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-  
-  .add_back-button:hover {
-    background: linear-gradient(135deg, #746e6e, #977c7c);
-    transform: scale(1.05);
-  }
+}
+.SDB_Btns{
+  display: flex;
+  padding: 0 0.5rem;
+  gap: 1rem;
+}
 
-  .add-product-section,
-  .seller-products-section {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+.seller-dashboard-container h1 {
+  text-align: center;
+  color: #333;
+  font-weight: bold;
+}
+
+.SDB {
+  display: block;
+  background: linear-gradient(135deg, #4caf50, #6fd83e);
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  font-family: "Arial", sans-serif;
+  margin: 0.75rem auto;
+  max-width: 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.SDB:hover {
+  background: linear-gradient(135deg, #6fd83e, #4caf50);
+  transform: scale(1.05);
+}
+
+.add-product-section,
+.seller-products-section {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.add-product-section {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.seller-products-section {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  .add-product-section {
-    animation: fadeIn 0.5s ease-in-out;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .seller-products-section {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+}

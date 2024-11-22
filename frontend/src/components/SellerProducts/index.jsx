@@ -10,7 +10,13 @@ import "./style.css";
 import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-const SellerProducts = ({ message, setMessage, showMessage }) => {
+const SellerProducts = ({
+  message,
+  setMessage,
+  showMessage,
+  iseditProduct,
+  setIseditProduct,
+}) => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -162,6 +168,7 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
       showMessage("Product updated successfully!", "success");
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
+      setIseditProduct(false);
       setProduct({
         title: "",
         description: "",
@@ -202,6 +209,7 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
 
   const handleEdit = (productToEdit) => {
     setEditProduct(productToEdit);
+    setIseditProduct(true);
     setProduct({
       ...productToEdit,
       color_options: productToEdit.color_options.join(", "),
@@ -238,8 +246,8 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
   );
 
   return (
-    <div className="product-management-page">
-      <h1 className="page-title">Product Management</h1>
+    <div className="seller-page">
+      <h2 className="page-title">Products Management</h2>
       {message?.text && (
         <div className={`message ${message.type} show`}>{message.text}</div>
       )}
@@ -247,13 +255,32 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
         <div className="product-edit-form-container">
           <form onSubmit={handleUpdate} className="product-edit-form">
             <h2>Edit Product</h2>
-            <button
-              className="edit_back-button"
-              onClick={() => setEditProduct(null)}
-            >
-              Back to Product List
-            </button>
-
+            <div className="product__picture-container">
+              <div className="image-upload">
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Product Preview"
+                    className="product_image"
+                  />
+                ) : (
+                  <label className="product_image-placeholder">
+                    <FaImage size={60} className="image-icon" />
+                    <span className="placeholder-text">Upload Image</span>
+                    <input
+                      type="file"
+                      onChange={handleFileChange}
+                      className="file-input"
+                    />
+                  </label>
+                )}
+                {isUploading && (
+                  <div className="upload-spinner">
+                    <RingLoader color="#36d7b7" size={50} />
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="form-group">
               <label htmlFor="title" className="form-label">
                 Title
@@ -341,30 +368,21 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
                 placeholder="Size Options (comma separated)"
                 className="input-field"
               />
-              <input type="file" onChange={handleFileChange} />
-              <div className="product__picture-container">
-                {imagePreview || product.product_image ? (
-                  <img
-                    src={imagePreview || product.product_image}
-                    alt="Product Preview"
-                    className="product_image"
-                  />
-                ) : (
-                  <div className="product_image-icon">
-                    <FaImage size={50} />
-                  </div>
-                )}
-                {isUploading && (
-                  <div className="profile__spinner">
-                    <RingLoader color="#36d7b7" size={100} />
-                  </div>
-                )}
-              </div>
             </div>
-
-            <button type="submit" className="edit_action-button">
-              {isSaving ? "Updating..." : "Update Product"}
-            </button>
+            <div className="Edit_Action_Btns">
+              <button type="submit" className="edit_action-button">
+                {isSaving ? "Updating..." : "Update Product"}
+              </button>
+              <button
+                className="edit_back-button"
+                onClick={() => {
+                  setEditProduct(null);
+                  setIseditProduct(false);
+                }}
+              >
+                Back to Product List
+              </button>
+            </div>
           </form>
         </div>
       ) : (
@@ -420,9 +438,9 @@ const SellerProducts = ({ message, setMessage, showMessage }) => {
               <p className="no-products-message">No products found.</p>
             )}
           </div>
+          {paginationControls}
         </div>
       )}
-      {paginationControls}
     </div>
   );
 };

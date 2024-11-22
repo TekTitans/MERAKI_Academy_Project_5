@@ -172,126 +172,139 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
   }, [message]);
 
   return (
-    <div className="add-product-container">
-      {message && (
-        <div className={`message ${message.type}`}>{message.text}</div>
-      )}
-      <form onSubmit={handleSubmit} className="product-form">
-        <input
-          type="text"
-          name="title"
-          value={product.title}
-          onChange={handleChange}
-          placeholder="Title"
-          required
-        />
-        <textarea
-          name="description"
-          value={product.description}
-          onChange={handleChange}
-          placeholder="Description"
-          required
-        />
-        <input
-          type="number"
-          name="price"
-          value={product.price}
-          onChange={handleChange}
-          placeholder="Price"
-          required
-        />
-        <input
-          type="number"
-          name="stock_quantity"
-          value={product.stock_quantity}
-          onChange={handleChange}
-          placeholder="Stock Quantity"
-          required
-        />
-        <select
-          name="stock_status"
-          value={product.stock_status}
-          onChange={handleChange}
-          required
-        >
-          <option value="in_stock">In Stock</option>
-          <option value="out_of_stock">Out of Stock</option>
-          <option value="on_demand">On Demand</option>
-        </select>
-        <input
-          type="text"
-          name="color_options"
-          value={product.color_options}
-          onChange={handleChange}
-          placeholder="Color Options"
-        />
-        <input
-          type="text"
-          name="size_options"
-          value={product.size_options}
-          onChange={handleChange}
-          placeholder="Size Options"
-        />
-        <input type="file" onChange={handleFileChange} />
-        <div className="product__picture-container">
-          {imagePreview ? (
-            <img
-              src={imagePreview}
-              alt="Product Preview"
-              className="product_image"
+    <div className="product-management-page">
+      <h2 className="page-title">Add New Product</h2>
+      <div className="add-product-container">
+        {message && (
+          <div className={`message ${message.type}`}>{message.text}</div>
+        )}
+        <form onSubmit={handleSubmit} className="product-form">
+          <div className="product__image-container">
+            <div className="image-upload">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Product Preview"
+                  className="product_image"
+                />
+              ) : (
+                <label className="product_image-placeholder">
+                  <FaImage size={60} className="image-icon" />
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="file-input"
+                  />
+                  <span className="placeholder-text">Upload Image</span>
+                </label>
+              )}
+              {isUploading && (
+                <div className="upload-spinner">
+                  <RingLoader color="#36d7b7" size={50} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="product__form-container">
+            <input
+              type="text"
+              name="title"
+              value={product.title}
+              onChange={handleChange}
+              placeholder="Title"
+              required
             />
-          ) : (
-            <div className="product_image-icon">
-              <FaImage size={50} />
-            </div>
-          )}
-          {isUploading && (
-            <div className="profile__spinner">
-              <RingLoader color="#36d7b7" size={100} />
-            </div>
-          )}
-        </div>
-        <select
-          name="category_id"
-          value={product.category_id}
-          onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Select Category
-          </option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-        <select
-          name="subcategory_id"
-          value={product.subcategory_id}
-          onChange={handleChange}
-          required
-          disabled={!product.category_id}
-        >
-          <option value="" disabled>
-            {product.category_id
-              ? "Select Subcategory"
-              : "Select a category first"}
-          </option>
-          {filteredSubcategories.map((subcategory) => (
-            <option key={subcategory.id} value={subcategory.id}>
-              {subcategory.name}
-            </option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="submit-button"
-          disabled={isSaving || isUploading}
-        >
-          {isSaving ? "Saving..." : "Add Product"}
-        </button>
-      </form>
+            <textarea
+              name="description"
+              value={product.description}
+              onChange={handleChange}
+              placeholder="Description"
+              required
+            />
+            <input
+              type="number"
+              name="price"
+              value={product.price}
+              onChange={handleChange}
+              placeholder="Price"
+              required
+            />
+            <input
+              type="number"
+              name="stock_quantity"
+              value={product.stock_quantity}
+              onChange={handleChange}
+              placeholder="Stock Quantity"
+              required
+            />
+            <select
+              name="stock_status"
+              value={product.stock_status}
+              onChange={handleChange}
+              required
+            >
+              <option value="in_stock">In Stock</option>
+              <option value="out_of_stock">Out of Stock</option>
+              <option value="on_demand">On Demand</option>
+            </select>
+            <input
+              type="text"
+              name="color_options"
+              value={product.color_options}
+              onChange={handleChange}
+              placeholder="Color Options"
+            />
+            <input
+              type="text"
+              name="size_options"
+              value={product.size_options}
+              onChange={handleChange}
+              placeholder="Size Options"
+            />
+            <select
+              name="category_id"
+              value={product.category_id}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Select Category
+              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <select
+              name="subcategory_id"
+              value={product.subcategory_id}
+              onChange={handleChange}
+              required
+              disabled={!product.category_id}
+            >
+              <option value="" disabled>
+                {product.category_id
+                  ? "Select Subcategory"
+                  : "Select a category first"}
+              </option>
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={isSaving || isUploading}
+            >
+              {isSaving ? "Saving..." : "Add Product"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
