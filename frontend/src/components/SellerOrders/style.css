@@ -75,7 +75,7 @@ body {
 }
 
 .orders-table .status.confirmed {
-  color: #007bff; /* Blue for confirmed */
+  color: #007bff; 
 }
 
 .orders-table .status.failed {
@@ -103,21 +103,44 @@ body {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px; 
+  align-items: center; 
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .filters input,
 .filters select {
-  padding: 8px;
+  padding: 10px; 
   font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #ccc; 
+  border-radius: 6px;
+  background-color: #f9f9f9; 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
+  transition: border-color 0.3s, box-shadow 0.3s; 
+}
+
+.filters input:focus,
+.filters select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none; 
+}
+
+.filters select {
+  cursor: pointer; 
+}
+
+.filters input::placeholder {
+  color: #888; 
+  font-style: italic; 
+  font-size: 0.9rem;
 }
 
 .orders-table button {
   padding: 6px 10px;
-  margin: 0 5px;
+  margin: 5px;
   font-size: 0.9rem;
   color: #fff;
   background-color: #007bff;
@@ -125,6 +148,8 @@ body {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 90%;
+  height: auto;
 }
 
 .orders-table button:hover {
@@ -148,21 +173,74 @@ body {
   display: flex !important;
   align-items: center;
   justify-content: center;
-
 }
 
 .modal-content {
-  background: #fff;
+  background: #fff !important;
   padding: 20px;
   border-radius: 5px;
-  width: 300px;
+  width: 300px !important;
   text-align: center;
 }
 
 .modal-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-top: 10px;
+}
+
+.modal button {
+  margin-top: 15px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: #0056b3;
+}
+.modal_cancel button {
+  background-color: #dc3545;
+}
+.modal_cancel button:hover {
+  background-color: #b02a37;
+}
+.modal h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.modal p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.modal input,
+.modal select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px; 
+  background-color: #f9f9f9; 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
+  transition: border-color 0.3s, box-shadow 0.3s; 
+}
+
+.modal input:focus,
+.modal select:focus {
+  border-color: #007bff; 
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
+  outline: none; 
+}
+
+.modal select {
+  cursor: pointer;
 }
 
 .order-details-modal {
@@ -174,7 +252,7 @@ body {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   max-width: 400px;
   width: 100%;
@@ -215,7 +293,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.2);
   z-index: -1;
 }
 

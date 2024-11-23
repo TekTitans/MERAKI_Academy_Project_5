@@ -118,7 +118,7 @@ const SellerOrders = () => {
       )
       .then(() => {
         setShowStatusModal(false);
-        fetchSellerOrders(); // Refresh the orders list
+        fetchSellerOrders(); 
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -150,7 +150,7 @@ const SellerOrders = () => {
           <option value="shipped">Shipped</option>
           <option value="completed">Completed</option>
           <option value="confirmed">Confirmed</option>
-          <option value="canceled">Canceled</option>
+          <option value="cancelled">Canceled</option>
         </select>
         <select
           name="paymentStatus"
@@ -165,19 +165,18 @@ const SellerOrders = () => {
         <input
           type="text"
           name="search"
-          placeholder="Search Orders"
+          placeholder="Search By Order/Customer Id"
           value={filters.search}
           onChange={handleFilterChange}
         />
       </div>
 
-      {/* Orders Table */}
       <div className="seller-orders">
         <table className="orders-table">
           <thead>
             <tr>
-              <th>Order ID</th>
-              <th>User ID</th>
+              <th>Order Id</th>
+              <th>Customer Id</th>
               <th>Total Price</th>
               <th>Order Status</th>
               <th>Payment Status</th>
@@ -211,7 +210,6 @@ const SellerOrders = () => {
                     {new Date(order.created_at).toLocaleTimeString()}
                   </td>
                   <td>
-                    {/* Buttons based on order_status */}
                     {order.order_status === "pending" && (
                       <>
                         <button
@@ -258,7 +256,6 @@ const SellerOrders = () => {
                         </button>
                       </>
                     )}
-                    {/* View details button for all statuses */}
                     <button onClick={() => setSelectedOrder(order)}>
                       View Details
                     </button>
@@ -275,10 +272,6 @@ const SellerOrders = () => {
           </tbody>
         </table>
       </div>
-      {showStatusModal
-        ? console.log("Modal should show")
-        : console.log("Modal hidden")}
-
       {showStatusModal && (
         <div className="modal">
           <div className="modal-content">
@@ -292,17 +285,20 @@ const SellerOrders = () => {
               <option value="Pending">Pending</option>
               <option value="Confirmed">Confirmed</option>
               <option value="Completed">Completed</option>
-              <option value="Canceled">Canceled</option>
+              <option value="Cancelled">Canceled</option>
             </select>
             <div className="modal-actions">
               <button onClick={handleUpdateStatus}>Update</button>
-              <button onClick={() => setShowStatusModal(false)}>Cancel</button>
+              <div className="modal_cancel">
+                <button onClick={() => setShowStatusModal(false)}>
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Order Details Modal */}
       {selectedOrder && (
         <div className="order-details-modal">
           <h3>Order Details</h3>
