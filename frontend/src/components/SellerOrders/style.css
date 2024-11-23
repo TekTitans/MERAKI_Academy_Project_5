@@ -75,7 +75,7 @@ body {
 }
 
 .orders-table .status.confirmed {
-  color: #007bff; 
+  color: #007bff;
 }
 
 .orders-table .status.failed {
@@ -103,8 +103,8 @@ body {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px; 
-  align-items: center; 
+  gap: 15px;
+  align-items: center;
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
@@ -112,29 +112,29 @@ body {
 
 .filters input,
 .filters select {
-  padding: 10px; 
+  padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc; 
+  border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: #f9f9f9; 
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
-  transition: border-color 0.3s, box-shadow 0.3s; 
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .filters input:focus,
 .filters select:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  outline: none; 
+  outline: none;
 }
 
 .filters select {
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .filters input::placeholder {
-  color: #888; 
-  font-style: italic; 
+  color: #888;
+  font-style: italic;
   font-size: 0.9rem;
 }
 
@@ -226,75 +226,187 @@ body {
   padding: 10px;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 6px; 
-  background-color: #f9f9f9; 
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
-  transition: border-color 0.3s, box-shadow 0.3s; 
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .modal input:focus,
 .modal select:focus {
-  border-color: #007bff; 
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
-  outline: none; 
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
 }
 
 .modal select {
   cursor: pointer;
 }
-
 .order-details-modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #f3f8ff
+  ); 
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); 
   z-index: 1000;
-  max-width: 400px;
-  width: 100%;
+  max-width: 500px;
+  width: 90%;
+  overflow: hidden;
+  animation: slideDown 0.4s ease-out; 
 }
 
 .order-details-modal h3 {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
+  background: linear-gradient(135deg, #007bff, #0056b3); 
+  color: #fff;
+  margin: 0;
+  padding: 15px 20px;
+  font-size: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.order-details-modal .content {
+  padding: 20px;
   color: #333;
 }
 
 .order-details-modal p {
-  margin: 8px 0;
+  margin: 10px 0;
   font-size: 1rem;
-  color: #555;
+  color: #444;
+  line-height: 1.6;
 }
 
-.order-details-modal button {
+.order-details-modal .product-list {
   margin-top: 15px;
-  padding: 8px 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.order-details-modal .product-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-details-modal .product-list li span {
+  font-weight: bold;
+  color: #333;
+}
+
+.order-details-modal .footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 20px;
+  background-color: #f1f5ff;
+  border-top: 2px solid #eaeaea;
+}
+
+.order-details-modal .footer button {
+  padding: 10px 20px;
   font-size: 1rem;
+  font-weight: bold;
   color: #fff;
-  background-color: #007bff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.order-details-modal button:hover {
-  background-color: #0056b3;
+.order-details-modal .footer button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
 }
 
-.order-details-modal::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  z-index: -1;
+.order-details-modal .footer .cancel {
+  background: linear-gradient(135deg, #dc3545, #b02a37);
+}
+
+.order-details-modal .footer .cancel:hover {
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+.order-details-modal .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.order-details-modal .close-button:hover {
+  color: #333;
+}
+
+
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .order-details-modal {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal .footer button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-details-modal {
+    padding: 20px;
+    max-width: 90%; 
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.9rem;
+  }
+
+  .order-details-modal button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -319,8 +431,20 @@ body {
   .seller-orders {
     padding: 0.4rem;
   }
-}
 
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal h3 {
+    font-size: 1.5rem;
+  }
+
+  .modal p {
+    font-size: 0.95rem;
+  }
+}
 @media (max-width: 480px) {
   .orders-table th,
   .orders-table td {

@@ -115,41 +115,57 @@ const cancelOrder = (req, res) => {
       });
     });
 };
-const getSellerOrders = (req, res) => {
-  const sellerId = 78;
+const getSellerOrders = async (req, res) => {
+  const sellerId = req.token.userId;
 
-  const query = `
-    SELECT o.id AS order_id, o.user_id, o.total_price, o.order_status, o.shipping_address, 
-           o.payment_status, o.created_at, o.updated_at
-    FROM orders o
-    JOIN cart c ON o.id = c.order_id
-    JOIN products p ON c.product_id = p.id
-    WHERE p.seller_id = $1
-      AND o.is_deleted = FALSE
-    GROUP BY o.id
-    ORDER BY o.created_at DESC;
-  `;
+  try {
+    const query = `
+      SELECT 
+        o.id AS order_id,
+        o.user_id,
+        o.shipping_address,
+        o.created_at,
+        o.updated_at,
+        o.order_status,
+        o.payment_status,
+        SUM(p.price * c.quantity) AS seller_total_price, -- Total price for this seller's products
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'product_id', p.id,
+            'product_name', p.title,
+            'quantity', c.quantity,
+            'price', p.price,
+            'total', p.price * c.quantity
+          )
+        ) AS products
+      FROM orders o
+      JOIN cart c ON o.id = c.order_id
+      JOIN products p ON c.product_id = p.id
+      WHERE p.seller_id = $1
+        AND o.is_deleted = FALSE
+      GROUP BY o.id
+      ORDER BY o.created_at DESC;
+    `;
 
-  const data = [sellerId];
+    const data = [78]; //sellerId
+    const result = await pool.query(query, data);
 
-  pool
-    .query(query, data)
-    .then((result) => {
-      res.status(200).json({
-        success: true,
-        message: "Orders retrieved successfully",
-        result: result.rows,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-        err: err.message || err,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Orders retrieved successfully",
+      result: result.rows,
     });
+    console.log(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      err: err.message || err,
+    });
+  }
 };
+
 const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

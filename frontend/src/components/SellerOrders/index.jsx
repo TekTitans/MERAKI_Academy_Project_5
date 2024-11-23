@@ -34,6 +34,7 @@ const SellerOrders = () => {
       );
       dispatch(setOrders(response.data.result));
       dispatch(setLoading(false));
+      console.log(response.data.result);
     } catch (error) {
       dispatch(setError(error.message));
       dispatch(setLoading(false));
@@ -118,7 +119,7 @@ const SellerOrders = () => {
       )
       .then(() => {
         setShowStatusModal(false);
-        fetchSellerOrders(); 
+        fetchSellerOrders();
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -192,16 +193,14 @@ const SellerOrders = () => {
                   <td>{order.order_id}</td>
                   <td>{order.user_id}</td>
                   <td>
-                    {order.total_price
-                      ? Number(order.total_price).toFixed(2)
+                    {order.seller_total_price
+                      ? Number(order.seller_total_price).toFixed(2)
                       : "0.00"}
                   </td>
-                  <td className={`status ${order.order_status.toLowerCase()}`}>
+                  <td className={`status ${order.order_status}`}>
                     {order.order_status}
                   </td>
-                  <td
-                    className={`status ${order.payment_status.toLowerCase()}`}
-                  >
+                  <td className={`status ${order.payment_status}`}>
                     {order.payment_status}
                   </td>
                   <td>{order.shipping_address}</td>
@@ -301,17 +300,73 @@ const SellerOrders = () => {
 
       {selectedOrder && (
         <div className="order-details-modal">
+          <button
+            className="close-button"
+            onClick={() => setSelectedOrder(null)}
+          >
+            ×
+          </button>
           <h3>Order Details</h3>
-          <p>Order ID: {selectedOrder.order_id}</p>
-          <p>User ID: {selectedOrder.user_id}</p>
-          <p>Total Price: ${Number(selectedOrder.total_price).toFixed(2)}</p>
-          <p>Order Status: {selectedOrder.order_status}</p>
-          <p>Payment Status: {selectedOrder.payment_status}</p>
-          <p>Shipping Address: {selectedOrder.shipping_address}</p>
-          <p>
-            Created At: {new Date(selectedOrder.created_at).toLocaleString()}
-          </p>
-          <button onClick={() => setSelectedOrder(null)}>Close</button>
+          <div className="content">
+            <p>
+              <strong>Order ID:</strong> {selectedOrder.order_id}
+            </p>
+            <p>
+              <strong>User ID:</strong> {selectedOrder.user_id}
+            </p>
+            <p>
+              <strong>Total Price for Your Products:</strong> $
+              {Number(selectedOrder.seller_total_price).toFixed(2)}
+            </p>
+            <p>
+              <strong>Order Status:</strong> {selectedOrder.order_status}
+            </p>
+            <p>
+              <strong>Payment Status:</strong> {selectedOrder.payment_status}
+            </p>
+            <p>
+              <strong>Shipping Address:</strong>{" "}
+              {selectedOrder.shipping_address}
+            </p>
+            <p>
+              <strong>Created At:</strong>{" "}
+              {new Date(selectedOrder.created_at).toLocaleString()}
+            </p>
+            <p>
+              <strong>Last Updated:</strong>{" "}
+              {new Date(selectedOrder.updated_at).toLocaleString()}
+            </p>
+            <h4>Products in Order:</h4>
+            <ul className="product-list">
+              {selectedOrder.products.map((product) => (
+                <li key={product.product_id}>
+                  <div>
+                    <span>
+                      <strong>Product Name:</strong> {product.product_name}
+                    </span>
+                    <span>
+                      <strong>Quantity:</strong> {product.quantity}
+                    </span>
+                  </div>
+                  <div>
+                    <span>
+                      <strong>Price:</strong> $
+                      {Number(product.price).toFixed(2)}
+                    </span>
+                    <span>
+                      <strong>Total:</strong> $
+                      {Number(product.total).toFixed(2)}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="footer">
+            <button onClick={() => setSelectedOrder(null)} className="cancel">
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>
