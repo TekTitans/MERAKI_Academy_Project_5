@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import SellerProducts from "../../components/SellerProducts";
 import AddProduct from "../../components/AddProduct";
 import "./style.css";
+import SellerOrders from "../../components/SellerOrders";
 
 const SellerDashboard = () => {
-  const [activeSection, setActiveSection] = useState("manageProduct"); // manageProduct, addProduct, myOrders
+  const [activeSection, setActiveSection] = useState("manageProduct");
   const [message, setMessage] = useState(null);
 
   const showMessage = (text, type) => {
@@ -34,11 +35,7 @@ const SellerDashboard = () => {
           />
         );
       case "myOrders":
-        return (
-          <div className="product-management-page">
-            <h2 className="page-title">Orders</h2>
-          </div>
-        );
+        return <SellerOrders />;
       case "myReviews":
         return (
           <div className="product-management-page">

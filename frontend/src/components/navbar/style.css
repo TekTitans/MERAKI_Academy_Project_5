@@ -31,15 +31,15 @@
   flex-wrap: wrap;
 }
 
-.nav-lift{
+.nav-lift {
   display: flex;
-  gap: 1rem
+  gap: 1rem;
 }
 
 /* Logo Styling */
 .navbar-logo h2 {
   color: var(--primary-color);
-  font-size: 1.5rem; 
+  font-size: 1.5rem;
   font-weight: 700;
   cursor: pointer;
   transition: color var(--transition-speed) ease;
@@ -88,7 +88,7 @@
 .navbar-links li a {
   text-decoration: none;
   color: var(--light-text-color);
-  font-size: 1rem; 
+  font-size: 1rem;
   transition: color var(--transition-speed) ease;
   justify-content: center;
   align-items: center;
@@ -106,7 +106,8 @@
   font-size: 0.9rem; /* Smaller font size */
   width: 180px; /* Adjust width */
   outline: none;
-  transition: box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
+  transition: box-shadow var(--transition-speed) ease,
+    border-color var(--transition-speed) ease;
 }
 
 .navbar-search input:focus {
@@ -136,15 +137,14 @@
   gap: 2rem; /* Reduced gap */
 }
 
-
 .navbar-icons .login-btn {
   color: var(--light-text-color);
-  font-size: 1rem; 
+  font-size: 1rem;
   text-decoration: none;
   transition: color var(--transition-speed) ease;
 }
 
-.cart-icon{
+.cart-icon {
   font-size: 1.7rem;
   color: var(--light-text-color);
   transition: color var(--transition-speed) ease;
@@ -186,7 +186,8 @@
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform var(--transition-speed) ease, color var(--transition-speed) ease;
+  transition: transform var(--transition-speed) ease,
+    color var(--transition-speed) ease;
   cursor: pointer;
 }
 
@@ -258,7 +259,7 @@
 
   .navbar-icons a,
   .navbar-icons .login-btn {
-    font-size: 0.9rem; 
+    font-size: 0.9rem;
   }
 
   .navbar-icons {
@@ -268,6 +269,12 @@
 }
 
 @media (max-width: 480px) {
+
+  .navbar-username {
+    font-size: 0.5rem; /* Reduced size */
+    padding: 0.3rem 0.5rem;
+
+  }
   .navbar-logo h2 {
     font-size: 1rem; /* Much smaller size */
   }
@@ -282,15 +289,16 @@
   }
 
   .navbar-search input {
-    width: 120px;
+    width: 80px;
   }
 
   .login-btn {
-    font-size: 0.8rem; /* Reduced size */
-    padding: 0.4rem 0.8rem; /* Reduced padding */
+    font-size: 0.2rem; 
+    padding: 0.3rem 0.5rem;
   }
 
   .navbar-links {
-    gap: 0.8rem; /* Reduced gap */
+    
+    gap: 0.5rem; /* Reduced gap */
   }
 }
