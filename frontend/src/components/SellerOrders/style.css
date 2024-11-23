@@ -18,6 +18,48 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Seller summary container */
+.seller-summary {
+    margin-bottom: 30px;
+    background-color: #f4f8fb;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .seller-summary h3 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+  
+  .summary-card {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .summary-card h4 {
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .summary-card p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+
 .orders-table {
   width: 100%;
   border-collapse: collapse;
@@ -80,6 +122,29 @@ body {
 
 .orders-table .status.failed {
   color: #6c757d;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .seller-orders .loading,
@@ -481,6 +546,12 @@ body {
 
   .seller-orders {
     padding: 0.4rem;
+  }
+
+  .error-message {
+    padding: 0.3rem;
+    font-size: 0.8rem;
+    margin-top: 10px;
   }
 
   .modal-content {

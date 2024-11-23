@@ -168,7 +168,6 @@ const getSellerOrders = async (req, res) => {
     });
   }
 };
-
 const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -218,7 +217,6 @@ const updateOrderStatus = async (req, res) => {
     });
   }
 };
-
 const generateInvoice = async (req, res) => {
   const { id: orderId } = req.params;
 
@@ -384,6 +382,80 @@ const generateInvoice = async (req, res) => {
     });
   }
 };
+const getSellerSummary = async (req, res) => {
+  const sellerId = req.token.userId;
+
+  try {
+    console.log("getSellerSummary");
+
+    const summaryQuery = `
+      SELECT 
+        COUNT(o.id) AS total_orders,
+        SUM(CASE WHEN o.order_status = 'pending' THEN 1 ELSE 0 END) AS pending_orders,
+        SUM(CASE WHEN o.order_status = 'shipped' THEN 1 ELSE 0 END) AS shipped_orders,
+        SUM(CASE WHEN o.order_status = 'completed' THEN 1 ELSE 0 END) AS completed_orders,
+        SUM(CASE WHEN o.order_status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed_orders,
+        SUM(CASE WHEN o.order_status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
+        COALESCE(SUM(p.price * c.quantity), 0) AS total_sales,
+        COUNT(DISTINCT p.id) AS total_products,
+        SUM(CASE WHEN p.stock = 0 THEN 1 ELSE 0 END) AS out_of_stock_products,
+        COUNT(DISTINCT o.user_id) AS total_customers
+      FROM orders o
+      JOIN cart c ON o.id = c.order_id
+      JOIN products p ON c.product_id = p.id
+      WHERE p.seller_id = $1 AND o.is_deleted = FALSE;
+    `;
+
+    const topSellingQuery = `
+      SELECT 
+        p.name AS top_selling_product,
+        SUM(c.quantity) AS units_sold
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE p.seller_id = $1
+      GROUP BY p.id
+      ORDER BY units_sold DESC
+      LIMIT 1;
+    `;
+
+    const summaryResult = await pool.query(summaryQuery, [sellerId]);
+    const topSellingResult = await pool.query(topSellingQuery, [sellerId]);
+
+    const summary = summaryResult.rows[0];
+    const topSellingProduct = topSellingResult.rows[0] || {
+      top_selling_product: null,
+      units_sold: 0,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Seller summary retrieved successfully",
+      summary: {
+        totalOrders: parseInt(summary.total_orders, 10),
+        pendingOrders: parseInt(summary.pending_orders, 10),
+        shippedOrders: parseInt(summary.shipped_orders, 10),
+        completedOrders: parseInt(summary.completed_orders, 10),
+        confirmedOrders: parseInt(summary.confirmed_orders, 10),
+        cancelledOrders: parseInt(summary.cancelled_orders, 10),
+        totalSales: parseFloat(summary.total_sales).toFixed(2),
+        totalProducts: parseInt(summary.total_products, 10),
+        outOfStockProducts: parseInt(summary.out_of_stock_products, 10),
+        totalCustomers: parseInt(summary.total_customers, 10),
+        topSellingProduct: {
+          name: topSellingProduct.top_selling_product,
+          unitsSold: parseInt(topSellingProduct.units_sold, 10),
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching seller summary:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message || err,
+    });
+  }
+};
 
 module.exports = {
   cancelOrder,
@@ -393,4 +465,5 @@ module.exports = {
   getSellerOrders,
   updateOrderStatus,
   generateInvoice,
+  getSellerSummary,
 };
