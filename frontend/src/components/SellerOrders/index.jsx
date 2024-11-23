@@ -84,11 +84,31 @@ const SellerOrders = () => {
     console.log("showStatusModal after:", showStatusModal);
   };
 
+  const handleOrderStatusUpdate = (order_id, newStatus) => {
+    console.log("newStatus:", newStatus);
+    console.log("order_id:", order_id);
+
+    axios
+      .put(
+        `http://localhost:5000/order/${order_id}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        console.log("Order status updated successfully");
+        setShowStatusModal(false); // Close the modal
+        fetchSellerOrders(); // Refresh the orders list
+      })
+      .catch((error) => {
+        console.error("Error updating order status:", error);
+      });
+  };
+
   const handleUpdateStatus = () => {
     if (!newStatus) {
-      alert("Please select a status!");
-      return;
+      console.log("newStatus :", newStatus);
     }
+    console.log("orderToUpdate :", orderToUpdate.order_id);
 
     axios
       .put(
@@ -196,14 +216,14 @@ const SellerOrders = () => {
                       <>
                         <button
                           onClick={() =>
-                            handleOrderStatusUpdate(order.order_id, "Confirmed")
+                            handleOrderStatusUpdate(order.order_id, "confirmed")
                           }
                         >
                           Confirm
                         </button>
                         <button
                           onClick={() =>
-                            handleOrderStatusUpdate(order.order_id, "Canceled")
+                            handleOrderStatusUpdate(order.order_id, "cancelled")
                           }
                         >
                           Cancel
@@ -217,20 +237,24 @@ const SellerOrders = () => {
                         </button>
                         <button
                           onClick={() =>
-                            handleOrderStatusUpdate(order.order_id, "Canceled")
+                            handleOrderStatusUpdate(order.order_id, "cancelled")
                           }
                         >
                           Cancel
                         </button>
                       </>
                     )}
-                    {order.order_status === "Completed" && (
+                    {order.order_status === "completed" && (
                       <>
                         <button onClick={() => handleShowStatusModal(order)}>
                           Change Status
                         </button>
-                        <button onClick={() => setSelectedOrder(order)}>
-                          View Details
+                      </>
+                    )}
+                    {order.order_status === "cancelled" && (
+                      <>
+                        <button onClick={() => handleShowStatusModal(order)}>
+                          Change Status
                         </button>
                       </>
                     )}

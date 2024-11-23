@@ -115,7 +115,6 @@ const cancelOrder = (req, res) => {
       });
     });
 };
-
 const getSellerOrders = (req, res) => {
   const sellerId = 78;
 
@@ -151,6 +150,55 @@ const getSellerOrders = (req, res) => {
       });
     });
 };
+const updateOrderStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const validStatuses = [
+    "pending",
+    "confirmed",
+    "completed",
+    "cancelled",
+    "shipped",
+  ];
+  if (!validStatuses.includes(status.toLowerCase())) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Invalid status. Valid statuses are: pending, confirmed, completed, cancelled, shipped.",
+    });
+  }
+
+  try {
+    const query = `
+      UPDATE orders
+      SET order_status = $1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $2 AND is_deleted = FALSE
+      RETURNING *;
+    `;
+    const values = [status.toLowerCase(), id];
+
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found or already deleted.",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully.",
+      order: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
 
 module.exports = {
   cancelOrder,
@@ -158,4 +206,5 @@ module.exports = {
   getAllOrders,
   getOrderDetails,
   getSellerOrders,
+  updateOrderStatus,
 };
