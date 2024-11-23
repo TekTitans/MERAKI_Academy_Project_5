@@ -156,75 +156,72 @@ body {
   background-color: #0056b3;
 }
 
-.orders-table button:nth-child(2) {
+.cancel_orders_table button {
   background-color: #dc3545;
 }
 
-.orders-table button:nth-child(2):hover {
+.cancel_orders_table button:hover {
   background-color: #b02a37;
 }
-.modal {
+
+.order-status-modal-wrapper {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: flex !important;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
-.modal-content {
-  background: #fff !important;
+.status-modal-content {
+  background: #fff;
   padding: 20px;
-  border-radius: 5px;
-  width: 300px !important;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: slideDown 0.5s ease-out forwards;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
+@keyframes slideDown {
+  0% {
+    transform: translate(-50%, -60%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
 }
 
-.modal button {
-  margin-top: 15px;
-  padding: 8px 12px;
-  font-size: 1rem;
-  color: #fff;
-  background-color: #007bff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.modal button:hover {
-  background-color: #0056b3;
-}
-.modal_cancel button {
-  background-color: #dc3545;
-}
-.modal_cancel button:hover {
-  background-color: #b02a37;
-}
-.modal h3 {
+.status-modal-title {
   font-size: 1.5rem;
   margin-bottom: 15px;
   color: #333;
 }
 
-.modal p {
+.status-modal-content p {
+  margin: 10px 0;
   font-size: 1rem;
   color: #555;
 }
 
-.modal input,
-.modal select {
-  padding: 10px;
+.status-modal-select {
+  width: 100%;
+  padding: 12px;
   font-size: 1rem;
+  margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #f9f9f9;
@@ -232,37 +229,103 @@ body {
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.modal input:focus,
-.modal select:focus {
+.status-modal-select:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
-.modal select {
+.status-modal-footer {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.status-modal-footer button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 45%;
+}
+
+.status-modal-update-button {
+  background-color: #007bff;
+}
+
+.status-modal-update-button:hover {
+  background-color: #0056b3;
+}
+
+.status-modal-cancel-button {
+  background-color: #dc3545;
+}
+
+.status-modal-cancel-button:hover {
+  background-color: #b02a37;
+}
+
+.status-modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: #333;
   cursor: pointer;
 }
+
+.status-modal-close-button:hover {
+  color: #dc3545;
+}
+
+.order-status-modal-wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+.order-details-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 .order-details-modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(
-    135deg,
-    #ffffff,
-    #f3f8ff
-  ); 
+  background: linear-gradient(135deg, #ffffff, #f3f8ff);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   max-width: 500px;
   width: 90%;
-  overflow: hidden;
-  animation: slideDown 0.4s ease-out; 
+  overflow: auto;
+  animation: slideDown 0.4s ease-out;
+  height: auto;
 }
 
 .order-details-modal h3 {
-  background: linear-gradient(135deg, #007bff, #0056b3); 
+  background: linear-gradient(135deg, #007bff, #0056b3);
   color: #fff;
   margin: 0;
   padding: 15px 20px;
@@ -290,15 +353,23 @@ body {
 }
 
 .order-details-modal .product-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  margin-bottom: 10px;
+  display: grid;
+  gap: 1rem;
   background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  grid-template-columns: repeat(2, 1fr);
+  justify-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  height: auto;
+}
+
+.product-list span {
+  margin: 1rem;
+  display: block;
 }
 
 .order-details-modal .product-list li span {
@@ -341,13 +412,13 @@ body {
 
 .order-details-modal .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0;
+  right: 5px;
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  color: #999;
+  color: #818080;
   cursor: pointer;
   transition: color 0.3s ease;
 }
@@ -355,8 +426,6 @@ body {
 .order-details-modal .close-button:hover {
   color: #333;
 }
-
-
 
 @keyframes slideDown {
   from {
@@ -366,46 +435,6 @@ body {
   to {
     opacity: 1;
     transform: translate(-50%, -50%);
-  }
-}
-
-@media (max-width: 768px) {
-  .order-details-modal {
-    padding: 15px;
-    max-width: 95%;
-  }
-
-  .order-details-modal h3 {
-    font-size: 1.4rem;
-  }
-
-  .order-details-modal p {
-    font-size: 0.95rem;
-  }
-
-  .order-details-modal .footer button {
-    font-size: 0.9rem;
-    padding: 8px 15px;
-  }
-}
-
-@media (max-width: 768px) {
-  .order-details-modal {
-    padding: 20px;
-    max-width: 90%; 
-  }
-
-  .order-details-modal h3 {
-    font-size: 1.4rem;
-  }
-
-  .order-details-modal p {
-    font-size: 0.9rem;
-  }
-
-  .order-details-modal button {
-    font-size: 0.9rem;
-    padding: 8px 12px;
   }
 }
 
@@ -444,11 +473,152 @@ body {
   .modal p {
     font-size: 0.95rem;
   }
+
+  .order-details-modal {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal .footer button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  .order-details-modal {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.9rem;
+  }
+
+  .order-details-modal button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+
+  .filters {
+    gap: 0.5rem;
+    max-width: 700px;
+    padding: 0.5rem;
+  }
+
+  .filters input,
+  .filters select {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .filters input::placeholder {
+    font-style: italic;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .orders-table button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    width: 90%;
+    height: auto;
+  }
 }
+
 @media (max-width: 480px) {
   .orders-table th,
   .orders-table td {
     font-size: 0.4rem;
     padding: 2px 2px;
+  }
+
+  .seller-orders {
+    padding: 0.4rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal h3 {
+    font-size: 1.5rem;
+  }
+
+  .modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal .footer button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  .order-details-modal {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.9rem;
+  }
+
+  .order-details-modal button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+
+  .filters {
+    gap: 0.5rem;
+    max-width: 700px;
+    padding: 0.5rem;
+  }
+
+  .filters input,
+  .filters select {
+    padding: 0.2rem;
+    font-size: 0.4rem;
+    width: 4rem;
+  }
+
+  .filters input::placeholder {
+    font-style: italic;
+    font-size: 0.3rem;
+    padding: 0.1rem;
+  }
+
+  .orders-table button {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.3rem;
+    width: 90%;
+    height: auto;
   }
 }

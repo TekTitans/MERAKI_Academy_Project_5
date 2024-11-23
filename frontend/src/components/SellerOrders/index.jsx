@@ -218,45 +218,55 @@ const SellerOrders = () => {
                         >
                           Confirm
                         </button>
-                        <button
-                          onClick={() =>
-                            handleOrderStatusUpdate(order.order_id, "cancelled")
-                          }
-                        >
-                          Cancel
-                        </button>
+                        <div className="cancel_orders_table">
+                          <button
+                            onClick={() =>
+                              handleOrderStatusUpdate(
+                                order.order_id,
+                                "cancelled"
+                              )
+                            }
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </>
                     )}
                     {order.order_status === "confirmed" && (
                       <>
                         <button onClick={() => handleShowStatusModal(order)}>
-                          Change Status
+                          Status
                         </button>
-                        <button
-                          onClick={() =>
-                            handleOrderStatusUpdate(order.order_id, "cancelled")
-                          }
-                        >
-                          Cancel
-                        </button>
+                        <div className="cancel_orders_table">
+                          <button
+                            onClick={() =>
+                              handleOrderStatusUpdate(
+                                order.order_id,
+                                "cancelled"
+                              )
+                            }
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </>
                     )}
                     {order.order_status === "completed" && (
                       <>
                         <button onClick={() => handleShowStatusModal(order)}>
-                          Change Status
+                          Status
                         </button>
                       </>
                     )}
                     {order.order_status === "cancelled" && (
                       <>
                         <button onClick={() => handleShowStatusModal(order)}>
-                          Change Status
+                          Status
                         </button>
                       </>
                     )}
                     <button onClick={() => setSelectedOrder(order)}>
-                      View Details
+                      Details
                     </button>
                   </td>
                 </tr>
@@ -272,13 +282,22 @@ const SellerOrders = () => {
         </table>
       </div>
       {showStatusModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Change Order Status</h3>
-            <p>Order ID: {orderToUpdate?.order_id}</p>
+        <div className="order-status-modal-wrapper">
+          <div className="status-modal-content">
+            <button
+              className="status-modal-close-button"
+              onClick={() => setShowStatusModal(false)}
+            >
+              ×
+            </button>
+            <h3 className="status-modal-title">Change Order Status</h3>
+            <p>
+              <strong>Order ID:</strong> {orderToUpdate?.order_id}
+            </p>
             <select
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
+              className="status-modal-select"
             >
               <option value="">Select Status</option>
               <option value="Pending">Pending</option>
@@ -286,86 +305,95 @@ const SellerOrders = () => {
               <option value="Completed">Completed</option>
               <option value="Cancelled">Canceled</option>
             </select>
-            <div className="modal-actions">
-              <button onClick={handleUpdateStatus}>Update</button>
-              <div className="modal_cancel">
-                <button onClick={() => setShowStatusModal(false)}>
-                  Cancel
-                </button>
-              </div>
+
+            <div className="status-modal-footer">
+              <button
+                onClick={handleUpdateStatus}
+                className="status-modal-update-button"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => setShowStatusModal(false)}
+                className="status-modal-cancel-button"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
 
       {selectedOrder && (
-        <div className="order-details-modal">
-          <button
-            className="close-button"
-            onClick={() => setSelectedOrder(null)}
-          >
-            ×
-          </button>
-          <h3>Order Details</h3>
-          <div className="content">
-            <p>
-              <strong>Order ID:</strong> {selectedOrder.order_id}
-            </p>
-            <p>
-              <strong>User ID:</strong> {selectedOrder.user_id}
-            </p>
-            <p>
-              <strong>Total Price for Your Products:</strong> $
-              {Number(selectedOrder.seller_total_price).toFixed(2)}
-            </p>
-            <p>
-              <strong>Order Status:</strong> {selectedOrder.order_status}
-            </p>
-            <p>
-              <strong>Payment Status:</strong> {selectedOrder.payment_status}
-            </p>
-            <p>
-              <strong>Shipping Address:</strong>{" "}
-              {selectedOrder.shipping_address}
-            </p>
-            <p>
-              <strong>Created At:</strong>{" "}
-              {new Date(selectedOrder.created_at).toLocaleString()}
-            </p>
-            <p>
-              <strong>Last Updated:</strong>{" "}
-              {new Date(selectedOrder.updated_at).toLocaleString()}
-            </p>
-            <h4>Products in Order:</h4>
-            <ul className="product-list">
-              {selectedOrder.products.map((product) => (
-                <li key={product.product_id}>
-                  <div>
-                    <span>
-                      <strong>Product Name:</strong> {product.product_name}
-                    </span>
-                    <span>
-                      <strong>Quantity:</strong> {product.quantity}
-                    </span>
-                  </div>
-                  <div>
-                    <span>
-                      <strong>Price:</strong> $
-                      {Number(product.price).toFixed(2)}
-                    </span>
-                    <span>
-                      <strong>Total:</strong> $
-                      {Number(product.total).toFixed(2)}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="footer">
-            <button onClick={() => setSelectedOrder(null)} className="cancel">
-              Close
+        <div className="order-details-modal-wrapper">
+          <div className="order-details-modal">
+            <button
+              className="close-button"
+              onClick={() => setSelectedOrder(null)}
+            >
+              ×
             </button>
+            <h3>Order Details</h3>
+            <div className="content">
+              <p>
+                <strong>Order ID:</strong> {selectedOrder.order_id}
+              </p>
+              <p>
+                <strong>User ID:</strong> {selectedOrder.user_id}
+              </p>
+              <p>
+                <strong>Total Price for Your Products:</strong> $
+                {Number(selectedOrder.seller_total_price).toFixed(2)}
+              </p>
+              <p>
+                <strong>Order Status:</strong> {selectedOrder.order_status}
+              </p>
+              <p>
+                <strong>Payment Status:</strong> {selectedOrder.payment_status}
+              </p>
+              <p>
+                <strong>Shipping Address:</strong>{" "}
+                {selectedOrder.shipping_address}
+              </p>
+              <p>
+                <strong>Created At:</strong>{" "}
+                {new Date(selectedOrder.created_at).toLocaleString()}
+              </p>
+              <p>
+                <strong>Last Updated:</strong>{" "}
+                {new Date(selectedOrder.updated_at).toLocaleString()}
+              </p>
+              <h4>Products in Order:</h4>
+              <ul className="product-list">
+                {selectedOrder.products.map((product) => (
+                  <li key={product.product_id}>
+                    <div>
+                      <span>
+                        <strong>Product Name:</strong> {product.product_name}
+                      </span>
+                      <span>
+                        <strong>Quantity:</strong> {product.quantity}
+                      </span>
+                    </div>
+                    <div>
+                      <span>
+                        <strong>Price:</strong> $
+                        {Number(product.price).toFixed(2)}
+                      </span>
+                      <span>
+                        <strong>Total:</strong> $
+                        {Number(product.total).toFixed(2)}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="footer">
+              <button onClick={() => setSelectedOrder(null)} className="cancel">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
