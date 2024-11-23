@@ -30,7 +30,6 @@ body {
   text-align: center;
   font-weight: 600;
   color: var(--color-heading);
-  margin-bottom: 30px;
 }
 
 .error-message {
@@ -46,7 +45,6 @@ body {
 
 .seller-summary {
   background-color: var(--bg-light);
-  padding: 30px;
   border-radius: 12px;
   box-shadow: var(--box-shadow);
 }
@@ -72,46 +70,46 @@ body {
 }
 
 .summary-card h4 {
-  font-size: 20px;
+  font-size: 23px;
   color: var(--color-heading);
   font-weight: 600;
   margin-bottom: 10px;
 }
 
 .summary-card p {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: 15px;
 }
 .summary-card.total-orders {
-  background-color: #f0f8ff; 
-  border-left: 5px solid #4682b4; 
+  background-color: #f0f8ff;
+  border-left: 5px solid #4682b4;
 }
 
 .summary-card.pending-orders {
-  background-color: #fff3cd; 
-  border-left: 5px solid #ffc107; 
+  background-color: #fff3cd;
+  border-left: 5px solid #ffc107;
 }
 
 .summary-card.confirmed-orders {
-  background-color: #d4edda; 
-  border-left: 5px solid #28a745; 
+  background-color: #d4edda;
+  border-left: 5px solid #28a745;
 }
 
 .summary-card.cancelled-orders {
-  background-color: #f8d7da; 
-  border-left: 5px solid #dc3545; 
+  background-color: #f8d7da;
+  border-left: 5px solid #dc3545;
 }
 
 .summary-card.shipped-orders {
-  background-color: #d1ecf1; 
-  border-left: 5px solid #17a2b8; 
+  background-color: #d1ecf1;
+  border-left: 5px solid #17a2b8;
 }
 
 .summary-card.completed-orders {
-  background-color: #e9f7ef; 
-  border-left: 5px solid #28a745; 
+  background-color: #e9f7ef;
+  border-left: 5px solid #28a745;
 }
 
 .summary-card.total-sales {
@@ -137,6 +135,15 @@ body {
 .summary-card.top-selling-product {
   background-color: #f8f9fa;
   border-left: 5px solid #343a40;
+}
+.summary-card.total-reviews {
+  background-color: #e2f7e1;
+  border-left: 5px solid #28a745;
+}
+
+.summary-card.average-rating {
+  background-color: #f0f8ff;
+  border-left: 5px solid #4682b4;
 }
 
 @media (max-width: 768px) {

@@ -1,6 +1,6 @@
 const pool = require("../models/db");
 const express = require("express");
-const pdf = require("pdfkit"); 
+const pdf = require("pdfkit");
 const fs = require("fs");
 
 const createOrder = async (req, res) => {
@@ -417,15 +417,26 @@ const getSellerSummary = async (req, res) => {
       ORDER BY units_sold DESC
       LIMIT 1;
     `;
+    const reviewQuery = `
+      SELECT 
+          COUNT(id) AS total_reviews,
+          COALESCE(AVG(rating), 0) AS average_rating
+      FROM sellerReviews
+      WHERE seller_id = $1 AND is_deleted = FALSE;
+    `;
 
     const summaryResult = await pool.query(summaryQuery, [78]); //sellerId
     const topSellingResult = await pool.query(topSellingQuery, [78]); //sellerId
+    const reviewResult = await pool.query(reviewQuery, [78]); //sellerId
 
+    console.log("reviewResult", reviewResult);
     const summary = summaryResult.rows[0];
     const topSellingProduct = topSellingResult.rows[0] || {
       top_selling_product: null,
       units_sold: 0,
     };
+    const totalReviews = reviewResult.rows[0].total_reviews;
+    const averageRating = reviewResult.rows[0].average_rating;
 
     res.status(200).json({
       success: true,
@@ -444,6 +455,8 @@ const getSellerSummary = async (req, res) => {
         topSellingProduct: {
           name: topSellingProduct.top_selling_product,
           unitsSold: parseInt(topSellingProduct.units_sold, 10),
+          totalReviews,
+          averageRating,
         },
       },
     });

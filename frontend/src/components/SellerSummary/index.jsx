@@ -11,6 +11,8 @@ const SellerSummary = () => {
   const { loading, error } = useSelector((state) => state.order);
 
   const [sellerSummary, setSellerSummary] = useState({
+    totalReviews: 0,
+    averageRating: 0,
     totalOrders: 0,
     pendingOrders: 0,
     shippedOrders: 0,
@@ -43,6 +45,8 @@ const SellerSummary = () => {
         const summary = response.data.summary;
 
         setSellerSummary({
+          totalReviews: summary.totalReviews,
+          averageRating: summary.averageRating,
           totalOrders: summary.totalOrders,
           pendingOrders: summary.pendingOrders,
           shippedOrders: summary.shippedOrders,
@@ -83,48 +87,18 @@ const SellerSummary = () => {
 
       <div className="seller-summary">
         <div className="summary-cards">
-          <div className={`summary-card total-orders`}>
-            <h4>Total Orders</h4>
-            <p>{sellerSummary.totalOrders}</p>
-          </div>
-          <div className={`summary-card pending-orders`}>
-            <h4>Pending Orders</h4>
-            <p>{sellerSummary.pendingOrders}</p>
-          </div>
-          <div className={`summary-card confirmed-orders`}>
-            <h4>Confirmed Orders</h4>
-            <p>{sellerSummary.confirmedOrders}</p>
-          </div>
-          <div className={`summary-card cancelled-orders`}>
-            <h4>Cancelled Orders</h4>
-            <p>{sellerSummary.cancelledOrders}</p>
-          </div>
-          <div className={`summary-card shipped-orders`}>
-            <h4>Shipped Orders</h4>
-            <p>{sellerSummary.shippedOrders}</p>
-          </div>
-          <div className={`summary-card completed-orders`}>
-            <h4>Completed Orders</h4>
-            <p>{sellerSummary.completedOrders}</p>
-          </div>
-          <div className={`summary-card total-sales`}>
-            <h4>Total Sales</h4>
-            <p>${sellerSummary.totalSales}</p>
-          </div>
-          <div className={`summary-card total-products`}>
+          <div className="summary-card total-products">
             <h4>Total Products</h4>
             <p>{sellerSummary.totalProducts}</p>
           </div>
-          <div className={`summary-card out-of-stock`}>
+
+          <div className="summary-card cancelled-orders">
             <h4>Out of Stock Products</h4>
             <p>{sellerSummary.outOfStockProducts}</p>
           </div>
-          <div className={`summary-card total-customers`}>
-            <h4>Total Customers</h4>
-            <p>{sellerSummary.totalCustomers}</p>
-          </div>
+
           {sellerSummary.topSellingProduct && (
-            <div className={`summary-card top-selling-product`}>
+            <div className="summary-card top-selling-product">
               <h4>Top Selling Product</h4>
               <p>
                 {sellerSummary.topSellingProduct?.name} (
@@ -132,6 +106,52 @@ const SellerSummary = () => {
               </p>
             </div>
           )}
+          <div className="summary-card total-customers">
+            <h4>Total Customers</h4>
+            <p>{sellerSummary.totalCustomers}</p>
+          </div>
+          <div className="summary-card total-reviews">
+            <h4>Total Reviews</h4>
+            <p>{sellerSummary.totalReviews || 0}</p>{" "}
+          </div>
+
+          <div className="summary-card average-rating">
+            <h4>Average Rating</h4>
+            <p>{(sellerSummary.averageRating || 0).toFixed(1)}</p>
+          </div>
+          <div className="summary-card total-orders">
+            <h4>Total Orders</h4>
+            <p>{sellerSummary.totalOrders}</p>
+          </div>
+          <div className="summary-card pending-orders">
+            <h4>Pending Orders</h4>
+            <p>{sellerSummary.pendingOrders}</p>
+          </div>
+
+          <div className="summary-card confirmed-orders">
+            <h4>Confirmed Orders</h4>
+            <p>{sellerSummary.confirmedOrders}</p>
+          </div>
+
+          <div className="summary-card cancelled-orders">
+            <h4>Cancelled Orders</h4>
+            <p>{sellerSummary.cancelledOrders}</p>
+          </div>
+
+          <div className="summary-card shipped-orders">
+            <h4>Shipped Orders</h4>
+            <p>{sellerSummary.shippedOrders}</p>
+          </div>
+
+          <div className="summary-card completed-orders">
+            <h4>Completed Orders</h4>
+            <p>{sellerSummary.completedOrders}</p>
+          </div>
+
+          <div className="summary-card total-sales">
+            <h4>Total Sales</h4>
+            <p>${sellerSummary.totalSales}</p>
+          </div>
         </div>
       </div>
     </div>
