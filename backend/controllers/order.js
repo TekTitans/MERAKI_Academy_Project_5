@@ -1,6 +1,6 @@
 const pool = require("../models/db");
 const express = require("express");
-const pdf = require("pdfkit"); // or any other PDF library
+const pdf = require("pdfkit"); 
 const fs = require("fs");
 
 const createOrder = async (req, res) => {
@@ -398,28 +398,28 @@ const getSellerSummary = async (req, res) => {
         SUM(CASE WHEN o.order_status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
         COALESCE(SUM(p.price * c.quantity), 0) AS total_sales,
         COUNT(DISTINCT p.id) AS total_products,
-        SUM(CASE WHEN p.stock = 0 THEN 1 ELSE 0 END) AS out_of_stock_products,
+        SUM(CASE WHEN p.stock_status = 'out_of_stock' THEN 1 ELSE 0 END) AS out_of_stock_products,
         COUNT(DISTINCT o.user_id) AS total_customers
       FROM orders o
       JOIN cart c ON o.id = c.order_id
       JOIN products p ON c.product_id = p.id
-      WHERE p.seller_id = $1 AND o.is_deleted = FALSE;
+      WHERE p.seller_id = $1 AND o.is_deleted = FALSE AND p.is_deleted = FALSE;
     `;
 
     const topSellingQuery = `
       SELECT 
-        p.name AS top_selling_product,
+        p.title AS top_selling_product,
         SUM(c.quantity) AS units_sold
       FROM cart c
       JOIN products p ON c.product_id = p.id
-      WHERE p.seller_id = $1
+      WHERE p.seller_id = $1 AND p.is_deleted = FALSE
       GROUP BY p.id
       ORDER BY units_sold DESC
       LIMIT 1;
     `;
 
-    const summaryResult = await pool.query(summaryQuery, [sellerId]);
-    const topSellingResult = await pool.query(topSellingQuery, [sellerId]);
+    const summaryResult = await pool.query(summaryQuery, [78]); //sellerId
+    const topSellingResult = await pool.query(topSellingQuery, [78]); //sellerId
 
     const summary = summaryResult.rows[0];
     const topSellingProduct = topSellingResult.rows[0] || {

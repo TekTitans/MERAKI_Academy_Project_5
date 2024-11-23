@@ -272,10 +272,6 @@ const SellerOrders = () => {
             <h4>Total Customers</h4>
             <p>{sellerSummary.totalCustomers}</p>
           </div>
-          <div className="summary-card">
-            <h4>Avg Order Value</h4>
-            <p>${parseFloat(sellerSummary.averageOrderValue).toFixed(2)}</p>
-          </div>
           {sellerSummary.topSellingProduct && (
             <div className="summary-card">
               <h4>Top Selling Product</h4>
