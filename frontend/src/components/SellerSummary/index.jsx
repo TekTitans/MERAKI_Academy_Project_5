@@ -150,7 +150,7 @@ const SellerSummary = () => {
 
           <div className="summary-card total-sales">
             <h4>Total Sales</h4>
-            <p>${sellerSummary.totalSales}</p>
+            <p>{sellerSummary.totalSales}</p>
           </div>
         </div>
       </div>

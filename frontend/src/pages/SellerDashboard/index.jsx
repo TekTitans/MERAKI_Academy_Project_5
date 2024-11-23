@@ -4,6 +4,7 @@ import AddProduct from "../../components/AddProduct";
 import "./style.css";
 import SellerOrders from "../../components/SellerOrders";
 import SellerSummary from "../../components/SellerSummary";
+import SellerReviews from "../../components/SellerReviews";
 
 const SellerDashboard = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -46,11 +47,7 @@ const SellerDashboard = () => {
       case "myOrders":
         return <SellerOrders />;
       case "myReviews":
-        return (
-          <div className="product-management-page">
-            <h2 className="page-title">Reviews</h2>
-          </div>
-        );
+        return <SellerReviews />;
       default:
         return null;
     }

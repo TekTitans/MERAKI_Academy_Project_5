@@ -133,29 +133,40 @@ const createSellerReviews = (req, res) => {
       });
     });
 };
-const getSellerReviews = (req, res) => {
-  const id = req.params.id;
 
-  const query = `SELECT * FROM sellerreviews WHERE seller_id=$1 ;`;
-  const data = [id];
+const getSellerReviews = (req, res) => {
+  const sellerId = parseInt(req.params.sellerId);
+
+  const query = `
+    SELECT reviews.id, reviews.rating, reviews.comment, reviews.created_at, 
+    users.name AS user_name
+    FROM sellerReviews reviews
+    JOIN users ON reviews.user_id = users.id
+    WHERE reviews.seller_id = $1 AND reviews.is_deleted = false
+    ORDER BY reviews.created_at DESC
+  `;
+  const data = [sellerId];
+
   pool
     .query(query, data)
     .then((result) => {
-      console.log(result.rows);
+      console.log("Seller reviews retrieved:", result.rows);
+
       res.status(200).json({
         success: true,
-        message: "seller reviews selected successfully",
-        result: result.rows[0],
+        message: "Seller reviews retrieved successfully",
+        result: result.rows,
       });
     })
     .catch((err) => {
+      console.error("Error retrieving seller reviews:", err);
       res.status(500).json({
         success: false,
-        message: "Server error",
-        err: err,
+        message: "Server error. Please try again later.",
       });
     });
 };
+
 const updateSellerReviews = (req, res) => {
   const { rating, comment } = req.body;
   const id = req.params.id;
