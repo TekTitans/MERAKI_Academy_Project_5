@@ -8,6 +8,7 @@ const {
   getOrderDetails,
   getSellerOrders,
   updateOrderStatus,
+  generateInvoice,
 } = require("../controllers/order");
 
 const orderRouter = express.Router();
@@ -18,5 +19,6 @@ orderRouter.get("/", auth, getAllOrders);
 orderRouter.get("/details/:id", auth, getOrderDetails);
 orderRouter.get("/seller/:sellerId", auth, getSellerOrders);
 orderRouter.put("/:id/status", auth, updateOrderStatus);
+orderRouter.get("/:id/invoice", generateInvoice);
 
 module.exports = orderRouter;

@@ -97,8 +97,8 @@ const SellerOrders = () => {
       )
       .then(() => {
         console.log("Order status updated successfully");
-        setShowStatusModal(false); // Close the modal
-        fetchSellerOrders(); // Refresh the orders list
+        setShowStatusModal(false);
+        fetchSellerOrders();
       })
       .catch((error) => {
         console.error("Error updating order status:", error);
@@ -124,6 +124,10 @@ const SellerOrders = () => {
       .catch((error) => {
         console.error("Error updating status:", error);
       });
+  };
+
+  const handleInvoice = (order_id) => {
+    window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
   };
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
@@ -256,8 +260,12 @@ const SellerOrders = () => {
                         <button onClick={() => handleShowStatusModal(order)}>
                           Status
                         </button>
+                        <button onClick={() => handleInvoice(order.order_id)}>
+                          Invoice
+                        </button>
                       </>
                     )}
+
                     {order.order_status === "cancelled" && (
                       <>
                         <button onClick={() => handleShowStatusModal(order)}>
