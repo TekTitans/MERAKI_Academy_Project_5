@@ -74,6 +74,10 @@ body {
   color: #17a2b8;
 }
 
+.orders-table .status.confirmed {
+  color: #007bff; /* Blue for confirmed */
+}
+
 .orders-table .status.failed {
   color: #6c757d;
 }
@@ -133,6 +137,32 @@ body {
 
 .orders-table button:nth-child(2):hover {
   background-color: #b02a37;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
 .order-details-modal {

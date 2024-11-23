@@ -11,14 +11,17 @@ const SellerOrders = () => {
   const { orders, loading, error } = useSelector((state) => state.order);
 
   const [filters, setFilters] = useState({
-    dateRange: { from: "", to: "" },
+    selectedDate: "",
     status: "",
     paymentStatus: "",
-    priceRange: { min: "", max: "" },
     search: "",
   });
 
-  const [selectedOrder, setSelectedOrder] = useState(null); 
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [orderToUpdate, setOrderToUpdate] = useState(null);
+  const [newStatus, setNewStatus] = useState("");
 
   const fetchSellerOrders = async () => {
     dispatch(setLoading(true));
@@ -53,8 +56,8 @@ const SellerOrders = () => {
 
   const filteredOrders = orders.filter((order) => {
     const matchesDate =
-      !filters.dateRange.to ||
-      new Date(order.created_at) <= new Date(filters.dateRange.to);
+      !filters.selectedDate ||
+      new Date(order.created_at) <= new Date(filters.selectedDate);
 
     const matchesStatus =
       !filters.status || order.order_status === filters.status;
@@ -62,41 +65,44 @@ const SellerOrders = () => {
     const matchesPaymentStatus =
       !filters.paymentStatus || order.payment_status === filters.paymentStatus;
 
-    const matchesPrice =
-      (!filters.priceRange.min ||
-        order.total_price >= parseFloat(filters.priceRange.min)) &&
-      (!filters.priceRange.max ||
-        order.total_price <= parseFloat(filters.priceRange.max));
-
     const matchesSearch =
       !filters.search ||
       order.order_id.toString().includes(filters.search) ||
       order.user_id.toString().includes(filters.search);
 
     return (
-      matchesDate &&
-      matchesStatus &&
-      matchesPaymentStatus &&
-      matchesPrice &&
-      matchesSearch
+      matchesDate && matchesStatus && matchesPaymentStatus && matchesSearch
     );
   });
 
-  const handleOrderStatusUpdate = (orderId, newStatus) => {
-    if (
-      window.confirm(
-        `Are you sure you want to update the order status to "${newStatus}"?`
-      )
-    ) {
-      axios
-        .put(
-          `http://localhost:5000/order/${orderId}/status`,
-          { status: newStatus },
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
-        .then(() => fetchSellerOrders())
-        .catch((error) => console.error(error));
+  const handleShowStatusModal = (order) => {
+    console.log("handleShowStatusModal");
+    console.log("showStatusModal before:", showStatusModal);
+
+    setOrderToUpdate(order);
+    setShowStatusModal(true);
+    console.log("showStatusModal after:", showStatusModal);
+  };
+
+  const handleUpdateStatus = () => {
+    if (!newStatus) {
+      alert("Please select a status!");
+      return;
     }
+
+    axios
+      .put(
+        `http://localhost:5000/order/${orderToUpdate.order_id}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        setShowStatusModal(false);
+        fetchSellerOrders(); // Refresh the orders list
+      })
+      .catch((error) => {
+        console.error("Error updating status:", error);
+      });
   };
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
@@ -109,9 +115,9 @@ const SellerOrders = () => {
       <div className="filters">
         <input
           type="date"
-          name="dateRange.to"
-          placeholder="To Date"
-          value={filters.dateRange.to}
+          name="selectedDate"
+          placeholder="Before Date"
+          value={filters.selectedDate}
           onChange={handleFilterChange}
         />
         <select
@@ -123,6 +129,7 @@ const SellerOrders = () => {
           <option value="pending">Pending</option>
           <option value="shipped">Shipped</option>
           <option value="completed">Completed</option>
+          <option value="confirmed">Confirmed</option>
           <option value="canceled">Canceled</option>
         </select>
         <select
@@ -135,20 +142,6 @@ const SellerOrders = () => {
           <option value="pending">Pending</option>
           <option value="failed">Failed</option>
         </select>
-        <input
-          type="number"
-          name="priceRange.min"
-          placeholder="Min Price"
-          value={filters.priceRange.min}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="number"
-          name="priceRange.max"
-          placeholder="Max Price"
-          value={filters.priceRange.max}
-          onChange={handleFilterChange}
-        />
         <input
           type="text"
           name="search"
@@ -198,20 +191,50 @@ const SellerOrders = () => {
                     {new Date(order.created_at).toLocaleTimeString()}
                   </td>
                   <td>
-                    <button
-                      onClick={() =>
-                        handleOrderStatusUpdate(order.order_id, "Shipped")
-                      }
-                    >
-                      Mark as Shipped
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleOrderStatusUpdate(order.order_id, "Canceled")
-                      }
-                    >
-                      Cancel Order
-                    </button>
+                    {/* Buttons based on order_status */}
+                    {order.order_status === "pending" && (
+                      <>
+                        <button
+                          onClick={() =>
+                            handleOrderStatusUpdate(order.order_id, "Confirmed")
+                          }
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleOrderStatusUpdate(order.order_id, "Canceled")
+                          }
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {order.order_status === "confirmed" && (
+                      <>
+                        <button onClick={() => handleShowStatusModal(order)}>
+                          Change Status
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleOrderStatusUpdate(order.order_id, "Canceled")
+                          }
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                    {order.order_status === "Completed" && (
+                      <>
+                        <button onClick={() => handleShowStatusModal(order)}>
+                          Change Status
+                        </button>
+                        <button onClick={() => setSelectedOrder(order)}>
+                          View Details
+                        </button>
+                      </>
+                    )}
+                    {/* View details button for all statuses */}
                     <button onClick={() => setSelectedOrder(order)}>
                       View Details
                     </button>
@@ -228,6 +251,32 @@ const SellerOrders = () => {
           </tbody>
         </table>
       </div>
+      {showStatusModal
+        ? console.log("Modal should show")
+        : console.log("Modal hidden")}
+
+      {showStatusModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Change Order Status</h3>
+            <p>Order ID: {orderToUpdate?.order_id}</p>
+            <select
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value)}
+            >
+              <option value="">Select Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Completed">Completed</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+            <div className="modal-actions">
+              <button onClick={handleUpdateStatus}>Update</button>
+              <button onClick={() => setShowStatusModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Order Details Modal */}
       {selectedOrder && (
