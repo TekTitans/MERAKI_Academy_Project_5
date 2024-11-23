@@ -34,7 +34,6 @@ const SellerOrders = () => {
       );
       dispatch(setOrders(response.data.result));
       dispatch(setLoading(false));
-      console.log(response.data.result);
     } catch (error) {
       dispatch(setError(error.message));
       dispatch(setLoading(false));
@@ -53,6 +52,15 @@ const SellerOrders = () => {
       ...prevFilters,
       [name]: value,
     }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      selectedDate: "",
+      status: "",
+      paymentStatus: "",
+      search: "",
+    });
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -77,60 +85,45 @@ const SellerOrders = () => {
   });
 
   const handleShowStatusModal = (order) => {
-    console.log("handleShowStatusModal");
-    console.log("showStatusModal before:", showStatusModal);
-
     setOrderToUpdate(order);
     setShowStatusModal(true);
-    console.log("showStatusModal after:", showStatusModal);
   };
 
   const handleOrderStatusUpdate = async (order_id, newStatus) => {
     try {
-      console.log("newStatus:", newStatus);
-      console.log("order_id:", order_id);
-  
       await axios.put(
         `http://localhost:5000/order/${order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      console.log("Order status updated successfully");
-  
       setShowStatusModal(false);
       fetchSellerOrders();
     } catch (error) {
       console.error("Error updating order status:", error);
     }
   };
-  
+
   const handleUpdateStatus = async () => {
     if (!newStatus) {
-      console.log("newStatus is not provided.");
-      return; 
+      return;
     }
-    
-    console.log("orderToUpdate :", orderToUpdate.order_id);
-  
     try {
       await axios.put(
         `http://localhost:5000/order/${orderToUpdate.order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       setShowStatusModal(false);
       fetchSellerOrders();
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
-  
+
   const handleInvoice = (order_id) => {
     window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
   };
-  
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -176,6 +169,9 @@ const SellerOrders = () => {
           value={filters.search}
           onChange={handleFilterChange}
         />
+        <button className="clear-filters-button" onClick={handleClearFilters}>
+          Clear
+        </button>
       </div>
 
       <div className="seller-orders">
