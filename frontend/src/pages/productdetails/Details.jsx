@@ -69,23 +69,6 @@ export const Details = () => {
   console.log(token);
   console.log(reviews);
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/review/${pId}`)
-      .then((response) => {
-        if (response.data.success) {
-          console.log(response.data);
-          setReviews(response.data.result);
-
-          setMsg(response.data.message);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setMsg(err.response.data.message);
-      });
-  }, []);
-
   const rev = reviews?.map((reviwe, index) => {
     return (
       <div key={reviwe.id}>
