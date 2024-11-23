@@ -8,6 +8,8 @@ const SellerSummary = () => {
   const dispatch = useDispatch();
   const sellerId = useSelector((state) => state.auth.userId);
   const { token } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state) => state.order);
+
   const [sellerSummary, setSellerSummary] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -20,7 +22,7 @@ const SellerSummary = () => {
     outOfStockProducts: 0,
     totalCustomers: 0,
     averageOrderValue: 0,
-    topSellingProduct: 0,
+    topSellingProduct: null,
   });
 
   const fetchSellerSummary = async () => {
@@ -38,50 +40,21 @@ const SellerSummary = () => {
       );
 
       if (response.data.success) {
-        const {
-          totalOrders,
-          pendingOrders,
-          shippedOrders,
-          completedOrders,
-          confirmedOrders,
-          cancelledOrders,
-          totalSales,
-          totalProducts,
-          outOfStockProducts,
-          totalCustomers,
-          averageOrderValue,
-          topSellingProduct,
-        } = response.data.summary;
+        const summary = response.data.summary;
 
-        console.log("Seller Summary:", {
-          totalOrders,
-          pendingOrders,
-          shippedOrders,
-          completedOrders,
-          confirmedOrders,
-          cancelledOrders,
-          totalSales,
-          totalProducts,
-          outOfStockProducts,
-          totalCustomers,
-          averageOrderValue,
-          topSellingProduct,
-        });
-
-        // Set the state with the received summary
         setSellerSummary({
-          totalOrders,
-          pendingOrders,
-          shippedOrders,
-          completedOrders,
-          confirmedOrders,
-          cancelledOrders,
-          totalSales: parseFloat(totalSales).toFixed(2),
-          totalProducts,
-          outOfStockProducts,
-          totalCustomers,
-          averageOrderValue: parseFloat(averageOrderValue).toFixed(2),
-          topSellingProduct,
+          totalOrders: summary.totalOrders,
+          pendingOrders: summary.pendingOrders,
+          shippedOrders: summary.shippedOrders,
+          completedOrders: summary.completedOrders,
+          confirmedOrders: summary.confirmedOrders,
+          cancelledOrders: summary.cancelledOrders,
+          totalSales: parseFloat(summary.totalSales).toFixed(2),
+          totalProducts: summary.totalProducts,
+          outOfStockProducts: summary.outOfStockProducts,
+          totalCustomers: summary.totalCustomers,
+          averageOrderValue: parseFloat(summary.averageOrderValue).toFixed(2),
+          topSellingProduct: summary.topSellingProduct || null,
         });
       }
     } catch (err) {
@@ -108,55 +81,54 @@ const SellerSummary = () => {
 
       {error && <div className="error-message">Error: {error}</div>}
 
-      {loading && <div className="loading-spinner">Loading...</div>}
       <div className="seller-summary">
         <div className="summary-cards">
-          <div className="summary-card">
+          <div className={`summary-card total-orders`}>
             <h4>Total Orders</h4>
             <p>{sellerSummary.totalOrders}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card pending-orders`}>
             <h4>Pending Orders</h4>
             <p>{sellerSummary.pendingOrders}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card confirmed-orders`}>
             <h4>Confirmed Orders</h4>
             <p>{sellerSummary.confirmedOrders}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card cancelled-orders`}>
             <h4>Cancelled Orders</h4>
             <p>{sellerSummary.cancelledOrders}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card shipped-orders`}>
             <h4>Shipped Orders</h4>
             <p>{sellerSummary.shippedOrders}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card completed-orders`}>
             <h4>Completed Orders</h4>
             <p>{sellerSummary.completedOrders}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card total-sales`}>
             <h4>Total Sales</h4>
-            <p>${parseFloat(sellerSummary.totalSales).toFixed(2)}</p>
+            <p>${sellerSummary.totalSales}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card total-products`}>
             <h4>Total Products</h4>
             <p>{sellerSummary.totalProducts}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card out-of-stock`}>
             <h4>Out of Stock Products</h4>
             <p>{sellerSummary.outOfStockProducts}</p>
           </div>
-          <div className="summary-card">
+          <div className={`summary-card total-customers`}>
             <h4>Total Customers</h4>
             <p>{sellerSummary.totalCustomers}</p>
           </div>
           {sellerSummary.topSellingProduct && (
-            <div className="summary-card">
+            <div className={`summary-card top-selling-product`}>
               <h4>Top Selling Product</h4>
               <p>
-                {sellerSummary.topSellingProduct.name} (
-                {sellerSummary.topSellingProduct.unitsSold} units sold)
+                {sellerSummary.topSellingProduct?.name} (
+                {sellerSummary.topSellingProduct?.unitsSold} units sold)
               </p>
             </div>
           )}

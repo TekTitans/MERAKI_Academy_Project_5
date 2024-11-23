@@ -3,9 +3,10 @@ import SellerProducts from "../../components/SellerProducts";
 import AddProduct from "../../components/AddProduct";
 import "./style.css";
 import SellerOrders from "../../components/SellerOrders";
+import SellerSummary from "../../components/SellerSummary";
 
 const SellerDashboard = () => {
-  const [activeSection, setActiveSection] = useState("manageProduct");
+  const [activeSection, setActiveSection] = useState("summary");
   const [message, setMessage] = useState(null);
 
   const showMessage = (text, type) => {
@@ -17,10 +18,18 @@ const SellerDashboard = () => {
 
   const renderSection = () => {
     switch (activeSection) {
+      case "summary":
+        return (
+          <SellerSummary
+            message={message}
+            setMessage={setMessage}
+            showMessage={showMessage}
+          />
+        );
       case "addProduct":
         return (
           <AddProduct
-            handleCancelAdd={() => setActiveSection("manageProduct")}
+            handleCancelAdd={() => setActiveSection("summary")}
             message={message}
             setMessage={setMessage}
             showMessage={showMessage}
@@ -52,6 +61,9 @@ const SellerDashboard = () => {
       <div className="SDB_Navbar">
         <h1>Seller Dashboard</h1>
         <div className="SDB_Btns">
+          <button className="SDB" onClick={() => setActiveSection("summary")}>
+            Summary
+          </button>
           <button
             className="SDB"
             onClick={() => setActiveSection("manageProduct")}
