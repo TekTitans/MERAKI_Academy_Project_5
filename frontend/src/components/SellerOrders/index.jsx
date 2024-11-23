@@ -85,50 +85,52 @@ const SellerOrders = () => {
     console.log("showStatusModal after:", showStatusModal);
   };
 
-  const handleOrderStatusUpdate = (order_id, newStatus) => {
-    console.log("newStatus:", newStatus);
-    console.log("order_id:", order_id);
-
-    axios
-      .put(
+  const handleOrderStatusUpdate = async (order_id, newStatus) => {
+    try {
+      console.log("newStatus:", newStatus);
+      console.log("order_id:", order_id);
+  
+      await axios.put(
         `http://localhost:5000/order/${order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then(() => {
-        console.log("Order status updated successfully");
-        setShowStatusModal(false);
-        fetchSellerOrders();
-      })
-      .catch((error) => {
-        console.error("Error updating order status:", error);
-      });
-  };
-
-  const handleUpdateStatus = () => {
-    if (!newStatus) {
-      console.log("newStatus :", newStatus);
+      );
+  
+      console.log("Order status updated successfully");
+  
+      setShowStatusModal(false);
+      fetchSellerOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
     }
+  };
+  
+  const handleUpdateStatus = async () => {
+    if (!newStatus) {
+      console.log("newStatus is not provided.");
+      return; 
+    }
+    
     console.log("orderToUpdate :", orderToUpdate.order_id);
-
-    axios
-      .put(
+  
+    try {
+      await axios.put(
         `http://localhost:5000/order/${orderToUpdate.order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then(() => {
-        setShowStatusModal(false);
-        fetchSellerOrders();
-      })
-      .catch((error) => {
-        console.error("Error updating status:", error);
-      });
+      );
+  
+      setShowStatusModal(false);
+      fetchSellerOrders();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
   };
-
+  
   const handleInvoice = (order_id) => {
     window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
   };
+  
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
   if (error) return <div>Error: {error}</div>;
