@@ -6,17 +6,13 @@ import {
   updateProduct,
   removeProduct,
 } from "../redux/reducers/product/product";
+import { setLoading, setError } from "../redux/reducers/orders";
 import "./style.css";
 import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-const SellerProducts = ({
-  message,
-  setMessage,
-  showMessage,
-  iseditProduct,
-  setIseditProduct,
-}) => {
+import Pagination from "../ProductsPagination";
+const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -32,23 +28,23 @@ const SellerProducts = ({
   });
 
   const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.order);
   const [imagePreview, setImagePreview] = useState("");
   const products = useSelector((state) => state.product.products);
-  const [loading, setLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const { token } = useSelector((state) => state.auth);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchProducts = async (page = 1) => {
     if (!token) {
-      console.error("No token found.");
-      setLoading(false);
+      dispatch(setLoading(false));
+      dispatch(setError("No token found."));
       return;
     }
-
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await axios.get(
         "http://localhost:5000/products/seller",
@@ -64,10 +60,10 @@ const SellerProducts = ({
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
 
-      setLoading(false);
+      dispatch(setLoading(false));
     } catch (error) {
-      console.error("Error fetching seller products", error);
-      setLoading(false);
+      dispatch(setLoading(false));
+      dispatch(setError("Error fetching seller products"));
     }
   };
 
@@ -77,11 +73,13 @@ const SellerProducts = ({
 
   const validateForm = () => {
     if (!product.title || !product.price || !product.stock_quantity) {
-      showMessage("Title, Price, and Stock Quantity are required.", "error");
+      dispatch(setLoading(false));
+      dispatch(setError("Title, Price, and Stock Quantity are required."));
       return false;
     }
     if (isNaN(product.price) || isNaN(product.stock_quantity)) {
-      showMessage("Price and Stock Quantity must be numbers.", "error");
+      dispatch(setLoading(false));
+      dispatch(setError("Price and Stock Quantity must be numbers."));
       return false;
     }
     return true;
@@ -100,11 +98,9 @@ const SellerProducts = ({
     if (!file) return;
 
     setIsUploading(true);
-    setMessage(null);
-
+    dispatch(setError(null));
     const formData = new FormData();
     formData.append("product_image", file);
-
     try {
       const res = await axios.post(
         "http://localhost:5000/products/upload_Image",
@@ -116,15 +112,15 @@ const SellerProducts = ({
           },
         }
       );
-
+      setIsUploading(false);
       setImagePreview(URL.createObjectURL(file));
       setProduct((prevState) => ({
         ...prevState,
         product_image: res.data.url,
       }));
     } catch (error) {
-      console.error("Error uploading product image:", error);
-      showMessage("Failed to upload image. Try again.", "error");
+      dispatch(setError("Failed to upload image. Try again."));
+      setIsUploading(false);
     } finally {
       setIsUploading(false);
     }
@@ -153,8 +149,7 @@ const SellerProducts = ({
       category_id: parseInt(product.category_id, 10),
       subcategory_id: parseInt(product.subcategory_id, 10),
     };
-    setIsSaving(true);
-
+    dispatch(setLoading(true));
     try {
       const response = await axios.put(
         `http://localhost:5000/products/${editProduct.id}`,
@@ -165,10 +160,10 @@ const SellerProducts = ({
           },
         }
       );
-      showMessage("Product updated successfully!", "success");
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
-      setIseditProduct(false);
+      dispatch(setError("Product updated successfully!"));
+      dispatch(setLoading(false));
       setProduct({
         title: "",
         description: "",
@@ -182,14 +177,11 @@ const SellerProducts = ({
         subcategory_id: "",
       });
       setImagePreview("");
-      setIsUploading(false);
     } catch (error) {
-      showMessage(
-        error.response?.data?.message || "Failed to update product.",
-        "error"
-      );
+      dispatch(setError("Failed to update product."));
+      dispatch(setLoading(false));
     } finally {
-      setIsSaving(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -200,16 +192,17 @@ const SellerProducts = ({
           Authorization: `Bearer ${token}`,
         },
       });
-      showMessage("Product deleted successfully!", "success");
+      dispatch(setLoading(false));
+      dispatch(setError("Product deleted successfully!"));
       dispatch(removeProduct(productId));
     } catch (error) {
-      showMessage("Failed to delete product.", "error");
+      dispatch(setLoading(false));
+      dispatch(setError("Failed to delete product."));
     }
   };
 
   const handleEdit = (productToEdit) => {
     setEditProduct(productToEdit);
-    setIseditProduct(true);
     setProduct({
       ...productToEdit,
       color_options: productToEdit.color_options.join(", "),
@@ -217,40 +210,12 @@ const SellerProducts = ({
     });
   };
 
-  const paginationControls = (
-    <div className="pagination-controls">
-      <div
-        className={`pagination-arrow ${
-          currentPage === 1 || totalPages === 0 ? "disabled" : ""
-        }`}
-        onClick={() => currentPage > 1 && fetchProducts(currentPage - 1)}
-        aria-disabled={currentPage === 1}
-      >
-        <FaArrowLeft size={20} />
-      </div>
-      <span className="pagination-info">
-        Page {currentPage} of {totalPages}
-      </span>
-      <div
-        className={`pagination-arrow ${
-          currentPage === totalPages || totalPages === 0 ? "disabled" : ""
-        }`}
-        onClick={() =>
-          currentPage < totalPages && fetchProducts(currentPage + 1)
-        }
-        aria-disabled={currentPage === totalPages}
-      >
-        <FaArrowRight size={20} />
-      </div>
-    </div>
-  );
+  if (loading) return <div className="loading-spinner">Loading...</div>;
 
   return (
     <div className="seller-page">
       <h2 className="page-title">Products Management</h2>
-      {message?.text && (
-        <div className={`message ${message.type} show`}>{message.text}</div>
-      )}
+      {error && <div className="error-message">Error: {error}</div>}
       {editProduct ? (
         <div className="product-edit-form-container">
           <form onSubmit={handleUpdate} className="product-edit-form">
@@ -371,7 +336,7 @@ const SellerProducts = ({
             </div>
             <div className="Edit_Action_Btns">
               <button type="submit" className="edit_action-button">
-                {isSaving ? "Updating..." : "Update Product"}
+                {loading ? "Updating..." : "Update Product"}
               </button>
               <button
                 className="edit_back-button"
@@ -440,7 +405,11 @@ const SellerProducts = ({
               <p className="no-products-message">No products found.</p>
             )}
           </div>
-          {paginationControls}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />{" "}
         </div>
       )}
     </div>
