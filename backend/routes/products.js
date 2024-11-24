@@ -13,6 +13,7 @@ const {
   getSellerProduct,
   getProductsByCategory,
   getProductByName,
+  serach,
 } = require("../controllers/products");
 
 const productRouter = express.Router();
@@ -30,5 +31,6 @@ productRouter.get("/", getAllProducts);
 productRouter.get("/seller", auth, getSellerProduct);
 productRouter.get("/:pId", getProductById);
 productRouter.get("/category/:cId", getProductsByCategory);
-productRouter.get("/serach/:title", getProductByName);
+//productRouter.get("/serach/:title", getProductByName);
+productRouter.get("/search", serach);
 module.exports = productRouter;

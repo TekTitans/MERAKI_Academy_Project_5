@@ -13,9 +13,13 @@ const Navbar = () => {
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const { userName } = useSelector((state) => state.auth);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e) => {
-    dispatch(setSearch(e.target.value));
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      history(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -48,13 +52,15 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-icons">
-          <div className="navbar-search">
+          <form onSubmit={handleSearch} className="search-form">
             <input
               type="text"
-              placeholder="Search..."
-              onChange={handleSearch}
+              placeholder="Search for products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
+            <button type="submit">Search</button>
+          </form>
           <a className="cart-icon">
             <FaShoppingCart onClick={() => history("/cart")} />
           </a>

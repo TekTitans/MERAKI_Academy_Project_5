@@ -407,6 +407,33 @@ const getProductByName = async (req, res) => {
   }
 };
 
+const serach = async (req, res) => {
+  const { query } = req.query;
+  if (!query || query.trim() === "") {
+    return res
+      .status(400)
+      .json({ success: false, message: "Search query is required" });
+  }
+  const searchQuery = `%${query}%`;
+  console.log(searchQuery);
+
+  try {
+    const result = await pool.query(
+      `SELECT * 
+         FROM products 
+         WHERE title ILIKE $1 
+            OR description ILIKE $1 
+            OR category ILIKE $1`,
+      [searchQuery]
+    );
+
+    res.status(200).json({ success: true, products: result.rows });
+  } catch (err) {
+    console.error("Error executing search query:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   createProduct,
   uploadProductImage,
@@ -417,4 +444,5 @@ module.exports = {
   getSellerProduct,
   getProductsByCategory,
   getProductByName,
+  serach,
 };
