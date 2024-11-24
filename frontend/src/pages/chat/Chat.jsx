@@ -1,5 +1,6 @@
 import socketInit from "./socket.server";
 import { useState, useEffect } from "react";
+import Messages from "./Messages";
 
 const Chat = () => {
   const [userId, setUserId] = useState("");
@@ -9,6 +10,13 @@ const Chat = () => {
     socket?.on("connect",()=>{
         console.log(true)
     })
+    socket?.on("connect_error",(error)=>{
+      console.log(error)
+  })
+  return()=>{
+    socket?.close()
+    //socket.removeAllListeners()
+  }
   },[socket])
 
   return (
@@ -40,6 +48,7 @@ const Chat = () => {
       >
         connect
       </button>
+     {socket? <Messages socket={socket} userId={userId} token={token}/>:<h1>no messages</h1>}
     </div>
   );
 };
