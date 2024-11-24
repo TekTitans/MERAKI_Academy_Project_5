@@ -3,28 +3,28 @@ import { createSlice } from "@reduxjs/toolkit";
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    token: localStorage.getItem("token"),
-    userId: localStorage.getItem("userId"),
-    userName: localStorage.getItem("userName"),
-    isLoggedIn: JSON.parse(localStorage.getItem("isLoggedIn")) || false,
+    token: sessionStorage.getItem("token"),
+    userId: sessionStorage.getItem("userId"),
+    userName: sessionStorage.getItem("userName"),
+    isLoggedIn: JSON.parse(sessionStorage.getItem("isLoggedIn")) || false,
   },
   reducers: {
     setLogin: (state, action) => {
       const token = action.payload;
       state.token = token;
       state.isLoggedIn = true;
-      localStorage.setItem("isLoggedIn", JSON.stringify(true));
-      localStorage.setItem("token", token);
+      sessionStorage.setItem("isLoggedIn", JSON.stringify(true));
+      sessionStorage.setItem("token", token);
     },
     setUserId: (state, action) => {
       const userId = action.payload;
       state.userId = userId;
-      localStorage.setItem("userId", userId);
+      sessionStorage.setItem("userId", userId);
     },
     setUserName: (state, action) => {
       const userName = action.payload;
       state.userName = userName;
-      localStorage.setItem("userName", userName);
+      sessionStorage.setItem("userName", userName);
     },
     setLogout: (state) => {
       state.token = null;
@@ -32,10 +32,10 @@ export const authSlice = createSlice({
       state.userId = null;
       state.userName = null;
 
-      localStorage.removeItem("userId");
-      localStorage.removeItem("token");
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("userName");
+      sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("isLoggedIn");
+      sessionStorage.removeItem("userName");
     },
   },
 });
