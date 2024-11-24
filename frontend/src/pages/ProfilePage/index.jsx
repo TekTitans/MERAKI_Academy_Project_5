@@ -160,6 +160,7 @@ const ProfilePage = () => {
       formData.append("profile_image", file);
 
       try {
+
         const res = await axios.put(
           "http://localhost:5000/users/profile",
           formData,
@@ -456,7 +457,6 @@ const ProfilePage = () => {
                 <FaUserAlt size={50} />
               </div>
             )}
-          
           </div>
           <div className="profile__details">
             <div className="details__titles">

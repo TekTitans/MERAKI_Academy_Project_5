@@ -1,38 +1,39 @@
 import React, { useState } from "react";
+import SellerNavbar from "../../components/SellerNavbar";
 import SellerProducts from "../../components/SellerProducts";
 import AddProduct from "../../components/AddProduct";
+import SellerOrders from "../../components/SellerOrders";
+import SellerSummary from "../../components/SellerSummary";
+import SellerReviews from "../../components/SellerReviews";
 import "./style.css";
 
 const SellerDashboard = () => {
-  const [isaddProduct, setIsaddProduct] = useState(false);
+  const [activeSection, setActiveSection] = useState("summary");
 
-  const handleCancelAdd = () => {
-    setIsaddProduct(false);
-    console.log("Cancelled adding product and navigated back.");
+  const renderSection = () => {
+    switch (activeSection) {
+      case "summary":
+        return <SellerSummary />;
+      case "addProduct":
+        return <AddProduct />;
+      case "manageProduct":
+        return <SellerProducts />;
+      case "myOrders":
+        return <SellerOrders />;
+      case "myReviews":
+        return <SellerReviews />;
+      default:
+        return null;
+    }
   };
+
   return (
     <div className="seller-dashboard-container">
-      <h1>Seller Dashboard</h1>
-      {isaddProduct ? (
-        <div className="add-product-section">
-          <button className="add_back-button" onClick={handleCancelAdd}>
-            Back
-          </button>
-          <AddProduct handleCancelAdd={handleCancelAdd} />
-        </div>
-      ) : (
-        <div className="seller-products-section">
-          <button
-            className="SDB_Add"
-            onClick={() => {
-              setIsaddProduct(true);
-            }}
-          >
-            Add New Product
-          </button>
-          <SellerProducts />
-        </div>
-      )}
+      <SellerNavbar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
+      <div className="seller-dashboard-content">{renderSection()}</div>
     </div>
   );
 };

@@ -1,88 +1,33 @@
 .seller-dashboard-container {
-    width:vw;
-    height: vh;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .seller-dashboard-container h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 28px;
-    font-weight: bold;
-  }
-  
-  .SDB_Add {
-    display: block;
-    background: linear-gradient(135deg, #4caf50, #6fd83e);
-    color: #ffffff;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
-    font-family: 'Arial', sans-serif;
-    margin: 20px auto; 
-    max-width: 200px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-  
-  .SDB_Add:hover {
-    background: linear-gradient(135deg, #6fd83e, #4caf50);
-    transform: scale(1.05);
-  }
-    
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  font-family: "Arial", sans-serif;
+}
 
-  .add_back-button {
-    display: block;
-    background: linear-gradient(135deg, #977c7c, #746e6e);
-    color: #ffffff;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
-    font-family: "Arial", sans-serif;
-    margin: 20px auto; 
-    max-width: 200px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-  
-  .add_back-button:hover {
-    background: linear-gradient(135deg, #746e6e, #977c7c);
-    transform: scale(1.05);
-  }
+.seller-dashboard-content {
+  flex: 1;
+  padding: 20px;
+  margin-top: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  width: 95%;
+  max-width: 1200px;
+}
 
-  .add-product-section,
-  .seller-products-section {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+.seller-dashboard-content h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .seller-dashboard-content {
+    margin: 10px;
+    padding: 15px;
   }
-  
-  .add-product-section {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  .seller-products-section {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+}
