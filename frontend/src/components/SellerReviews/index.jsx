@@ -123,9 +123,7 @@ const SellerReviews = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div className="loading-spinner">Loading...</div>;
 
   if (error) {
     return <div className="error-message">Error: {error}</div>;
