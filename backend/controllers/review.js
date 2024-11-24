@@ -138,20 +138,26 @@ const getSellerReviews = (req, res) => {
   const sellerId = parseInt(req.params.sellerId);
 
   const query = `
-    SELECT reviews.id, reviews.rating, reviews.comment, reviews.created_at, 
-    users.name AS user_name
+    SELECT 
+      reviews.id, 
+      reviews.rating, 
+      reviews.comment, 
+      reviews.created_at, 
+      CONCAT(users.first_name, ' ', users.last_name) AS user_name, 
+      users.userName, 
+      users.profile_image
     FROM sellerReviews reviews
     JOIN users ON reviews.user_id = users.id
-    WHERE reviews.seller_id = $1 AND reviews.is_deleted = false
-    ORDER BY reviews.created_at DESC
+    WHERE reviews.seller_id = $1
+      AND reviews.is_deleted = false
+    ORDER BY reviews.created_at DESC;
   `;
-  const data = [sellerId];
 
+  const data = [sellerId];
   pool
     .query(query, data)
     .then((result) => {
       console.log("Seller reviews retrieved:", result.rows);
-
       res.status(200).json({
         success: true,
         message: "Seller reviews retrieved successfully",

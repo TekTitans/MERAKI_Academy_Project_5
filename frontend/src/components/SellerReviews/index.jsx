@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setSellerReviews,
@@ -19,31 +19,38 @@ const SellerReviews = () => {
   const fetchReviews = async () => {
     dispatch(setLoading(true));
     dispatch(setError(null));
+
     try {
+      if (!sellerId) {
+        throw new Error("Seller ID is not available.");
+      }
+
       const response = await axios.get(
         `http://localhost:5000/review/seller/${sellerId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (!response) {
-        throw new Error("Failed to fetch reviews");
-      }
 
       if (response.data.success) {
         dispatch(setSellerReviews(response.data.result));
+        console.log("Seller Reviews: ", response.data.result);
       } else {
         dispatch(setError("No reviews found for this seller"));
       }
     } catch (err) {
-      dispatch(setError(err.message));
+      dispatch(
+        setError(err.response?.data?.message || "Failed to fetch reviews")
+      );
     } finally {
       dispatch(setLoading(false));
     }
   };
 
   useEffect(() => {
-    fetchReviews();
+    if (sellerId && token) {
+      fetchReviews();
+    }
   }, [sellerId, token]);
 
   const formatDate = (dateString) => {
@@ -68,12 +75,12 @@ const SellerReviews = () => {
         <div className="reviews-list">
           {reviews.map((review) => (
             <div key={review.id} className="review-card">
-              <p>
+              <div className="review-header">
                 <strong>{review.user_name}</strong> -{" "}
                 {formatDate(review.created_at)}
-              </p>
-              <p>Rating: {review.rating} / 5</p>
-              <p>{review.comment}</p>
+              </div>
+              <div className="review-rating">Rating: {review.rating} / 5</div>
+              <div className="review-comment">{review.comment}</div>
             </div>
           ))}
         </div>
