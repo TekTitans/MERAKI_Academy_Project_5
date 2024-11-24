@@ -15,8 +15,8 @@ const auth = require("../middleware/authentication");
 const reviewRouter = express.Router();
 
 reviewRouter.post("/:pId", auth, createReview);
-reviewRouter.put("/:id", updateReview);
-reviewRouter.delete("/:id", removeReview);
+reviewRouter.put("/:reviewId", auth, updateReview);
+reviewRouter.delete("/:reviewId", auth, removeReview);
 reviewRouter.get("/:id", getProductReviews);
 reviewRouter.post("/seller/:id", createSellerReviews);
 reviewRouter.get("/seller/:id", getSellerReviews);
