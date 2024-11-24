@@ -69,7 +69,10 @@ const Details = () => {
   };
 
   const createReview = () => {
-    if (newComment.trim() && rating > 0) {
+    if (!token) {
+      setModalMessage("Need to login first ");
+      setShowModal(true);
+    } else if (newComment.trim() && rating > 0) {
       axios
         .post(
           `http://localhost:5000/review/${pId}`,
@@ -195,9 +198,7 @@ const Details = () => {
               ?.map((review) => (
                 <div className="review-card" key={review?.id}>
                   <div className="review-header">
-                    <span className="review-author">
-                       {review.user_name}
-                    </span>
+                    <span className="review-author">{review.user_name}</span>
                     <span className="review-date">
                       {new Date(review.created_at).toLocaleString()}
                     </span>

@@ -13,19 +13,45 @@
 }
 
 .modal-content {
-  background-color: white;
+  background-color: #ffffff; /* White background */
   padding: 20px;
   border-radius: 10px;
-  width: 300px;
+  width: 90%; /* Responsive width */
+  max-width: 400px; /* Limit maximum width */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Subtle shadow */
   text-align: center;
+  animation: scaleIn 0.3s ease-in-out; /* Add an animation effect */
 }
 
 .close-button {
-  background-color: #f44336;
+  background-color: #f44336; /* Red button */
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 20px;
   margin-top: 10px;
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.close-button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+/* Add animation for modal appearance */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.pmessage {
+  color: white;
+  font-weight: bolder;
+  font-size: 30px;
 }
