@@ -6,12 +6,10 @@ import {
   updateProduct,
   removeProduct,
 } from "../redux/reducers/product/product";
-import { setLoading, setError } from "../redux/reducers/orders";
+import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
-import { FaImage } from "react-icons/fa";
-import { RingLoader } from "react-spinners";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Pagination from "../ProductsPagination";
+import EditProductForm from "../ProductEdit";
 const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
@@ -28,7 +26,7 @@ const SellerProducts = () => {
   });
 
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.order);
+  const { loading, error, message } = useSelector((state) => state.order);
   const [imagePreview, setImagePreview] = useState("");
   const products = useSelector((state) => state.product.products);
   const { token } = useSelector((state) => state.auth);
@@ -162,7 +160,7 @@ const SellerProducts = () => {
       );
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
-      dispatch(setError("Product updated successfully!"));
+      dispatch(setMessage("Product updated successfully!"));
       dispatch(setLoading(false));
       setProduct({
         title: "",
@@ -193,7 +191,7 @@ const SellerProducts = () => {
         },
       });
       dispatch(setLoading(false));
-      dispatch(setError("Product deleted successfully!"));
+      dispatch(setMessage("Product deleted successfully!"));
       dispatch(removeProduct(productId));
     } catch (error) {
       dispatch(setLoading(false));
@@ -210,146 +208,33 @@ const SellerProducts = () => {
     });
   };
 
+  useEffect(() => {
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
+
   if (loading) return <div className="loading-spinner">Loading...</div>;
 
   return (
     <div className="seller-page">
       <h2 className="page-title">Products Management</h2>
       {error && <div className="error-message">Error: {error}</div>}
+      {message && <div className="success-message">{message}</div>}
       {editProduct ? (
-        <div className="product-edit-form-container">
-          <form onSubmit={handleUpdate} className="product-edit-form">
-            <h2>Edit Product</h2>
-            <div className="product__picture-container">
-              <div className="image-upload">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Product Preview"
-                    className="product_image"
-                  />
-                ) : (
-                  <label className="product_image-placeholder">
-                    <FaImage size={60} className="image-icon" />
-                    <span className="placeholder-text">Upload Image</span>
-                    <input
-                      type="file"
-                      onChange={handleFileChange}
-                      className="file-input"
-                    />
-                  </label>
-                )}
-                {isUploading && (
-                  <div className="upload-spinner">
-                    <RingLoader color="#36d7b7" size={50} />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="title" className="form-label">
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={product.title}
-                onChange={handleChange}
-                placeholder="Title"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={product.description}
-                onChange={handleChange}
-                placeholder="Description"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="price" className="form-label">
-                Price
-              </label>
-              <input
-                type="text"
-                id="price"
-                name="price"
-                value={product.price}
-                onChange={handleChange}
-                placeholder="Price"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="stock_quantity" className="form-label">
-                Stock Quantity
-              </label>
-              <input
-                type="text"
-                id="stock_quantity"
-                name="stock_quantity"
-                value={product.stock_quantity}
-                onChange={handleChange}
-                placeholder="Stock Quantity"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="color_options" className="form-label">
-                Color Options (comma separated)
-              </label>
-              <input
-                type="text"
-                id="color_options"
-                name="color_options"
-                value={product.color_options}
-                onChange={handleChange}
-                placeholder="Color Options (comma separated)"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="size_options" className="form-label">
-                Size Options (comma separated)
-              </label>
-              <input
-                type="text"
-                id="size_options"
-                name="size_options"
-                value={product.size_options}
-                onChange={handleChange}
-                placeholder="Size Options (comma separated)"
-                className="input-field"
-              />
-            </div>
-            <div className="Edit_Action_Btns">
-              <button type="submit" className="edit_action-button">
-                {loading ? "Updating..." : "Update Product"}
-              </button>
-              <button
-                className="edit_back-button"
-                onClick={() => {
-                  setEditProduct(null);
-                  setIseditProduct(false);
-                }}
-              >
-                Back to Product List
-              </button>
-            </div>
-          </form>
-        </div>
+        <EditProductForm
+          product={product}
+          imagePreview={imagePreview}
+          isUploading={isUploading}
+          handleChange={handleChange}
+          handleFileChange={handleFileChange}
+          handleUpdate={handleUpdate}
+          setEditProduct={setEditProduct}
+        />
       ) : (
         <div className="SDB_product-list">
           <div className="SDB_product-grid">

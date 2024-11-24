@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setOrders, setLoading, setError } from "../redux/reducers/orders";
+import {
+  setOrders,
+  setLoading,
+  setError,
+  setMessage,
+} from "../redux/reducers/orders";
 import axios from "axios";
 import "./style.css";
 
@@ -8,7 +13,9 @@ const SellerOrders = () => {
   const dispatch = useDispatch();
   const sellerId = useSelector((state) => state.auth.userId);
   const { token } = useSelector((state) => state.auth);
-  const { orders, loading, error } = useSelector((state) => state.order);
+  const { orders, loading, error, message } = useSelector(
+    (state) => state.order
+  );
 
   const [filters, setFilters] = useState({
     selectedDate: "",
@@ -118,6 +125,7 @@ const SellerOrders = () => {
       dispatch(setLoading(false));
       setShowStatusModal(false);
       fetchSellerOrders();
+      dispatch(setMessage("Order Status Changed successfully"));
     } catch (error) {
       dispatch(setError(error.message));
       dispatch(setLoading(false));
@@ -136,7 +144,7 @@ const SellerOrders = () => {
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+      dispatch(setMessage("Order Status Changed successfully"));
       setShowStatusModal(false);
       fetchSellerOrders();
     } catch (error) {
@@ -149,7 +157,15 @@ const SellerOrders = () => {
     window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
   };
 
-  if (loading) return <div className="loading-spinner">Loading...</div>;
+  useEffect(() => {
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
 
   return (
     <div className="seller-page">
@@ -158,6 +174,9 @@ const SellerOrders = () => {
       {error && <div className="error-message">Error: {error}</div>}
 
       {loading && <div className="loading-spinner">Loading...</div>}
+
+      {message && <div className="success-message">{message}</div>}
+
       <div className="filters">
         <input
           type="date"

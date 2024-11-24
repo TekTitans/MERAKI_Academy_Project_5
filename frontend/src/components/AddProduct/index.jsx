@@ -5,8 +5,8 @@ import axios from "axios";
 import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
 import "./style.css";
-
-const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
+import { setLoading, setError, setMessage } from "../redux/reducers/orders";
+const AddProduct = () => {
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -20,12 +20,12 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
     subcategory_id: "",
   });
 
+  const { loading, error, message } = useSelector((state) => state.order);
   const [imagePreview, setImagePreview] = useState("");
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
@@ -72,7 +72,6 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
     if (!file) return;
 
     setIsUploading(true);
-    setMessage(null);
 
     const formData = new FormData();
     formData.append("product_image", file);
@@ -94,11 +93,14 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
         ...prevState,
         product_image: res.data.url,
       }));
+      dispatch(setLoading(false));
+      setIsUploading(false);
     } catch (error) {
-      console.error("Error uploading product image:", error);
-      showMessage("Failed to upload image. Try again.", "error");
+      dispatch(setError("Failed to upload image. Try again."));
+      setIsUploading(false);
     } finally {
       setIsUploading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -106,7 +108,7 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
     e.preventDefault();
 
     if (!product.title || !product.price || !product.category_id) {
-      showMessage("Please fill all required fields.", "error");
+      dispatch(setError("Please fill all required fields."));
 
       return;
     }
@@ -128,7 +130,7 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
       size_options: sizeOptionsArray,
     };
 
-    setIsSaving(true);
+    dispatch(setLoading(true));
     try {
       const response = await axios.post(
         "http://localhost:5000/products",
@@ -140,7 +142,7 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
         }
       );
 
-      showMessage("Product added successfully!", "success");
+      dispatch(setMessage("Product added successfully!"));
       dispatch(addProduct(response.data.product));
       setProduct({
         title: "",
@@ -155,29 +157,34 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
         subcategory_id: "",
       });
       setImagePreview("");
-      handleCancelAdd();
     } catch (error) {
-      console.error("Error adding product:", error);
-      showMessage("Failed to add product. Please try again.", "error");
+      dispatch(setError("Failed to add product. Please try again."));
+      dispatch(setLoading(false));
     } finally {
-      setIsSaving(false);
+      dispatch(setLoading(false));
     }
   };
 
   useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(null), 5000);
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));   
+        dispatch(setMessage(null)); 
+      }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [message]);
+  }, [error, message, dispatch]);
+  
+
+  if (loading) return <div className="loading-spinner">Loading...</div>;
 
   return (
     <div className="product-management-page">
       <h2 className="page-title">Add New Product</h2>
       <div className="add-product-container">
-        {message && (
-          <div className={`message ${message.type}`}>{message.text}</div>
-        )}
+        {error && <div className="error-message">Error: {error}</div>}
+        {message && <div className="success-message">{message}</div>}
+
         <form onSubmit={handleSubmit} className="product-form">
           <div className="product__image-container">
             <div className="image-upload">
@@ -298,9 +305,9 @@ const AddProduct = ({ handleCancelAdd, message, setMessage, showMessage }) => {
             <button
               type="submit"
               className="submit-button"
-              disabled={isSaving || isUploading}
+              disabled={loading || isUploading}
             >
-              {isSaving ? "Saving..." : "Add Product"}
+              {loading ? "Saving..." : "Add Product"}
             </button>
           </div>
         </form>
