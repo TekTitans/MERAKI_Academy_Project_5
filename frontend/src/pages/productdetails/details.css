@@ -1,29 +1,368 @@
-.loader {
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  margin: auto;
-  border-top: 16px solid #3498db;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
+/* General styles */
+
+.details-container {
+  width: 80%;
+  margin: 0 auto;
 }
 
-/* Safari */
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
+/* Product Section */
+.productpage {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+/* Wrapper for the image to hide overflow */
+.productimage {
+  position: relative;
+  overflow: hidden; /* Hide the zoomed portion of the image */
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center; /* Center the image */
+}
+
+/* Style for the image itself */
+.productimage img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease-in-out; /* Smooth transition for zoom effect */
+  cursor: zoom-in; /* Change cursor to indicate zoom effect */
+}
+
+/* Hover effect that zooms in the image */
+.productimage:hover img {
+  transform: scale(1.2); /* Increase the size of the image */
+}
+
+/* Optional: Add an overlay effect to create a soft shadow when zooming */
+.productimage:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3); /* Dark overlay to give depth */
+  pointer-events: none; /* Disable interaction with the overlay */
+  border-radius: 5px; /* Optional: Add rounded corners */
+}
+
+.productdetails {
+  flex-basis: 60%;
+  padding-left: 150px;
+}
+
+.producttitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.productprice {
+  font-size: 1.6rem;
+  color: #e74c3c;
+  margin: 10px 0;
+}
+
+.productdescription {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+}
+
+/* Add to Cart Section */
+.add-to-cart {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.quantity-input {
+  width: 80px;
+  padding: 10px;
+  font-size: 1.2rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.add-to-cart-button {
+  background-color: #3498db;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart-button:hover {
+  background-color: #2980b9;
+}
+
+/* Reviews Section */
+.reviews-section {
+  margin-top: 50px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-input {
+  display: flex;
+  gap: 15px;
+}
+
+.star {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.star.filled {
+  color: #f39c12;
+}
+
+textarea {
+  padding: 12px;
+  font-size: 1rem;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.submit-button {
+  background-color: #27ae60;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100px;
+  height: 50px;
+}
+
+.submit-button:hover {
+  background-color: #2ecc71;
+}
+
+/* Review Item */
+.review-item {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #ecf0f1;
+  border: 1px solid #ddd;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-button {
+  background-color: #f39c12;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+  background-color: #e67e22;
+}
+
+/* Edit Form */
+.edit-form {
+  margin-top: 15px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+}
+
+.edit-form button {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-form button:hover {
+  background-color: #2980b9;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+button.cancel {
+  background-color: #95a5a6;
+}
+
+button.cancel:hover {
+  background-color: #7f8c8d;
+}
+
+.show-all-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.show-all-button:hover {
+  background-color: #0056b3;
+}
+button {
+  background-color: #f44336; /* Red color for delete button */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #d32f2f;
+}
+h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Star Rating Styling */
+.star {
+  font-size: 1.5rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.star:hover {
+  color: #ffd700;
+}
+
+/* Review Card Styling */
+.review-card {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.review-card .review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-card .review-header .review-author {
+  font-weight: bold;
+  color: #333;
+}
+
+.review-card .review-header .review-date {
+  font-size: 14px;
+  color: #888;
+}
+
+.review-card .review-rating {
+  margin: 10px 0;
+}
+
+.review-card .review-comment {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.review-card .edit-delete-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.review-card .edit-delete-buttons button {
+  background-color: #28a745;
+}
+
+.review-card .edit-delete-buttons button.edit:hover {
+  background-color: #218838;
+}
+
+.review-card .edit-delete-buttons button.delete {
+  background-color: #dc3545;
+}
+
+.review-card .edit-delete-buttons button.delete:hover {
+  background-color: #c82333;
+}
+
+/* New Review Form */
+.new-review-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.new-review-form .rating {
+  margin-bottom: 10px;
+}
+
+.new-review-form .rating .star {
+  font-size: 2rem;
+  color: #ccc;
+}
+
+.new-review-form .rating .star.filled {
+  color: #ffd700;
 }

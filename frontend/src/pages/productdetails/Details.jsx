@@ -1,137 +1,281 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "./details.css";
+import Modal from "../modal/Modal";
 
-export const Details = () => {
-  const [rating, setRating] = useState(1);
-  const [comment, setComment] = useState("");
-  const token = useSelector((state) => {
-    return state.auth.token;
-  });
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
+const Details = () => {
+  const token = useSelector((state) => state.auth.token);
+  const userId = useSelector((state) => state.auth.userId);
+  const userName = useSelector((state) => state.auth.userName);
 
+  const headers = { Authorization: `Bearer ${token}` };
   const Navigate = useNavigate();
   const { pId } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [reviews, setReviews] = useState([]);
   const [product, setProduct] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(1);
   const [quantity, setQuantity] = useState(1);
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const [newComment, setNewComment] = useState("");
+  const [editingReview, setEditingReview] = useState(null);
+  const [editComment, setEditComment] = useState("");
+  const [editRating, setEditRating] = useState(0);
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [modalMessage, setModalMessage] = useState(""); // State for modal message
+  const [showAllComments, setShowAllComments] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    axios
-      .get(`http://localhost:5000/products/${pId}`)
-      .then((response) => {
-        console.log(response.data);
-        setProduct(response.data.product);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-  const createReview = () => {
-    axios
-      .post(
-        `http://localhost:5000/review/${pId}`,
-        { rating, comment },
-        { headers }
-      )
-      .then((response) => {})
-      .catch((err) => {});
-  };
+    axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
+      setProduct(response.data.product);
+    });
+    axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
+      setReviews(response.data.result);
+      //console.log(reviews);
+    });
+  }, [pId]);
 
   const addToCart = () => {
-    console.log(token);
-    console.log("this is token");
-    Navigate("/")
-
-
-    if (isLoggedIn === false) {
+    if (!token) {
       Navigate("/users/login");
-      return 0;
     }
     axios
-      .post(` http://localhost:5000/cart/${pId}`, { quantity }, { headers })
+      .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
       .then((response) => {
-        console.log(response.data);
+        Navigate("/cart");
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
-  console.log(token);
-  console.log(reviews);
-
-  const rev = reviews?.map((reviwe, index) => {
-    return (
-      <div key={reviwe.id}>
-        <div>{reviwe.comment}</div>
-      </div>
-    );
-  });
-
-  useEffect(() => {
+  const deleteReview = (reviewId) => {
     axios
-      .get(`http://localhost:5000/review/${pId}`)
+      .delete(`http://localhost:5000/review/${reviewId}`, { headers })
       .then((response) => {
-        if (response.data.success) {
-          console.log(response.data);
-          setReviews(response.data.result);
-          setMsg(response.data.message);
-        }
+        // Update the state to reflect the deleted review
+        setReviews((prevReviews) =>
+          prevReviews.filter((review) => review.id !== reviewId)
+        );
+        setModalMessage(response.data.message);
       })
       .catch((err) => {
-        console.log(err);
-        setMsg(err.response.data.message);
+        console.error("Error deleting review:", err);
+        setModalMessage("Failed to delete review.");
       });
-  }, []);
+  };
+
+
+ 
+
+  const createReview = () => {
+    if (newComment.trim() && rating > 0) {
+      axios
+        .post(
+          `http://localhost:5000/review/${pId}`,
+          { rating, comment: newComment },
+          { headers }
+        )
+        .then((response) => {
+          console.log(response.data);
+
+          setReviews([...reviews, response.data.result]);
+          setNewComment("");
+          setRating(0);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      setModalMessage("Please provide a valid rating and comment!");
+      setShowModal(true);
+    }
+  };
+
+  const handleEdit = (review) => {
+    setEditingReview(review);
+    setEditComment(review.comment);
+    setEditRating(review.rating);
+  };
+
+  const handleUpdate = (reviewId) => {
+    if (editComment.trim() && editRating > 0) {
+      axios
+        .put(
+          `http://localhost:5000/review/${reviewId}`,
+          { rating: editRating, comment: editComment },
+          { headers }
+        )
+        .then((response) => {
+          setReviews(
+            reviews.map((review) =>
+              review.id === reviewId ? response.data.result : review
+            )
+          );
+          setEditingReview(null);
+          setEditComment("");
+          setEditRating(0);
+          setModalMessage(response.data.message);
+        })
+
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      setModalMessage("Enter A valid input");
+    }
+  };
+
+  const toggleShowAllComments = () => {
+    setShowAllComments(!showAllComments);
+  };
+
   return (
-    <>
-      <div className="container">
-        <div>{product.title}</div>
-        <div>{product.price}</div>
-        <div>{product.description}</div>
+    <div className="details-container">
+      <div className="productpage">
+        {/* Product Image Section */}
+        <div className="productimage">
+          <img
+            src={product.product_image || "https://via.placeholder.com/400x400"}
+            alt={product.title}
+          />
+        </div>
 
-        <button
-          onClick={() => {
-            addToCart();
-          }}
-        >
-          add to cart
-        </button>
-        <input
-          onChange={(e) => {
-            if (e.target.value < 1 || !true) {
-              setQuantity(1);
-            } else {
-              setQuantity(e.target.value);
-            }
-            console.log(e.target.value);
-          }}
-          type="number"
-          value={quantity}
-          min={1}
-        />
-      </div>
-      <h2>Reviews</h2>
-      <div className="container">
-        {rev}
-        {reviews[0]?.avgrating}
-
-        <div>
-          <button onClick={createReview}>Add Review</button>
+        {/* Product Details Section */}
+        <div className="productdetails">
+          <h1 className="producttitle">{product.title}</h1>
+          <p className="productprice">{product.price} JD</p>
+          <p className="productdescription">{product.description}</p>
+          {/* Add to Cart Section */}
+          <div className="add-to-cart">
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              min="1"
+              className="quantity-input"
+            />
+            <button className="add-to-cart-button" onClick={addToCart}>
+              Add to Cart
+            </button>
+          </div>
         </div>
       </div>
-    </>
+
+      <div className="reviews-section">
+        <h2>Reviews</h2>
+
+        {/* New Review Form */}
+        <div className="new-review-form">
+          <div className="rating">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                onClick={() => setRating(star)}
+                className={`star ${rating >= star ? "filled" : ""}`}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write your review..."
+          />
+          <button onClick={createReview}>Submit Review</button>
+        </div>
+
+        {/* Reviews List */}
+        <div>
+          {reviews.length > 0 ? (
+            reviews
+              .slice(0, showAllComments ? reviews.length : 5)
+              .map((review) => (
+                <div className="review-card" key={review?.id}>
+                  <div className="review-header">
+                    <span className="review-author">User {userName}</span>
+                    {/* <span className="review-date">
+                      {new Date(review.created_at).toLocaleString()}
+                    </span> */}
+                  </div>
+                  <div className="review-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={`star ${
+                          review?.rating >= star ? "filled" : ""
+                        }`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                  <p className="review-comment">{review?.comment}</p>
+                  {/* Edit and Delete buttons */}
+                  {review?.user_id === parseInt(userId) && (
+                    <div className="edit-delete-buttons">
+                      <button
+                        className="edit"
+                        onClick={() => handleEdit(review)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="delete"
+                        onClick={() => deleteReview(review.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Edit Review Form */}
+                  {editingReview?.id === review?.id && (
+                    <div>
+                      <div className="rating">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            onClick={() => setEditRating(star)}
+                            className={`star ${
+                              editRating >= star ? "filled" : ""
+                            }`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <textarea
+                        value={editComment}
+                        onChange={(e) => setEditComment(e.target.value)}
+                        placeholder="Edit your review..."
+                      />
+                      <button onClick={() => handleUpdate(review.id)}>
+                        Update
+                      </button>
+                      <button onClick={() => setEditingReview(null)}>
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+          ) : (
+            <p>No reviews yet. Be the first to review!</p>
+          )}
+          {/* Show 'Show All' or 'Show Less' button */}
+          {reviews.length > 5 && (
+            <button onClick={toggleShowAllComments} className="show-all-button">
+              {showAllComments ? "Show Less" : "Show All"}
+            </button>
+          )}
+        </div>
+        {/* Modal Component */}
+        {showModal && (
+          <Modal message={modalMessage} onClose={() => setShowModal(false)} />
+        )}
+      </div>
+    </div>
   );
 };
 
