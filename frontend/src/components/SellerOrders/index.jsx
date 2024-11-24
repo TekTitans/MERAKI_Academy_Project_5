@@ -23,8 +23,24 @@ const SellerOrders = () => {
   const [orderToUpdate, setOrderToUpdate] = useState(null);
   const [newStatus, setNewStatus] = useState("");
 
+  const [sellerSummary, setSellerSummary] = useState({
+    totalOrders: 0,
+    pendingOrders: 0,
+    shippedOrders: 0,
+    completedOrders: 0,
+    confirmedOrders: 0,
+    cancelledOrders: 0,
+    totalSales: 0,
+    totalProducts: 0,
+    outOfStockProducts: 0,
+    totalCustomers: 0,
+    averageOrderValue: 0,
+    topSellingProduct: 0,
+  });
+
   const fetchSellerOrders = async () => {
     dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await axios.get(
         `http://localhost:5000/order/seller/${sellerId}`,
@@ -34,7 +50,6 @@ const SellerOrders = () => {
       );
       dispatch(setOrders(response.data.result));
       dispatch(setLoading(false));
-      console.log(response.data.result);
     } catch (error) {
       dispatch(setError(error.message));
       dispatch(setLoading(false));
@@ -53,6 +68,15 @@ const SellerOrders = () => {
       ...prevFilters,
       [name]: value,
     }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      selectedDate: "",
+      status: "",
+      paymentStatus: "",
+      search: "",
+    });
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -77,62 +101,62 @@ const SellerOrders = () => {
   });
 
   const handleShowStatusModal = (order) => {
-    console.log("handleShowStatusModal");
-    console.log("showStatusModal before:", showStatusModal);
-
     setOrderToUpdate(order);
     setShowStatusModal(true);
-    console.log("showStatusModal after:", showStatusModal);
   };
 
-  const handleOrderStatusUpdate = (order_id, newStatus) => {
-    console.log("newStatus:", newStatus);
-    console.log("order_id:", order_id);
-
-    axios
-      .put(
+  const handleOrderStatusUpdate = async (order_id, newStatus) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(setError(null));
+      await axios.put(
         `http://localhost:5000/order/${order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then(() => {
-        console.log("Order status updated successfully");
-        setShowStatusModal(false); // Close the modal
-        fetchSellerOrders(); // Refresh the orders list
-      })
-      .catch((error) => {
-        console.error("Error updating order status:", error);
-      });
+      );
+      dispatch(setLoading(false));
+      setShowStatusModal(false);
+      fetchSellerOrders();
+    } catch (error) {
+      dispatch(setError(error.message));
+      dispatch(setLoading(false));
+    }
   };
 
-  const handleUpdateStatus = () => {
+  const handleUpdateStatus = async () => {
     if (!newStatus) {
-      console.log("newStatus :", newStatus);
+      return;
     }
-    console.log("orderToUpdate :", orderToUpdate.order_id);
-
-    axios
-      .put(
+    try {
+      dispatch(setLoading(true));
+      dispatch(setError(null));
+      await axios.put(
         `http://localhost:5000/order/${orderToUpdate.order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then(() => {
-        setShowStatusModal(false);
-        fetchSellerOrders();
-      })
-      .catch((error) => {
-        console.error("Error updating status:", error);
-      });
+      );
+
+      setShowStatusModal(false);
+      fetchSellerOrders();
+    } catch (error) {
+      dispatch(setError(error.message));
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleInvoice = (order_id) => {
+    window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
   };
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="seller-page">
       <h2 className="page-title">Seller Orders</h2>
 
+      {error && <div className="error-message">Error: {error}</div>}
+
+      {loading && <div className="loading-spinner">Loading...</div>}
       <div className="filters">
         <input
           type="date"
@@ -170,6 +194,9 @@ const SellerOrders = () => {
           value={filters.search}
           onChange={handleFilterChange}
         />
+        <button className="clear-filters-button" onClick={handleClearFilters}>
+          Clear
+        </button>
       </div>
 
       <div className="seller-orders">
@@ -256,8 +283,12 @@ const SellerOrders = () => {
                         <button onClick={() => handleShowStatusModal(order)}>
                           Status
                         </button>
+                        <button onClick={() => handleInvoice(order.order_id)}>
+                          Invoice
+                        </button>
                       </>
                     )}
+
                     {order.order_status === "cancelled" && (
                       <>
                         <button onClick={() => handleShowStatusModal(order)}>

@@ -18,6 +18,46 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.seller-summary {
+  margin-bottom: 30px;
+  background-color: #f4f8fb;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.seller-summary h3 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.summary-card {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.summary-card h4 {
+  font-size: 18px;
+  color: #555;
+}
+
+.summary-card p {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
 .orders-table {
   width: 100%;
   border-collapse: collapse;
@@ -82,6 +122,29 @@ body {
   color: #6c757d;
 }
 
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .seller-orders .loading,
 .seller-orders .error {
   font-size: 1.2rem;
@@ -136,6 +199,28 @@ body {
   color: #888;
   font-style: italic;
   font-size: 0.9rem;
+}
+.clear-filters-button {
+  background-color: #e57373;
+  color: white;
+  border: 1px solid #e57373;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 10px;
+}
+
+.clear-filters-button:hover {
+  background-color: #d64040;
+  transform: translateY(-2px);
+}
+
+.clear-filters-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.5);
 }
 
 .orders-table button {
@@ -461,6 +546,12 @@ body {
     padding: 0.4rem;
   }
 
+  .error-message {
+    padding: 0.3rem;
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+
   .modal-content {
     width: 95%;
     padding: 20px;
@@ -527,7 +618,11 @@ body {
     font-size: 0.8rem;
     padding: 0.5rem;
   }
-
+  .clear-filters-button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    margin-left: 5px;
+  }
   .orders-table button {
     padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
@@ -606,7 +701,7 @@ body {
   .filters select {
     padding: 0.2rem;
     font-size: 0.4rem;
-    width: 4rem;
+    width: 3.55rem;
   }
 
   .filters input::placeholder {
@@ -614,7 +709,11 @@ body {
     font-size: 0.3rem;
     padding: 0.1rem;
   }
-
+  .clear-filters-button {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.4rem;
+    margin-left: 3px;
+  }
   .orders-table button {
     padding: 0.1rem 0.3rem;
     font-size: 0.3rem;
