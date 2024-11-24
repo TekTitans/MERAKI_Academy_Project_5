@@ -6,5 +6,5 @@ const socketInit=({userId,token})=>{
    },
  //  autoConnect:true//.connect()  .open()
 }) 
-}
+}//test
 export default socketInit
