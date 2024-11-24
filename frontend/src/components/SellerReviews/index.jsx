@@ -118,6 +118,11 @@ const SellerReviews = () => {
       }
     });
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -171,19 +176,47 @@ const SellerReviews = () => {
         </div>
 
         <div className="sort-section">
-          <label htmlFor="sort-select">Sort By:</label>
-          <select
-            id="sort-select"
-            value={sortOption}
-            onChange={(e) => handleSortChange(e.target.value)}
-          >
-            <option value="">Clear Sort</option>
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="highest">Highest Rating</option>
-            <option value="lowest">Lowest Rating</option>
-            <option value="username">Username (A-Z)</option>
-          </select>
+          <label htmlFor="sort-select" className="sort-label">
+            Sort By:
+          </label>
+          <div className="custom-select">
+            <button className="select-btn">
+              {sortOption ? capitalizeFirstLetter(sortOption) : "Sort Options"}
+              <span className="arrow">&#x25BC;</span>
+            </button>
+            <ul className="select-options">
+              <li
+                className="select-option"
+                onClick={() => handleSortChange("newest")}
+              >
+                <span className="icon">🆕</span> Newest
+              </li>
+              <li
+                className="select-option"
+                onClick={() => handleSortChange("oldest")}
+              >
+                <span className="icon">🕒</span> Oldest
+              </li>
+              <li
+                className="select-option"
+                onClick={() => handleSortChange("highest")}
+              >
+                <span className="icon">⭐</span> Highest Rating
+              </li>
+              <li
+                className="select-option"
+                onClick={() => handleSortChange("lowest")}
+              >
+                <span className="icon">⭐</span> Lowest Rating
+              </li>
+              <li
+                className="select-option"
+                onClick={() => handleSortChange("username")}
+              >
+                <span className="icon">👤</span> Username (A-Z)
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 

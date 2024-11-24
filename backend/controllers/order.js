@@ -417,12 +417,12 @@ const getSellerSummary = async (req, res) => {
       ORDER BY units_sold DESC
       LIMIT 1;
     `;
-    const reviewQuery = `
-      SELECT 
-          COUNT(id) AS total_reviews,
-          COALESCE(AVG(rating), 0) AS average_rating
-      FROM sellerReviews
-      WHERE seller_id = $1 AND is_deleted = FALSE;
+    const reviewQuery = ` SELECT 
+      COUNT(*) AS total_reviews,
+      AVG(reviews.rating) AS average_rating
+    FROM sellerReviews reviews
+    WHERE reviews.seller_id = $1
+      AND reviews.is_deleted = false;
     `;
 
     const summaryResult = await pool.query(summaryQuery, [78]); //sellerId
@@ -437,6 +437,8 @@ const getSellerSummary = async (req, res) => {
     };
     const totalReviews = reviewResult.rows[0].total_reviews;
     const averageRating = reviewResult.rows[0].average_rating;
+    console.log(reviewResult.rows[0]);
+    console.log(reviewResult.rows[0].total_reviews);
 
     res.status(200).json({
       success: true,
