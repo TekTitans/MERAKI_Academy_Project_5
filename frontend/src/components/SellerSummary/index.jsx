@@ -43,7 +43,7 @@ const SellerSummary = () => {
 
       if (response.data.success) {
         const summary = response.data.summary;
-
+        console.log(response.data);
         setSellerSummary({
           totalReviews: summary.totalReviews,
           averageRating: summary.averageRating,
@@ -57,7 +57,6 @@ const SellerSummary = () => {
           totalProducts: summary.totalProducts,
           outOfStockProducts: summary.outOfStockProducts,
           totalCustomers: summary.totalCustomers,
-          averageOrderValue: parseFloat(summary.averageOrderValue).toFixed(2),
           topSellingProduct: summary.topSellingProduct || null,
         });
       }
@@ -117,7 +116,7 @@ const SellerSummary = () => {
 
           <div className="summary-card average-rating">
             <h4>Average Rating</h4>
-            <p>{(sellerSummary.averageRating || 0).toFixed(1)}</p>
+            <p>{(sellerSummary.averageRating || 0).toFixed(2)}</p>
           </div>
           <div className="summary-card total-orders">
             <h4>Total Orders</h4>
