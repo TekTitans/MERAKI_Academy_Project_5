@@ -16,6 +16,7 @@ import { Search } from "../pages/Serach";
 import Category from "../components/category";
 import Products from "../pages/Products";
 import SellerDashboard from "../pages/SellerDashboard";
+import Chat from "../pages/chat/Chat";
 
 export const router = createBrowserRouter(
   [
@@ -46,6 +47,8 @@ export const router = createBrowserRouter(
         { path: "/category/:id", element: <Category /> },
         { path: "/products", element: <Products /> },
         { path: "/seller", element: <SellerDashboard /> },
+        { path: "/chat", element: <Chat /> },
+
       ],
     },
   ],

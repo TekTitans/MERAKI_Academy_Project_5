@@ -7,6 +7,7 @@ const io =new Server(8080,{cors:{origin:"*"}})
 io.use(Sauth)
 const clients=[]
 io.on("connection",(socket)=>{
+    console.log("connected")
     socket.use(example)
 
     const userId=socket.handshake.headers.userid
@@ -25,7 +26,6 @@ socket.on("disconnect",()=>{
              clients.splice(i,1)
         }
     }
-    console.log(clients)
 })
 
 })
