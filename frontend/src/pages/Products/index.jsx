@@ -4,6 +4,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const Products = () => {
   const [categories, setCategories] = useState([]);
@@ -116,23 +117,34 @@ const Products = () => {
 
   const paginationControls = (
     <div className="pagination-controls">
-      <button
-        className="pagination-button"
-        onClick={() => fetchProducts(selectedCategory, currentPage - 1)}
-        disabled={currentPage === 1 || filterProducts.length === 0}
+      <div
+        className={`pagination-arrow ${
+          currentPage === 1 || filterProducts.length === 0 ? "disabled" : ""
+        }`}
+        onClick={() =>
+          currentPage > 1 && fetchProducts(selectedCategory, currentPage - 1)
+        }
+        aria-disabled={currentPage === 1}
       >
-        Previous
-      </button>
+        <FaArrowLeft size={20} />
+      </div>
       <span className="pagination-info">
         Page {currentPage} of {totalPages}
       </span>
-      <button
-        className="pagination-button"
-        onClick={() => fetchProducts(selectedCategory, currentPage + 1)}
-        disabled={currentPage === totalPages || filterProducts.length === 0}
+      <div
+        className={`pagination-arrow ${
+          currentPage === totalPages || filterProducts.length === 0
+            ? "disabled"
+            : ""
+        }`}
+        onClick={() =>
+          currentPage < totalPages &&
+          fetchProducts(selectedCategory, currentPage + 1)
+        }
+        aria-disabled={currentPage === totalPages}
       >
-        Next
-      </button>
+        <FaArrowRight size={20} />
+      </div>
     </div>
   );
 

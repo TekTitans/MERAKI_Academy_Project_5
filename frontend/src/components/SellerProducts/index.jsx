@@ -7,8 +7,16 @@ import {
   removeProduct,
 } from "../redux/reducers/product/product";
 import "./style.css";
-
-const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
+import { FaImage } from "react-icons/fa";
+import { RingLoader } from "react-spinners";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+const SellerProducts = ({
+  message,
+  setMessage,
+  showMessage,
+  iseditProduct,
+  setIseditProduct,
+}) => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -24,67 +32,56 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
   });
 
   const dispatch = useDispatch();
+  const [imagePreview, setImagePreview] = useState("");
   const products = useSelector((state) => state.product.products);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState({
-    text: "",
-    type: "",
-  });
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-
-    setTimeout(() => {
-      setMessage(null);
-    }, 3000);
-  };
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { token } = useSelector((state) => state.auth);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(12);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchProducts = async (page = 1) => {
+    if (!token) {
+      console.error("No token found.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/products/seller",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.products) {
+        dispatch(setProducts(response.data.products));
+      }
+      setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching seller products", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      if (!token) {
-        console.error("No token found.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/products/seller",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.data.products) {
-          dispatch(setProducts(response.data.products));
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching seller products", error);
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
   }, [dispatch, token]);
 
   const validateForm = () => {
     if (!product.title || !product.price || !product.stock_quantity) {
-      showMessage(
-        error.response?.data?.message ||
-          "Title, Price, and Stock Quantity are required.",
-        "error"
-      );
+      showMessage("Title, Price, and Stock Quantity are required.", "error");
       return false;
     }
     if (isNaN(product.price) || isNaN(product.stock_quantity)) {
-      showMessage(
-        error.response?.data?.message ||
-          "Price and Stock Quantity must be numbers.",
-        "error"
-      );
+      showMessage("Price and Stock Quantity must be numbers.", "error");
       return false;
     }
     return true;
@@ -96,6 +93,41 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
       ...product,
       [name]: value,
     });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setMessage(null);
+
+    const formData = new FormData();
+    formData.append("product_image", file);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/products/upload_Image",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setImagePreview(URL.createObjectURL(file));
+      setProduct((prevState) => ({
+        ...prevState,
+        product_image: res.data.url,
+      }));
+    } catch (error) {
+      console.error("Error uploading product image:", error);
+      showMessage("Failed to upload image. Try again.", "error");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -121,6 +153,7 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
       category_id: parseInt(product.category_id, 10),
       subcategory_id: parseInt(product.subcategory_id, 10),
     };
+    setIsSaving(true);
 
     try {
       const response = await axios.put(
@@ -135,11 +168,12 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
       showMessage("Product updated successfully!", "success");
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
+      setIseditProduct(false);
       setProduct({
         title: "",
         description: "",
         price: "",
-        stock_status: "In Stock",
+        stock_status: "in_stock",
         stock_quantity: "",
         color_options: "",
         size_options: "",
@@ -147,12 +181,15 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
         category_id: "",
         subcategory_id: "",
       });
-      showMessage("Product updated successfully!", "success");
+      setImagePreview("");
+      setIsUploading(false);
     } catch (error) {
       showMessage(
         error.response?.data?.message || "Failed to update product.",
         "error"
       );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -172,6 +209,7 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
 
   const handleEdit = (productToEdit) => {
     setEditProduct(productToEdit);
+    setIseditProduct(true);
     setProduct({
       ...productToEdit,
       color_options: productToEdit.color_options.join(", "),
@@ -179,24 +217,70 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
     });
   };
 
+  const paginationControls = (
+    <div className="pagination-controls">
+      <div
+        className={`pagination-arrow ${
+          currentPage === 1 || totalPages === 0 ? "disabled" : ""
+        }`}
+        onClick={() => currentPage > 1 && fetchProducts(currentPage - 1)}
+        aria-disabled={currentPage === 1}
+      >
+        <FaArrowLeft size={20} />
+      </div>
+      <span className="pagination-info">
+        Page {currentPage} of {totalPages}
+      </span>
+      <div
+        className={`pagination-arrow ${
+          currentPage === totalPages || totalPages === 0 ? "disabled" : ""
+        }`}
+        onClick={() =>
+          currentPage < totalPages && fetchProducts(currentPage + 1)
+        }
+        aria-disabled={currentPage === totalPages}
+      >
+        <FaArrowRight size={20} />
+      </div>
+    </div>
+  );
+
   return (
-    <div className="product-management-page">
-      <h1 className="page-title">Product Management</h1>
+    <div className="seller-page">
+      <h2 className="page-title">Products Management</h2>
       {message?.text && (
         <div className={`message ${message.type} show`}>{message.text}</div>
       )}
-
       {editProduct ? (
         <div className="product-edit-form-container">
           <form onSubmit={handleUpdate} className="product-edit-form">
             <h2>Edit Product</h2>
-            <button
-              className="edit_back-button"
-              onClick={() => setEditProduct(null)}
-            >
-              Back to Product List
-            </button>
-
+            <div className="product__picture-container">
+              <div className="image-upload">
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Product Preview"
+                    className="product_image"
+                  />
+                ) : (
+                  <label className="product_image-placeholder">
+                    <FaImage size={60} className="image-icon" />
+                    <span className="placeholder-text">Upload Image</span>
+                    <input
+                      type="file"
+                      onChange={handleFileChange}
+                      className="file-input"
+                    />
+                  </label>
+                )}
+                {isUploading && (
+                  <div className="upload-spinner">
+                    <RingLoader color="#36d7b7" size={50} />
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="form-group">
               <label htmlFor="title" className="form-label">
                 Title
@@ -285,42 +369,52 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
                 className="input-field"
               />
             </div>
-
-            <button type="submit" className="edit_action-button">
-              Update Product
-            </button>
+            <div className="Edit_Action_Btns">
+              <button type="submit" className="edit_action-button">
+                {isSaving ? "Updating..." : "Update Product"}
+              </button>
+              <button
+                className="edit_back-button"
+                onClick={() => {
+                  setEditProduct(null);
+                  setIseditProduct(false);
+                }}
+              >
+                Back to Product List
+              </button>
+            </div>
           </form>
         </div>
       ) : (
-        <div className="products-list">
-          <div className="products-grid">
+        <div className="SDB_product-list">
+          <div className="SDB_product-grid">
             {loading ? (
               <div className="loading-spinner">Loading...</div>
             ) : products.length > 0 ? (
               products.map((prod) => (
-                <div key={prod.id} className="product-card">
+                <div key={prod.id} className="SDB_product-card">
                   <img
                     src={
                       prod.product_image || "https://via.placeholder.com/150"
                     }
                     alt={prod.title}
-                    className="product-image"
+                    className="SDB_product-image"
                     onError={(e) =>
                       (e.target.src = "https://via.placeholder.com/150")
                     }
                   />
-                  <div className="product-info">
-                    <h3 className="product-title">{prod.title}</h3>
-                    <p className="product-description">{prod.description}</p>
-                    <p className="product-price">${prod.price}</p>
-                    <p className="product-stock">
+                  <div className="SDB_product-info">
+                    <h3 className="SDB_product-title">{prod.title}</h3>
+                    <p className="SDB_product-description">{prod.description}</p>
+                    <p className="SDB_product-price">${prod.price}</p>
+                    <p className="SDB_product-stock">
                       Stock Status: {prod.stock_status} | Quantity:{" "}
                       {prod.stock_quantity}
                     </p>
-                    <p className="product-colors">
+                    <p className="SDB_product-colors">
                       Colors: {prod.color_options.join(", ")}
                     </p>
-                    <p className="product-sizes">
+                    <p className="SDB_product-sizes">
                       Sizes: {prod.size_options.join(", ")}
                     </p>
                     <div className="product-actions">
@@ -344,6 +438,7 @@ const SellerProducts = ({ isaddProduct, setIsaddProduct }) => {
               <p className="no-products-message">No products found.</p>
             )}
           </div>
+          {paginationControls}
         </div>
       )}
     </div>

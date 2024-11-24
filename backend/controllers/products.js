@@ -5,7 +5,6 @@ const { uploadToCloudinary } = require("../services/cloudinary");
 
 const createProduct = async (req, res) => {
   const seller_id = req.token.userId;
-
   const {
     title,
     description,
@@ -18,42 +17,6 @@ const createProduct = async (req, res) => {
     category_id,
     subcategory_id,
   } = req.body;
-
-  if (req.file) {
-    const fileSizeLimit = 5 * 1024 * 1024;
-    const allowedTypes = ["image/jpeg", "image/png"];
-
-    if (req.file.size > fileSizeLimit) {
-      return res
-        .status(400)
-        .json({ success: false, message: "File is too large" });
-    }
-
-    if (!allowedTypes.includes(req.file.mimetype)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid file type" });
-    }
-  }
-
-  if (req.file) {
-    try {
-      const uploadResponse = await uploadToCloudinary(req.file.buffer);
-      const productImageUrl = uploadResponse.url;
-      const trimmedPrductImageUrl =
-        productImageUrl.length > 500
-          ? productImageUrl.substring(0, 500)
-          : productImageUrl;
-
-      console.log("Trimmed Profile Image URL:", trimmedPrductImageUrl);
-
-      product_image = trimmedPrductImageUrl;
-      
-    } catch (error) {
-      console.error("Error uploading profile image:", error);
-      return res.status(500).json({ success: false, message: error.message });
-    }
-  }
 
   const query = `INSERT INTO products( title,
   description,
@@ -88,6 +51,49 @@ const createProduct = async (req, res) => {
       message: "Server error",
       err: error,
     });
+  }
+};
+
+const uploadProductImage = async (req, res) => {
+  const seller_id = req.token.userId;
+  console.log("seller_id :", seller_id);
+
+  if (req.file) {
+    console.log("File provided in the request.");
+    const fileSizeLimit = 5 * 1024 * 1024;
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (req.file.size > fileSizeLimit) {
+      return res
+        .status(400)
+        .json({ success: false, message: "File is too large" });
+    }
+
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid file type" });
+    }
+
+    try {
+      const uploadResponse = await uploadToCloudinary(req.file.buffer);
+      const productImageUrl = uploadResponse.url;
+
+      console.log("Uploaded product image URL:", productImageUrl);
+
+      return res.status(200).json({
+        success: true,
+        message: "File uploaded successfully",
+        url: productImageUrl,
+      });
+    } catch (error) {
+      console.error("Error uploading product image:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error uploading product image.",
+        err: error.message,
+      });
+    }
   }
 };
 
@@ -300,21 +306,34 @@ const getProductById = async (req, res) => {
 const getSellerProduct = async (req, res) => {
   const seller_id = req.token.userId;
 
-  const query = `SELECT * FROM products WHERE seller_id = $1`;
-  const data = [seller_id];
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 8;
+  const offset = (page - 1) * size;
+
+  const query = `SELECT * FROM products WHERE seller_id = $1 LIMIT $2 OFFSET $3`;
+  const data = [seller_id, size, offset];
+  const countQuery = `SELECT COUNT(*) FROM products WHERE seller_id = $1`;
+  const countData = [seller_id];
+
   try {
     const result = await pool.query(query, data);
+    const countResult = await pool.query(countQuery, countData);
+    const totalProducts = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalProducts / size);
+
     if (result.rows.length !== 0) {
       res.json({
         success: true,
-        message: "seller products Details",
+        message: "Seller's product details",
+        totalPages: totalPages,
+        totalProducts: totalProducts,
         products: result.rows,
       });
     } else {
       res.json({
         success: true,
-        message: "seller has no products",
-        products: result.rows,
+        message: "Seller has no products",
+        products: [],
       });
     }
   } catch (error) {
@@ -390,6 +409,7 @@ const getProductByName = async (req, res) => {
 
 module.exports = {
   createProduct,
+  uploadProductImage,
   updateProduct,
   removeProduct,
   getAllProducts,

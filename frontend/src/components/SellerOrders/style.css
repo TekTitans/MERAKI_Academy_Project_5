@@ -1,0 +1,723 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+.seller-orders {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.seller-summary {
+  margin-bottom: 30px;
+  background-color: #f4f8fb;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.seller-summary h3 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.summary-card {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.summary-card h4 {
+  font-size: 18px;
+  color: #555;
+}
+
+.summary-card p {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  table-layout: fixed;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 15px;
+  text-align: center;
+  font-size: 1rem;
+  border-bottom: 1px solid #ddd;
+  white-space: normal;
+  overflow: visible;
+}
+
+.orders-table th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.orders-table tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+.orders-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.orders-table td {
+  color: #555;
+}
+
+.orders-table .status {
+  font-weight: bold;
+}
+
+.orders-table .status.pending {
+  color: #ffc107;
+}
+
+.orders-table .status.completed {
+  color: #28a745;
+}
+
+.orders-table .status.cancelled {
+  color: #dc3545;
+}
+
+.orders-table .status.shipped {
+  color: #17a2b8;
+}
+
+.orders-table .status.confirmed {
+  color: #007bff;
+}
+
+.orders-table .status.failed {
+  color: #6c757d;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.seller-orders .loading,
+.seller-orders .error {
+  font-size: 1.2rem;
+  text-align: center;
+  color: #007bff;
+  margin-top: 20px;
+}
+
+.seller-orders .error {
+  color: #dc3545;
+}
+
+.seller-orders .empty-state {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-top: 30px;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.filters input,
+.filters select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filters input:focus,
+.filters select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.filters select {
+  cursor: pointer;
+}
+
+.filters input::placeholder {
+  color: #888;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+.clear-filters-button {
+  background-color: #e57373;
+  color: white;
+  border: 1px solid #e57373;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 10px;
+}
+
+.clear-filters-button:hover {
+  background-color: #d64040;
+  transform: translateY(-2px);
+}
+
+.clear-filters-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.5);
+}
+
+.orders-table button {
+  padding: 6px 10px;
+  margin: 5px;
+  font-size: 0.9rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 90%;
+  height: auto;
+}
+
+.orders-table button:hover {
+  background-color: #0056b3;
+}
+
+.cancel_orders_table button {
+  background-color: #dc3545;
+}
+
+.cancel_orders_table button:hover {
+  background-color: #b02a37;
+}
+
+.order-status-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.status-modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translate(-50%, -60%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+.status-modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.status-modal-content p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.status-modal-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.status-modal-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.status-modal-footer {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.status-modal-footer button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 45%;
+}
+
+.status-modal-update-button {
+  background-color: #007bff;
+}
+
+.status-modal-update-button:hover {
+  background-color: #0056b3;
+}
+
+.status-modal-cancel-button {
+  background-color: #dc3545;
+}
+
+.status-modal-cancel-button:hover {
+  background-color: #b02a37;
+}
+
+.status-modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+}
+
+.status-modal-close-button:hover {
+  color: #dc3545;
+}
+
+.order-status-modal-wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+.order-details-modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.order-details-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #ffffff, #f3f8ff);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  max-width: 500px;
+  width: 90%;
+  overflow: auto;
+  animation: slideDown 0.4s ease-out;
+  height: auto;
+}
+
+.order-details-modal h3 {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #fff;
+  margin: 0;
+  padding: 15px 20px;
+  font-size: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.order-details-modal .content {
+  padding: 20px;
+  color: #333;
+}
+
+.order-details-modal p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+.order-details-modal .product-list {
+  margin-top: 15px;
+  padding: 0;
+  list-style: none;
+}
+
+.order-details-modal .product-list li {
+  display: grid;
+  gap: 1rem;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  grid-template-columns: repeat(2, 1fr);
+  justify-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  height: auto;
+}
+
+.product-list span {
+  margin: 1rem;
+  display: block;
+}
+
+.order-details-modal .product-list li span {
+  font-weight: bold;
+  color: #333;
+}
+
+.order-details-modal .footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 20px;
+  background-color: #f1f5ff;
+  border-top: 2px solid #eaeaea;
+}
+
+.order-details-modal .footer button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.order-details-modal .footer button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.order-details-modal .footer .cancel {
+  background: linear-gradient(135deg, #dc3545, #b02a37);
+}
+
+.order-details-modal .footer .cancel:hover {
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+.order-details-modal .close-button {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #818080;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.order-details-modal .close-button:hover {
+  color: #333;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .orders-table th,
+  .orders-table td {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+
+  .seller-orders h2 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .orders-table th,
+  .orders-table td {
+    font-size: 0.8rem;
+    padding: 6px 8px;
+  }
+
+  .seller-orders {
+    padding: 0.4rem;
+  }
+
+  .error-message {
+    padding: 0.3rem;
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal h3 {
+    font-size: 1.5rem;
+  }
+
+  .modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal .footer button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  .order-details-modal {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.9rem;
+  }
+
+  .order-details-modal button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+
+  .filters {
+    gap: 0.5rem;
+    max-width: 700px;
+    padding: 0.5rem;
+  }
+
+  .filters input,
+  .filters select {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .filters input::placeholder {
+    font-style: italic;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+  .clear-filters-button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    margin-left: 5px;
+  }
+  .orders-table button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    width: 90%;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .orders-table th,
+  .orders-table td {
+    font-size: 0.4rem;
+    padding: 2px 2px;
+  }
+
+  .seller-orders {
+    padding: 0.4rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal h3 {
+    font-size: 1.5rem;
+  }
+
+  .modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.95rem;
+  }
+
+  .order-details-modal .footer button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  .order-details-modal {
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .order-details-modal h3 {
+    font-size: 1.4rem;
+  }
+
+  .order-details-modal p {
+    font-size: 0.9rem;
+  }
+
+  .order-details-modal button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+
+  .filters {
+    gap: 0.5rem;
+    max-width: 700px;
+    padding: 0.5rem;
+  }
+
+  .filters input,
+  .filters select {
+    padding: 0.2rem;
+    font-size: 0.4rem;
+    width: 3.55rem;
+  }
+
+  .filters input::placeholder {
+    font-style: italic;
+    font-size: 0.3rem;
+    padding: 0.1rem;
+  }
+  .clear-filters-button {
+    padding: 0.15rem 0.3rem;
+    font-size: 0.4rem;
+    margin-left: 3px;
+  }
+  .orders-table button {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.3rem;
+    width: 90%;
+    height: auto;
+  }
+}
