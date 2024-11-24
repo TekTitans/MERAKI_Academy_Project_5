@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setProducts,
-  updateProduct,
-  removeProduct,
-} from "../redux/reducers/product/product";
 import "./style.css";
 import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
@@ -17,26 +11,9 @@ const SellerProducts = ({
   iseditProduct,
   setIseditProduct,
 }) => {
-  const [editProduct, setEditProduct] = useState(null);
-  const [product, setProduct] = useState({
-    title: "",
-    description: "",
-    price: "",
-    stock_status: "in_stock",
-    stock_quantity: "",
-    color_options: "",
-    size_options: "",
-    product_image: "",
-    category_id: "",
-    subcategory_id: "",
-  });
-
   const dispatch = useDispatch();
-  const [imagePreview, setImagePreview] = useState("");
   const products = useSelector((state) => state.product.products);
-  const [loading, setLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+
   const { token } = useSelector((state) => state.auth);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(12);
@@ -70,15 +47,7 @@ const SellerProducts = ({
     </div>
   );
 
-  return (
-    <div className="seller-page">
-      <h2 className="page-title">Products Management</h2>
-      {message?.text && (
-        <div className={`message ${message.type} show`}>{message.text}</div>
-      )}
-      {paginationControls}
-    </div>
-  );
+  return <div className="seller-page">{paginationControls}</div>;
 };
 
 export default SellerProducts;
