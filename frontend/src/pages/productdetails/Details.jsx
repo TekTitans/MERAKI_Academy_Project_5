@@ -64,6 +64,9 @@ const Details = () => {
       });
   };
 
+
+ 
+
   const createReview = () => {
     if (newComment.trim() && rating > 0) {
       axios

@@ -19,7 +19,7 @@ reviewRouter.put("/:reviewId", auth, updateReview);
 reviewRouter.delete("/:reviewId", auth, removeReview);
 reviewRouter.get("/:id", getProductReviews);
 reviewRouter.post("/seller/:id", createSellerReviews);
-reviewRouter.get("/seller/:id", getSellerReviews);
+reviewRouter.get("/seller/:sellerId", getSellerReviews);
 reviewRouter.put("/seller/:id", updateSellerReviews);
 reviewRouter.delete("/seller/:id", removeSellerReviews);
 
