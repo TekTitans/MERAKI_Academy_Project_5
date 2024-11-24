@@ -1,5 +1,6 @@
 const {Server}=require ("socket.io")
 const Sauth=require("../socket io/Sauth")
+const {message}=require("../controllers/message")
 
 const io =new Server(8080,{cors:{origin:"*"}})
 io.use(Sauth)
@@ -8,6 +9,10 @@ io.on("connection",(socket)=>{
     const userId=socket.handshake.headers.userid
     clients.push({socketId:socket.id,userId:userId})
     console.log(clients)
+    message(socket,io)
+
+
+ 
 
 socket.on("disconnect",()=>{
     for(let i=0;i<clients.length;i++){
