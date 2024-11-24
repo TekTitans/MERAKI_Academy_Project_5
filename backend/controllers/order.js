@@ -3,20 +3,23 @@ const express = require("express");
 const pdf = require("pdfkit");
 const fs = require("fs");
 
-const createOrder = async (req, res) => {
-  const userId = req.token.userId;
-  const { shippingAddress } = req.body;
-  try {
-    const cartQuery =
-      "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
-    const cartResult = await pool.query(cartQuery, [userId]);
-    if (cartResult.rows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Your cart is empty.",
-      });
-    }
-    const totalAmountQuery = `
+
+const createOrder=async(req,res)=>{
+    
+        const userId = req.token.userId;
+        const  shippingAddress = "amman";
+        try {
+          const cartQuery =
+            "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
+          const cartResult = await pool.query(cartQuery, [userId]);
+          if (cartResult.rows.length === 0) {
+            return res.status(400).json({
+              success: false,
+              message: "Your cart is empty.",
+            });
+          }
+          const totalAmountQuery = `
+
               SELECT SUM(p.price * c.quantity) AS total_amount
               FROM cart c
               JOIN products p ON c.product_id = p.id

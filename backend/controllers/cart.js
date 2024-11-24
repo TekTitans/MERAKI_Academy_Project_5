@@ -17,12 +17,12 @@ const addToCart = async (req, res) => {
           message: "Product not found.",
         });
       }
-      const check="SELECT * FROM cart WHERE product_id = $1";
-      const checkResult= await pool.query(check, [productId]);
+      const check="SELECT * FROM cart WHERE product_id = $1 and user_id=$2 and is_deleted=false";
+      const checkResult= await pool.query(check, [productId,userId]);
       
-      if (checkResult.rows.length===1) {
+      if (checkResult.rows.length) {
         const modify =
-        "UPDATE cart SET quantity = $3 WHERE user_id = $1 AND product_id = $2";
+        "UPDATE cart SET quantity = $3 WHERE user_id = $1 AND product_id = $2 AND is_deleted=false";
          await pool.query(modify, [userId, productId,quantity]);
 
         return res.status(200).json({
@@ -30,6 +30,7 @@ const addToCart = async (req, res) => {
           message: "Product quantity is modified in your cart.",
         });
       }else{
+        console.log(checkResult.rows)
       const insertQuery =
         "INSERT INTO cart (user_id, product_id, quantity) VALUES ($1, $2, $3)";
       await pool.query(insertQuery, [userId, productId, quantity]);
@@ -97,7 +98,7 @@ FULL OUTER JOIN
     cart t2
 ON 
     t1.id = t2.product_id
-WHERE user_id=$1;`;
+WHERE user_id=$1 AND t2.is_deleted = false`;
      const data = [user_id];
      pool
        .query(query, data)
