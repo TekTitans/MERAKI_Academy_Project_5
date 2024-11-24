@@ -86,9 +86,7 @@ const removeReview = async (req, res) => {
 const getProductReviews = (req, res) => {
   const product_id = req.params.id;
 
-  const query = `SELECT *,CAST(ROUND(AVG(rating) OVER (PARTITION BY product_id), 2) AS DECIMAL(10, 2)) AS avgrating 
-FROM reviews 
-WHERE product_id = $1; `;
+  const query = `SELECT * FROM reviews WHERE product_id = $1; `;
 
   const data = [product_id];
   pool
@@ -158,7 +156,7 @@ const getSellerReviews = (req, res) => {
     ORDER BY reviews.created_at DESC;
   `;
 
-  const data = [78];//sellerId
+  const data = [78]; //sellerId
   pool
     .query(query, data)
     .then((result) => {

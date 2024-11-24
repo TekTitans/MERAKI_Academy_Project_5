@@ -30,9 +30,12 @@ const Details = () => {
       setProduct(response.data.product);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
-      setReviews(response.data.result);
-      console.log(response.data.result);
-      setAvgrate(response.data.result[0].avgrating);
+      const allReview = response.data.result;
+      setReviews(allReview);
+      const total = allReview.reduce((sum, review) => sum + review.rating, 0);
+      const avg =
+        allReview.length > 0 ? (total / allReview.length).toFixed(2) : null;
+      setAvgrate(avg);
     });
   }, [pId]);
 
@@ -129,7 +132,6 @@ const Details = () => {
   return (
     <div className="details-container">
       <div className="productpage">
-        {/* Product Image Section */}
         <div className="productimage">
           <img
             src={product.product_image || "https://via.placeholder.com/400x400"}
@@ -142,7 +144,7 @@ const Details = () => {
           <h1 className="producttitle">{product.title}</h1>
           <p className="productprice">{product.price} JD</p>
           <p className="productdescription">{product.description}</p>
-          {/* Add to Cart Section */}
+
           <div className="add-to-cart">
             <input
               type="number"
