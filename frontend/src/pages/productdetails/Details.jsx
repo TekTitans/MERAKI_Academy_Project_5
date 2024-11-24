@@ -9,7 +9,6 @@ const Details = () => {
   const token = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId);
   const userName = useSelector((state) => state.auth.userName);
-//commetn
   const headers = { Authorization: `Bearer ${token}` };
   const Navigate = useNavigate();
   const { pId } = useParams();
@@ -24,7 +23,7 @@ const Details = () => {
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [modalMessage, setModalMessage] = useState(""); // State for modal message
   const [showAllComments, setShowAllComments] = useState(false);
-
+//comment
   useEffect(() => {
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
       setProduct(response.data.product);
