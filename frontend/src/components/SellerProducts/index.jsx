@@ -405,7 +405,9 @@ const SellerProducts = ({
                   />
                   <div className="SDB_product-info">
                     <h3 className="SDB_product-title">{prod.title}</h3>
-                    <p className="SDB_product-description">{prod.description}</p>
+                    <p className="SDB_product-description">
+                      {prod.description}
+                    </p>
                     <p className="SDB_product-price">${prod.price}</p>
                     <p className="SDB_product-stock">
                       Stock Status: {prod.stock_status} | Quantity:{" "}
