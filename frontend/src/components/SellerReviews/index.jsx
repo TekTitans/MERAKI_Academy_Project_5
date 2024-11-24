@@ -47,7 +47,7 @@ const SellerReviews = () => {
         );
         const avgRating =
           fetchedReviews.length > 0
-            ? (totalRating / fetchedReviews.length).toFixed(1)
+            ? (totalRating / fetchedReviews.length).toFixed(2)
             : null;
         setGeneralRating(avgRating);
       } else {
@@ -139,7 +139,7 @@ const SellerReviews = () => {
         </div>
         <div className="general-rating">
           <div className="general-rating-content">
-            <h3>General Rating</h3>
+            <h3>General Rating: {generalRating} / 5</h3>
             {generalRating ? (
               <div className="star-general">
                 {renderStars(Math.round(generalRating))}

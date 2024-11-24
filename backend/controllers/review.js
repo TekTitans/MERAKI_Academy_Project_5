@@ -158,7 +158,7 @@ const getSellerReviews = (req, res) => {
     ORDER BY reviews.created_at DESC;
   `;
 
-  const data = [sellerId];
+  const data = [78];//sellerId
   pool
     .query(query, data)
     .then((result) => {

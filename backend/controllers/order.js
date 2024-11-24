@@ -3,22 +3,20 @@ const express = require("express");
 const pdf = require("pdfkit");
 const fs = require("fs");
 
-
-const createOrder=async(req,res)=>{
-    
-        const userId = req.token.userId;
-        const  shippingAddress = "amman";
-        try {
-          const cartQuery =
-            "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
-          const cartResult = await pool.query(cartQuery, [userId]);
-          if (cartResult.rows.length === 0) {
-            return res.status(400).json({
-              success: false,
-              message: "Your cart is empty.",
-            });
-          }
-          const totalAmountQuery = `
+const createOrder = async (req, res) => {
+  const userId = req.token.userId;
+  const shippingAddress = "amman";
+  try {
+    const cartQuery =
+      "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
+    const cartResult = await pool.query(cartQuery, [userId]);
+    if (cartResult.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Your cart is empty.",
+      });
+    }
+    const totalAmountQuery = `
 
               SELECT SUM(p.price * c.quantity) AS total_amount
               FROM cart c
@@ -440,8 +438,6 @@ const getSellerSummary = async (req, res) => {
     };
     const totalReviews = reviewResult.rows[0].total_reviews;
     const averageRating = reviewResult.rows[0].average_rating;
-    console.log(reviewResult.rows[0]);
-    console.log(reviewResult.rows[0].total_reviews);
 
     res.status(200).json({
       success: true,
@@ -460,9 +456,9 @@ const getSellerSummary = async (req, res) => {
         topSellingProduct: {
           name: topSellingProduct.top_selling_product,
           unitsSold: parseInt(topSellingProduct.units_sold, 10),
-          totalReviews,
-          averageRating,
         },
+        totalReviews: parseInt(totalReviews, 10),
+        averageRating: parseFloat(averageRating),
       },
     });
   } catch (err) {
