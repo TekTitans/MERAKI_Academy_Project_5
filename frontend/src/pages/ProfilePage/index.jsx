@@ -445,11 +445,11 @@ const ProfilePage = () => {
         <div className="profile_Layout">
           <div className="profile__picture-container">
             {userData.profilePicture ? (
-              <div class="profile__picture" id="profilePicture">
+              <div className="profile__picture" id="profilePicture">
                 <img
                   src={userData.profilePicture}
                   alt="Profile Picture"
-                  class="profile__picture"
+                  className="profile__picture"
                 />
               </div>
             ) : (
