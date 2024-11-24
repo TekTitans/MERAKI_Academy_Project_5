@@ -143,7 +143,6 @@ const Details = () => {
           />
         </div>
 
-        {/* Product Details Section */}
         <div className="productdetails">
           <h1 className="producttitle">{product.title}</h1>
           <p className="productprice">{product.price} JD</p>
@@ -164,12 +163,19 @@ const Details = () => {
         </div>
       </div>
       <div className="avgrating">
-        <h1>Rating {avgrate}/5</h1>
+        <span className="ratingstart">Rating</span>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            className={`star ${avgrate >= star ? "filled" : ""}`}
+          >
+            ★
+          </span>
+        ))}
       </div>
       <div className="reviews-section">
         <h2>Reviews</h2>
 
-        {/* New Review Form */}
         <div className="new-review-form">
           <div className="rating">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -190,7 +196,6 @@ const Details = () => {
           <button onClick={createReview}>Submit Review</button>
         </div>
 
-        {/* Reviews List */}
         <div>
           {reviews.length > 0 ? (
             reviews
@@ -216,7 +221,7 @@ const Details = () => {
                     ))}
                   </div>
                   <p className="review-comment">{review?.comment}</p>
-                  {/* Edit and Delete buttons */}
+
                   {review?.user_id === parseInt(userId) && (
                     <div className="edit-delete-buttons">
                       <button
@@ -234,7 +239,6 @@ const Details = () => {
                     </div>
                   )}
 
-                  {/* Edit Review Form */}
                   {editingReview?.id === review?.id && (
                     <div>
                       <div className="rating">
@@ -268,14 +272,14 @@ const Details = () => {
           ) : (
             <p>No reviews yet. Be the first to review!</p>
           )}
-          {/* Show 'Show All' or 'Show Less' button */}
+
           {reviews.length > 5 && (
             <button onClick={toggleShowAllComments} className="show-all-button">
               {showAllComments ? "Show Less" : "Show All"}
             </button>
           )}
         </div>
-        {/* Modal Component */}
+
         {showModal && (
           <Modal message={modalMessage} onClose={() => setShowModal(false)} />
         )}
