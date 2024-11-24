@@ -9,7 +9,7 @@ const Details = () => {
   const token = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId);
   const userName = useSelector((state) => state.auth.userName);
-
+//commetn
   const headers = { Authorization: `Bearer ${token}` };
   const Navigate = useNavigate();
   const { pId } = useParams();
