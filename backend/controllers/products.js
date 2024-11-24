@@ -379,59 +379,11 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
-const getProductByName = async (req, res) => {
-  const name = req.params.title;
-  const query = `SELECT * FROM products WHERE title LIKE '%${name}%' `;
+const lookUp = (req, res) => {
+  console.log("test");
 
-  try {
-    const result = await pool.query(query);
-    if (result.rows.length == 0) {
-      res.json({
-        success: false,
-        message: "no product with this title",
-      });
-    } else {
-      res.json({
-        success: true,
-        message: "product Details",
-        product: result.rows,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-      err: error,
-    });
-  }
-};
-
-const serach = async (req, res) => {
-  const { query } = req.query;
-  if (!query || query.trim() === "") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Search query is required" });
-  }
-  const searchQuery = `%${query}%`;
-  console.log(searchQuery);
-
-  try {
-    const result = await pool.query(
-      `SELECT * 
-         FROM products 
-         WHERE title ILIKE $1 
-            OR description ILIKE $1 
-            OR category ILIKE $1`,
-      [searchQuery]
-    );
-
-    res.status(200).json({ success: true, products: result.rows });
-  } catch (err) {
-    console.error("Error executing search query:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
+  // Assuming you want to send a response to the client
+  res.status(200).json({ message: "Request received successfully" });
 };
 
 module.exports = {
@@ -443,6 +395,5 @@ module.exports = {
   getProductById,
   getSellerProduct,
   getProductsByCategory,
-  getProductByName,
-  serach,
+  lookUp,
 };
