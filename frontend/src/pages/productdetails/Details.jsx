@@ -20,17 +20,19 @@ const Details = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [editComment, setEditComment] = useState("");
   const [editRating, setEditRating] = useState(0);
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [modalMessage, setModalMessage] = useState(""); // State for modal message
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
-//comment
+  const [avgrate, setAvgrate] = useState();
+  //comment
   useEffect(() => {
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
       setProduct(response.data.product);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
       setReviews(response.data.result);
-      //console.log(reviews);
+      console.log(response.data.result);
+      setAvgrate(response.data.result[0].avgrating);
     });
   }, [pId]);
 
@@ -51,7 +53,6 @@ const Details = () => {
     axios
       .delete(`http://localhost:5000/review/${reviewId}`, { headers })
       .then((response) => {
-        // Update the state to reflect the deleted review
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review.id !== reviewId)
         );
@@ -62,9 +63,6 @@ const Details = () => {
         setModalMessage("Failed to delete review.");
       });
   };
-
-
- 
 
   const createReview = () => {
     if (newComment.trim() && rating > 0) {
@@ -106,8 +104,8 @@ const Details = () => {
         )
         .then((response) => {
           setReviews(
-            reviews.map((review) =>
-              review.id === reviewId ? response.data.result : review
+            reviews?.map((review) =>
+              review.id === reviewId ? response.data : review
             )
           );
           setEditingReview(null);
@@ -159,7 +157,9 @@ const Details = () => {
           </div>
         </div>
       </div>
-
+      <div className="avgrating">
+        <h1>Rating {avgrate}/5</h1>
+      </div>
       <div className="reviews-section">
         <h2>Reviews</h2>
 

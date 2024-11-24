@@ -366,3 +366,6 @@ button:hover {
 .new-review-form .rating .star.filled {
   color: #ffd700;
 }
+.avgrating{
+  color: #27ae60;
+}

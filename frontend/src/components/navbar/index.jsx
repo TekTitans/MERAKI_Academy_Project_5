@@ -55,13 +55,13 @@ const Navbar = () => {
               onChange={handleSearch}
             />
           </div>
-          <a  className="cart-icon">
+          <a className="cart-icon">
             <FaShoppingCart onClick={() => history("/cart")} />
           </a>
 
           {isLoggedIn && (
             <div className="navbar-user" onClick={() => history("/Profile")}>
-              <span className="navbar-username" >{userName}</span>
+              <span className="navbar-username">{userName}</span>
             </div>
           )}
 
