@@ -17,8 +17,9 @@ const SellerReviews = () => {
     (state) => state.sellerReview
   );
 
-  const [filterRating, setFilterRating] = useState(0); 
-  const [generalRating, setGeneralRating] = useState(null); 
+  const [filterRating, setFilterRating] = useState(0);
+  const [generalRating, setGeneralRating] = useState(null);
+  const [sortOption, setSortOption] = useState("");
 
   const fetchReviews = async () => {
     dispatch(setLoading(true));
@@ -40,7 +41,6 @@ const SellerReviews = () => {
         const fetchedReviews = response.data.result;
         dispatch(setSellerReviews(fetchedReviews));
 
-        // Calculate general rating (average)
         const totalRating = fetchedReviews.reduce(
           (sum, review) => sum + review.rating,
           0
@@ -85,13 +85,38 @@ const SellerReviews = () => {
   };
 
   const handleStarClick = (star) => {
-    setFilterRating(star); // Update filter rating
+    setFilterRating(star);
   };
 
-  const filteredReviews =
-    filterRating > 0
-      ? reviews.filter((review) => review.rating <= filterRating)
-      : reviews;
+  const handleSortChange = (option) => {
+    setSortOption(option);
+  };
+
+  const handleClearFilters = () => {
+    setFilterRating(0);
+    setSortOption("");
+  };
+
+  const filteredReviews = reviews
+    .filter((review) => {
+      return filterRating === 0 || review.rating === filterRating;
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "newest":
+          return new Date(b.created_at) - new Date(a.created_at);
+        case "oldest":
+          return new Date(a.created_at) - new Date(b.created_at);
+        case "highest":
+          return b.rating - a.rating;
+        case "lowest":
+          return a.rating - b.rating;
+        case "username":
+          return a.user_name.localeCompare(b.user_name);
+        default:
+          return 0;
+      }
+    });
 
   if (loading) {
     return <div>Loading...</div>;
@@ -103,67 +128,100 @@ const SellerReviews = () => {
 
   return (
     <div className="reviews-container">
-      <div className="header_seller_reviews">
-        <h2 className="page-title">Seller Reviews</h2>
-        <div className="general-rating">
-          <h4>General Rating: {generalRating || "No reviews yet"}</h4>
-          {generalRating && <div>{renderStars(Math.round(generalRating))}</div>}
+      <div className="header-seller-reviews">
+        <div>
+          <h2 className="page-title">Seller Reviews</h2>
         </div>
-      </div>
-      <div className="filter-section">
-        <p>Filter by Rating:</p>
-        <div className="star-filter">
-          {Array.from({ length: 5 }, (_, index) => (
-            <span
-              key={index}
-              className={`star ${filterRating >= index + 1 ? "selected" : ""}`}
-              onClick={() => handleStarClick(index + 1)}
-            >
-              ★
-            </span>
-          ))}
+        <div className="general-rating">
+          <div className="general-rating-content">
+            <h3>General Rating</h3>
+            {generalRating ? (
+              <div className="star-general">
+                {renderStars(Math.round(generalRating))}
+              </div>
+            ) : (
+              <p>No reviews yet</p>
+            )}
+          </div>
         </div>
       </div>
 
-      {filteredReviews.length === 0 ? (
-        <p>No reviews found for the selected filter.</p>
-      ) : (
-        <div className="reviews-list">
-          {filteredReviews.map((review) => (
-            <div
-              key={review.id}
-              className="review-card"
-              data-rating={
-                review.rating >= 4
-                  ? "positive"
-                  : review.rating === 3
-                  ? "neutral"
-                  : "negative"
-              }
-            >
-              <div className="profile-wrapper">
-                {review.profile_image ? (
-                  <img
-                    src={review.profile_image}
-                    alt={`${review.user_name}'s profile`}
-                    className="review-profile-image"
-                  />
-                ) : (
-                  <FaUserAlt className="fallback-icon" />
-                )}
-              </div>
-              <div className="review-content">
-                <div className="review-header">
-                  <strong>{review.user_name}</strong> -{" "}
-                  {formatDate(review.created_at)}
-                </div>
-                {renderStars(review.rating)}
-                <p className="review-comment">{review.comment}</p>
-              </div>
-            </div>
-          ))}
+      <div className="filter-sort-section">
+        <div className="filter-section">
+          <h4>Filter Reviews</h4>
+          <div className="star-filter">
+            {Array.from({ length: 5 }, (_, index) => (
+              <span
+                key={index}
+                className={`star ${
+                  filterRating >= index + 1 ? "selected" : ""
+                }`}
+                onClick={() => handleStarClick(index + 1)}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <button
+            className="seller_review_clear-filter-btn"
+            onClick={handleClearFilters}
+          >
+            Clear
+          </button>
         </div>
-      )}
+
+        <div className="sort-section">
+          <label htmlFor="sort-select">Sort By:</label>
+          <select
+            id="sort-select"
+            value={sortOption}
+            onChange={(e) => handleSortChange(e.target.value)}
+          >
+            <option value="">Clear Sort</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="highest">Highest Rating</option>
+            <option value="lowest">Lowest Rating</option>
+            <option value="username">Username (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="reviews-list">
+        {filteredReviews.map((review) => (
+          <div
+            key={review.id}
+            className="review-card"
+            data-rating={
+              review.rating >= 4
+                ? "positive"
+                : review.rating === 3
+                ? "neutral"
+                : "negative"
+            }
+          >
+            <div className="profile-wrapper">
+              {review.profile_image ? (
+                <img
+                  src={review.profile_image}
+                  alt={`${review.user_name}'s profile`}
+                  className="review-profile-image"
+                />
+              ) : (
+                <FaUserAlt className="fallback-icon" />
+              )}
+            </div>
+            <div className="review-content">
+              <div className="review-header">
+                <strong>{review.user_name}</strong> -{" "}
+                {formatDate(review.created_at)}
+              </div>
+              {renderStars(review.rating)}
+              <p className="review-comment">{review.comment}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

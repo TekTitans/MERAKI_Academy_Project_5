@@ -25,24 +25,37 @@
   font-weight: 600;
   color: var(--color-heading);
 }
-
+.header_seller_reviews {
+  display: flex;
+  gap: 3rem;
+  align-items: baseline;
+}
 .general-rating {
-  margin-bottom: 20px;
-  font-size: 18px;
   color: var(--color-success);
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 1rem;
+}
+.general-rating h3 {
+  font-weight: bold;
+}
+
+.star_general {
+  color: var(--color-text);
+  transition: var(--transition);
 }
 
 .filter-section {
+  margin-top: 10px;
   margin-bottom: 20px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 0;
+  gap: 1rem;
+  align-items: first baseline;
 }
-
+.filter-section p {
+  font-size: 20px;
+  color: var(--color-text);
+  transition: var(--transition);
+}
 .filter-section label {
   font-size: 16px;
   color: var(--color-text);
@@ -82,6 +95,70 @@
   color: var(--color-text);
 }
 
+.filter-sort-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.seller_review_clear-filter-btn {
+  background-color: #e57373;
+  color: white;
+  border: 1px solid #e57373;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 10px;
+}
+
+.seller_review_clear-filter-btn:hover {
+  background-color: #d64040;
+  transform: translateY(-2px);
+}
+
+.sort-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-section label {
+  font-size: 16px;
+  color: var(--color-heading);
+  font-weight: bold;
+}
+
+.sort-section select {
+  padding: 8px 12px;
+  border: 1px solid var(--color-text);
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  color: var(--color-text);
+  font-size: 14px;
+  transition: var(--transition);
+}
+
+.sort-section select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.sort-section select:hover {
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+}
+
+#sort-select option:first-child {
+  font-style: italic;
+  color: var(--color-text-light);
+}
+
 .reviews-list {
   display: flex;
   flex-direction: column;
@@ -97,6 +174,11 @@
   background-color: var(--color-bg);
   border-left: 5px solid var(--color-success);
   transition: var(--transition);
+}
+
+.review-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px) scale(1.02);
 }
 
 .review-card[data-rating="positive"] {
