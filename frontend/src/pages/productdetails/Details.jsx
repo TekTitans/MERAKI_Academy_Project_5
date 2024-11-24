@@ -38,6 +38,7 @@ const Details = () => {
       setAvgrate(avg);
     });
   }, [pId]);
+  console.log(reviews);
 
   const addToCart = () => {
     if (!token) {
@@ -191,13 +192,15 @@ const Details = () => {
           {reviews.length > 0 ? (
             reviews
               .slice(0, showAllComments ? reviews.length : 5)
-              .map((review) => (
+              ?.map((review) => (
                 <div className="review-card" key={review?.id}>
                   <div className="review-header">
-                    <span className="review-author">User {userName}</span>
-                    {/* <span className="review-date">
+                    <span className="review-author">
+                       {review.user_name}
+                    </span>
+                    <span className="review-date">
                       {new Date(review.created_at).toLocaleString()}
-                    </span> */}
+                    </span>
                   </div>
                   <div className="review-rating">
                     {[1, 2, 3, 4, 5].map((star) => (
