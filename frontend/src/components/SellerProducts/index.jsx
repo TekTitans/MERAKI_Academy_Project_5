@@ -10,7 +10,6 @@ import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import EditProductForm from "../ProductEdit";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import Pagination from "../ProductsPagination";
 
 const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
@@ -36,6 +35,8 @@ const SellerProducts = () => {
   const [pageSize] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedReviews, setSelectedReviews] = useState(null);
 
   const fetchProducts = async (page = 1) => {
     if (!token) {
@@ -47,7 +48,7 @@ const SellerProducts = () => {
     dispatch(setError(null));
     try {
       const response = await axios.get(
-        "http://localhost:5000/products/seller",
+        `http://localhost:5000/products/seller?page=${page}&size=${pageSize}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,8 +70,8 @@ const SellerProducts = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [dispatch, token]);
+    fetchProducts(currentPage);
+  }, [dispatch, token, currentPage]);
 
   const validateForm = () => {
     if (!product.title || !product.price || !product.stock_quantity) {
@@ -196,6 +197,7 @@ const SellerProducts = () => {
       dispatch(setLoading(false));
       dispatch(setMessage("Product deleted successfully!"));
       dispatch(removeProduct(productId));
+      fetchProducts(currentPage);
     } catch (error) {
       dispatch(setLoading(false));
       dispatch(setError("Failed to delete product."));
@@ -217,7 +219,7 @@ const SellerProducts = () => {
         className={`pagination-arrow ${
           currentPage === 1 || totalPages === 0 ? "disabled" : ""
         }`}
-        onClick={() => currentPage > 1 && fetchProducts(currentPage - 1)}
+        onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
         aria-disabled={currentPage === 1}
       >
         <FaArrowLeft size={20} />
@@ -230,7 +232,7 @@ const SellerProducts = () => {
           currentPage === totalPages || totalPages === 0 ? "disabled" : ""
         }`}
         onClick={() =>
-          currentPage < totalPages && fetchProducts(currentPage + 1)
+          currentPage < totalPages && setCurrentPage(currentPage + 1)
         }
         aria-disabled={currentPage === totalPages}
       >
@@ -287,56 +289,64 @@ const SellerProducts = () => {
                   <div className="SDB_product-info">
                     <h3 className="SDB_product-title">{prod.title}</h3>
                     <p className="SDB_product-description">
-                      {prod.description}
+                      {prod.description || "No Description"}
                     </p>
-                    <p className="SDB_product-price">{prod.price}</p>
-                    <p className="SDB_product-stock">
-                      Stock Status: {prod.stock_status.replace("_", " ")} |
-                      Quantity: {prod.stock_quantity}
+
+                    <p className="SDB_product-price">
+                      {prod.price ? `$${prod.price}` : "Price Not Available"}
                     </p>
+
+                    <div className="SDB_product-stock">
+                      <span className="status">
+                        {prod.stock_status
+                          ? prod.stock_status.replace("_", " ")
+                          : "Status Unknown"}
+                      </span>
+                      &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+                      <span className="quantity">
+                        {prod.stock_quantity || "0"}
+                      </span>
+                    </div>
+
                     <p className="SDB_product-colors">
-                      Colors:
-                      {prod.color_options ? (
-                        <div> {prod.color_options.join(", ")}</div>
-                      ) : null}
+                      <span className="color-list">
+                        {prod.color_options && prod.color_options.length > 0
+                          ? prod.color_options.join(", ")
+                          : "No Colors"}
+                      </span>
                     </p>
+
                     <p className="SDB_product-sizes">
-                      Sizes:{" "}
-                      {prod.size_options ? (
-                        <div> {prod.size_options.join(", ")}</div>
-                      ) : null}
+                      <span className="size-list">
+                        {prod.size_options && prod.size_options.length > 0
+                          ? prod.size_options.join(", ")
+                          : "One Size"}
+                      </span>
                     </p>
+
                     <p className="SDB_product-category">
-                      Category: {prod.category_name}
+                      {prod.category_name || "Category Not Specified"}
                     </p>
+
                     <p className="SDB_product-subCategory">
-                      Subcategory: {prod.subcategory_name}
+                      {prod.subcategory_name || "Subcategory Not Specified"}
                     </p>
-                    <p className="SDB_product-times_ordered">
-                      Times ordered: {prod.total_orders_containing_product}
-                    </p>
-                    <p className="SDB_product-quantity_ordered">
-                      Quantity Ordered: {prod.quantity_ordered}
-                    </p>
-                    <p className="SDB_product-total_revenue">
-                      Total Revenue: {prod.total_revenue} | Revenue Percentage:{" "}
-                      {prod.revenue_percentage}
-                    </p>
-                    <p className="SDB_product-users_added_to_wishlist">
-                      Added To Wishlist: {prod.users_added_to_wishlist}
-                    </p>
-                    <p className="SDB_product-rating">
-                      Rate: {prod.rating} | {prod.number_of_reviews} Reviews
-                    </p>
-                    <p className="SDB_product-reviews">
-                      reviews: {prod.reviews}
-                    </p>
+
+                    <div className="SDB_product-rating">
+                      <span>{prod.rating || "No Rating Yet"}</span>{" "}
+                      &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                      <span>({prod.number_of_reviews})</span>
+                    </div>
+
                     <div className="product-actions">
                       <button
                         onClick={() => handleEdit(prod)}
                         className="action-button edit-button"
                       >
                         Edit
+                      </button>
+                      <button onClick={() => setSelectedProduct(prod)}>
+                        Statistics
                       </button>
                       <button
                         onClick={() => handleDelete(prod.id)}
@@ -353,6 +363,128 @@ const SellerProducts = () => {
             )}
           </div>
           {paginationControls}
+        </div>
+      )}
+      {selectedProduct && (
+        <div className="order-details-modal-wrapper">
+          <div className="order-details-modal">
+            <button
+              className="close-button"
+              onClick={() => setSelectedProduct(null)}
+            >
+              ×
+            </button>
+            <h3>{selectedProduct.title}</h3>
+            {selectedReviews ? (
+              <div className="reviews-list">
+                {selectedReviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="review-card"
+                    data-rating={
+                      review.rating >= 4
+                        ? "positive"
+                        : review.rating === 3
+                        ? "neutral"
+                        : "negative"
+                    }
+                  >
+                    <div className="profile-wrapper">
+                      {review.profile_image ? (
+                        <img
+                          src={review.profile_image}
+                          alt={`${review.user_name}'s profile`}
+                          className="review-profile-image"
+                        />
+                      ) : (
+                        <FaUserAlt className="fallback-icon" />
+                      )}
+                    </div>
+                    <div className="review-content">
+                      <div className="review-header">
+                        <strong>{review.user_name}</strong> -{" "}
+                        {formatDate(review.created_at)}
+                      </div>
+                      {renderStars(review.rating)}
+                      <p className="review-comment">{review.comment}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="content">
+                <div className="SDB_product-info">
+                  <p className="SDB_product-times_ordered">
+                    {selectedProduct.total_orders_containing_product > 0
+                      ? selectedProduct.total_orders_containing_product
+                      : "Not Ordered Yet"}
+                  </p>
+
+                  <p className="SDB_product-quantity_ordered">
+                    {selectedProduct.quantity_ordered > 0
+                      ? selectedProduct.quantity_ordered
+                      : "Not Ordered Yet"}
+                  </p>
+
+                  <div className="SDB_product-total_revenue">
+                    <span>
+                      {selectedProduct.total_revenue > 0
+                        ? `${(
+                            parseFloat(selectedProduct.revenue_percentage) || 0
+                          ).toFixed(2)}`
+                        : "Not Ordered Yet"}
+                    </span>{" "}
+                    &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;
+                    <span>
+                      {selectedProduct.revenue_percentage > 0 &&
+                        `${parseFloat(
+                          selectedProduct.revenue_percentage
+                        ).toFixed(2)}`}
+                    </span>
+                  </div>
+
+                  <p className="SDB_product-users_added_to_wishlist">
+                    {selectedProduct.users_added_to_wishlist > 0
+                      ? selectedProduct.users_added_to_wishlist
+                      : "Not Added Yet"}
+                  </p>
+
+                  <div className="SDB_product-rating">
+                    <span>{selectedProduct.rating || "No Rating Yet"}</span>{" "}
+                    <span>{"  "}</span> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+                    <span>({selectedProduct.number_of_reviews})</span>
+                  </div>
+
+                  <div className="SDB_product-reviews">
+                    {selectedProduct.reviews &&
+                    selectedProduct.reviews.length > 0 ? (
+                      <button
+                        onClick={() =>
+                          setSelectedReviews(selectedProduct.reviews)
+                        }
+                        className="cancel"
+                      >
+                        Reviews
+                      </button>
+                    ) : (
+                      "No Reviews Yet"
+                    )}
+
+                   
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="footer">
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="cancel"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

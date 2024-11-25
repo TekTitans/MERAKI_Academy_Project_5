@@ -374,10 +374,10 @@ WHERE
     AND p.is_deleted = FALSE
 GROUP BY 
     p.id, c.name, sc.name, total_revenue_per_seller.total_revenue
-;
+LIMIT $2 OFFSET $3;
 `;
 
-  const data = [78];//seller_id
+  const data = [78, size, offset];//seller_id
 
   try {
     const result = await pool.query(query, data);
