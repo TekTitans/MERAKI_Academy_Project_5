@@ -71,6 +71,8 @@ const SellerProducts = () => {
 
   useEffect(() => {
     fetchProducts(currentPage);
+    console.log("product", product);
+    console.log("editProduct", editProduct);
   }, [dispatch, token, currentPage]);
 
   const validateForm = () => {
@@ -93,12 +95,14 @@ const SellerProducts = () => {
       ...product,
       [name]: value,
     });
+    console.log("handleChange");
+    console.log("product change", product);
   };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+    console.log("handleFileChange");
     setIsUploading(true);
     dispatch(setError(null));
     const formData = new FormData();
@@ -130,8 +134,10 @@ const SellerProducts = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
+    console.log("handleUpdate");
     if (!validateForm()) {
+      console.error("Validation failed:", product);
+
       return;
     }
 
@@ -153,8 +159,11 @@ const SellerProducts = () => {
     };
     dispatch(setLoading(true));
     try {
+      console.log("product.id", product.id);
+      console.log("Submitting product:", formattedProduct);
+
       const response = await axios.put(
-        `http://localhost:5000/products/${editProduct.id}`,
+        `http://localhost:5000/products/${product.product_id}`,
         formattedProduct,
         {
           headers: {
@@ -162,6 +171,7 @@ const SellerProducts = () => {
           },
         }
       );
+      console.log("Update response:", response.data);
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
       dispatch(setMessage("Product updated successfully!"));
@@ -208,10 +218,19 @@ const SellerProducts = () => {
     setEditProduct(productToEdit);
     setProduct({
       ...productToEdit,
-      color_options: productToEdit.color_options.join(", "),
-      size_options: productToEdit.size_options.join(", "),
+      color_options: productToEdit.color_options?.join(", ") || "",
+      size_options: productToEdit.size_options?.join(", ") || "",
     });
+
+    console.log("Updated productToEdit:", productToEdit);
   };
+  useEffect(() => {
+    console.log("editProduct has been updated:", editProduct);
+  }, [editProduct]);
+
+  useEffect(() => {
+    console.log("product has been updated:", product);
+  }, [product]);
 
   const paginationControls = (
     <div className="pagination-controls">

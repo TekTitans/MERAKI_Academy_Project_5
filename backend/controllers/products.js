@@ -377,12 +377,12 @@ GROUP BY
 LIMIT $2 OFFSET $3;
 `;
 
-  const data = [78, size, offset];//seller_id
+  const data = [seller_id, size, offset]; //seller_id
 
   try {
     const result = await pool.query(query, data);
     const countQuery = `SELECT COUNT(*) FROM products WHERE seller_id = $1 AND is_deleted = FALSE`;
-    const countResult = await pool.query(countQuery, [78]);//seller_id
+    const countResult = await pool.query(countQuery, [seller_id]); //seller_id
     const totalProducts = parseInt(countResult.rows[0].count);
     const totalPages = Math.ceil(totalProducts / size);
 

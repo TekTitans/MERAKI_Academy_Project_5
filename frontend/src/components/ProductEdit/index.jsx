@@ -13,7 +13,6 @@ const EditProductForm = ({
   handleFileChange,
   handleUpdate,
   setEditProduct,
-  setIseditProduct,
 }) => {
   const { loading, error, message } = useSelector((state) => state.order);
   const dispatch = useDispatch();
@@ -156,7 +155,6 @@ const EditProductForm = ({
             className="edit_back-button"
             onClick={() => {
               setEditProduct(null);
-              setIseditProduct(false);
             }}
           >
             Back to Product List

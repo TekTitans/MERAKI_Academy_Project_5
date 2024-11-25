@@ -11,8 +11,8 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
   padding: 1rem;
+  max-width: 350px;
 }
 
 .SDB_product-card:hover {
@@ -54,7 +54,7 @@
 .SDB_product-users_added_to_wishlist,
 .SDB_product-rating,
 .SDB_product-reviews {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #555;
   padding: 0.4rem 0.5rem;
   border-radius: 6px;
@@ -97,20 +97,41 @@
 }
 
 .SDB_product-title {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 
 .SDB_product-description {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #555;
   margin-bottom: 1rem;
+  line-height: 1.5; 
+  white-space: normal; 
+  word-wrap: break-word; 
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  height: 5rem; 
+  max-height: 5rem; 
+}
+.SDB_product-description {
+  word-break: break-word; 
+  overflow-wrap: break-word; 
+}
+.SDB_product-description::-webkit-scrollbar {
+  width: 5px;
+}
+.SDB_product-description::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px;
+}
+.SDB_product-description::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .SDB_product-price {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: bold;
   color: #28a745;
   margin-bottom: 1rem;
@@ -243,7 +264,6 @@
   background-color: #e2f7e6;
 }
 
-
 .SDB_product-colors {
   border-color: #007bff;
 }
@@ -293,7 +313,7 @@
 }
 
 .statistics-button {
-  padding: 0.6rem 1.4rem;
+  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
@@ -314,7 +334,7 @@
 
 .edit-button,
 .delete-button {
-  padding: 0.6rem 1.4rem;
+  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
@@ -348,10 +368,9 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-
 .no-products-message {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #666;
   padding: 2rem 0;
 }
@@ -360,7 +379,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 3rem;
   color: #4caf50;
   margin-top: 50px;
 }
