@@ -197,13 +197,5 @@
     font-size: 0.875rem;
   }
 
-  .back-button,
-  .edit-button,
-  .delete-button {
-    padding: 6px 12px;
-  }
 
-  .product-image {
-    height: 120px;
-  }
 }

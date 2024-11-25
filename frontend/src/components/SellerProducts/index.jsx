@@ -291,10 +291,11 @@ const SellerProducts = () => {
                     <p className="SDB_product-description">
                       {prod.description || "No Description"}
                     </p>
-
-                    <p className="SDB_product-price">
-                      {prod.price ? `$${prod.price}` : "Price Not Available"}
-                    </p>
+                    <div className="SDB_product-price">
+                      <span className="status">
+                        {prod.price ? `${prod.price}` : "Price Not Available"}
+                      </span>
+                    </div>
 
                     <div className="SDB_product-stock">
                       <span className="status">
@@ -341,16 +342,19 @@ const SellerProducts = () => {
                     <div className="product-actions">
                       <button
                         onClick={() => handleEdit(prod)}
-                        className="action-button edit-button"
+                        className="edit-button"
                       >
                         Edit
                       </button>
-                      <button onClick={() => setSelectedProduct(prod)}>
+                      <button
+                        onClick={() => setSelectedProduct(prod)}
+                        className="statistics-button"
+                      >
                         Statistics
                       </button>
                       <button
                         onClick={() => handleDelete(prod.id)}
-                        className="action-button delete-button"
+                        className="delete-button"
                       >
                         Delete
                       </button>
@@ -469,8 +473,6 @@ const SellerProducts = () => {
                     ) : (
                       "No Reviews Yet"
                     )}
-
-                   
                   </div>
                 </div>
               </div>
