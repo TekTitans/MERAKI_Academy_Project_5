@@ -341,7 +341,11 @@ const getSellerProduct = async (req, res) => {
         ) FILTER (WHERE r.id IS NOT NULL),
         '[]'
     ) AS reviews,
-    COALESCE(SUM(o.quantity), 0) AS times_ordered
+    COALESCE(SUM(o.quantity), 0) AS quantity_ordered,
+    COALESCE(COUNT(DISTINCT o.order_id), 0) AS total_orders_containing_product,
+    COALESCE(SUM(o.quantity * p.price), 0) AS total_revenue,  
+    COALESCE(SUM(o.quantity * p.price), 0) / total_revenue_per_seller.total_revenue * 100 AS revenue_percentage,  
+    COALESCE(COUNT(DISTINCT w.user_id), 0) AS users_added_to_wishlist  
 FROM 
     products p
 JOIN 
@@ -351,20 +355,34 @@ JOIN
 LEFT JOIN 
     reviews r ON r.product_id = p.id AND r.is_deleted = FALSE
 LEFT JOIN 
-    cart o ON o.product_id = p.id AND o.is_deleted = FALSE
+    cart o ON o.product_id = p.id AND o.is_deleted = TRUE
+LEFT JOIN 
+    wishlists w ON w.product_id = p.id AND w.is_deleted = FALSE  -- Join with the wishlists table
+LEFT JOIN (
+    SELECT 
+        SUM(o.quantity * p.price) AS total_revenue
+    FROM 
+        products p
+    JOIN 
+        cart o ON o.product_id = p.id
+    WHERE 
+        p.seller_id = $1
+        AND p.is_deleted = FALSE
+) total_revenue_per_seller ON true
 WHERE 
     p.seller_id = $1
     AND p.is_deleted = FALSE
 GROUP BY 
-    p.id, c.name, sc.name
-  LIMIT $2 OFFSET $3;`;
+    p.id, c.name, sc.name, total_revenue_per_seller.total_revenue
+;
+`;
 
-  const data = [seller_id, size, offset];
+  const data = [78];//seller_id
 
   try {
     const result = await pool.query(query, data);
     const countQuery = `SELECT COUNT(*) FROM products WHERE seller_id = $1 AND is_deleted = FALSE`;
-    const countResult = await pool.query(countQuery, [seller_id]);
+    const countResult = await pool.query(countQuery, [78]);//seller_id
     const totalProducts = parseInt(countResult.rows[0].count);
     const totalPages = Math.ceil(totalProducts / size);
 

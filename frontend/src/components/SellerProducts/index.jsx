@@ -8,8 +8,10 @@ import {
 } from "../redux/reducers/product/product";
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
-import Pagination from "../ProductsPagination";
 import EditProductForm from "../ProductEdit";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import Pagination from "../ProductsPagination";
+
 const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
@@ -55,7 +57,7 @@ const SellerProducts = () => {
 
       if (response.data.products) {
         dispatch(setProducts(response.data.products));
-        console.log(response.data.products);
+        console.log(response.data);
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
 
@@ -209,6 +211,34 @@ const SellerProducts = () => {
     });
   };
 
+  const paginationControls = (
+    <div className="pagination-controls">
+      <div
+        className={`pagination-arrow ${
+          currentPage === 1 || totalPages === 0 ? "disabled" : ""
+        }`}
+        onClick={() => currentPage > 1 && fetchProducts(currentPage - 1)}
+        aria-disabled={currentPage === 1}
+      >
+        <FaArrowLeft size={20} />
+      </div>
+      <span className="pagination-info">
+        Page {currentPage} of {totalPages}
+      </span>
+      <div
+        className={`pagination-arrow ${
+          currentPage === totalPages || totalPages === 0 ? "disabled" : ""
+        }`}
+        onClick={() =>
+          currentPage < totalPages && fetchProducts(currentPage + 1)
+        }
+        aria-disabled={currentPage === totalPages}
+      >
+        <FaArrowRight size={20} />
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     if (error || message) {
       const timer = setTimeout(() => {
@@ -220,14 +250,6 @@ const SellerProducts = () => {
   }, [error, message, dispatch]);
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
-
-  const renderSizeOptions = () => {
-    return size_options ? (
-      <div>
-        <strong>Sizes:</strong> {size_options.join(", ")}
-      </div>
-    ) : null;
-  };
 
   return (
     <div className="seller-page">
@@ -291,7 +313,17 @@ const SellerProducts = () => {
                       Subcategory: {prod.subcategory_name}
                     </p>
                     <p className="SDB_product-times_ordered">
-                      Times ordered: {prod.times_ordered}
+                      Times ordered: {prod.total_orders_containing_product}
+                    </p>
+                    <p className="SDB_product-quantity_ordered">
+                      Quantity Ordered: {prod.quantity_ordered}
+                    </p>
+                    <p className="SDB_product-total_revenue">
+                      Total Revenue: {prod.total_revenue} | Revenue Percentage:{" "}
+                      {prod.revenue_percentage}
+                    </p>
+                    <p className="SDB_product-users_added_to_wishlist">
+                      Added To Wishlist: {prod.users_added_to_wishlist}
                     </p>
                     <p className="SDB_product-rating">
                       Rate: {prod.rating} | {prod.number_of_reviews} Reviews
@@ -320,11 +352,7 @@ const SellerProducts = () => {
               <p className="no-products-message">No products found.</p>
             )}
           </div>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />{" "}
+          {paginationControls}
         </div>
       )}
     </div>
