@@ -379,12 +379,54 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
-const lookUp = (req, res) => {
-  console.log("test");
+ const searchByName = async (req, res) => {
+  const  query1  = req.params.query;
+  console.log(query1);
+  
+  if (!query1 || query1.trim() === "") {
+    return res.status(400).json({
+      success: false,
+      message: "Query parameter is required",
+    });
+  }
 
-  // Assuming you want to send a response to the client
-  res.status(200).json({ message: "Request received successfully" });
+  const searchQuery = `%${query1.trim()}%`; 
+
+  try {
+    const result = await pool.query(
+      `SELECT products.*, categories.name AS category_name 
+       FROM products 
+       LEFT JOIN categories ON products.category_id = categories.id
+       WHERE products.title ILIKE $1 
+       OR products.description ILIKE $1 
+       OR categories.name ILIKE $1`, 
+      [searchQuery] 
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: true,
+        message: "No products found matching your search",
+        products: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      products: result.rows,
+    });
+  } catch (error) {
+    console.error("Error executing search:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
 };
+
+
+
 
 module.exports = {
   createProduct,
@@ -395,5 +437,6 @@ module.exports = {
   getProductById,
   getSellerProduct,
   getProductsByCategory,
-  lookUp,
+
+  searchByName,
 };

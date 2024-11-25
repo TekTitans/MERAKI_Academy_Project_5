@@ -1,57 +1,72 @@
-// SearchPage.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import "./style.css";
 
-const SearchPage = () => {
-  const location = useLocation();
-  const query = new URLSearchParams(location.search).get("query");
+const SearchResults = () => {
+  const { query } = useParams(); // Access the path parameter
   const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log(query);
-
-    if (query) {
-      axios
-        .get(
-          `http://localhost:5000/products/search?query=${encodeURIComponent(
-            query
-          )}`
-        )
-        .then((response) => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/products/search/${encodeURIComponent(query)}`
+        );
+        if (response.data.success) {
           setProducts(response.data.products);
-          console.log(response);
+        } else {
+          setError(response.data.message || "No products found");
+        }
+      } catch (err) {
+        setError("No Product Found");
+      }
+    };
 
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching search results:", error);
-          setIsLoading(false);
-        });
-    }
+    fetchProducts();
   }, [query]);
 
   return (
-    <div>
-      <h2>Search Results for "{query}"</h2>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : products.length > 0 ? (
-        <div className="product-list">
-          {products.map((product) => (
-            <div key={product.id} className="product-item">
-              <img src={product.image} alt={product.name} />
-              <h3>{product.name}</h3>
-              <p>{product.price} JD</p>
-            </div>
-          ))}
-        </div>
+    <div className="search-results-container">
+      <h2 className="search-header">Results for "{query}"</h2>
+      {error ? (
+        <p className="error-message">{error}</p>
       ) : (
-        <p>No products found.</p>
+        <div className="products-grid">
+          {products.length === 0 ? (
+            <p className="no-results">No products match your search criteria.</p>
+          ) : (
+            products.map((product) => (
+              <div className="product-card" key={product.id}>
+                <img
+                  src={product.image_url || "https://via.placeholder.com/150"}
+                  alt={product.title}
+                  className="product-image"
+                />
+                <div className="product-info">
+                  <h3 className="product-title">{product.title}</h3>
+                  <p className="product-description">{product.description}</p>
+                  <div className="product-details">
+                    <p className="product-category">
+                      <strong>Category:</strong> {product.category_name}
+                    </p>
+                    <p className="product-price">
+                      <strong>Price:</strong> {product.price} JD
+                    </p>
+                  </div>
+                </div>
+                <Link to={`/details/${product.id}`} className="details-link">
+                  View Details
+                </Link>
+              </div>
+            ))
+          )}
+        </div>
       )}
     </div>
   );
 };
 
-export default SearchPage;
+export default SearchResults;

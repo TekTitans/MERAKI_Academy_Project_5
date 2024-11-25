@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
-import { RiAccountCircleFill } from "react-icons/ri";
+//import { RiAccountCircleFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
-import { setSearch } from "../redux/reducers/product/product";
+//import { setSearch } from "../redux/reducers/product/product";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -18,8 +18,9 @@ const Navbar = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      history(`/search?query=${encodeURIComponent(searchQuery)}`);
+      history(`/search/${encodeURIComponent(searchQuery.trim())}`);
     }
+    setSearchQuery("");
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -52,14 +53,17 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-icons">
-          <form onSubmit={handleSearch} className="search-form">
+          <form className="navbar-search" onSubmit={handleSearch}>
             <input
               type="text"
-              placeholder="Search for products..."
+              className="search-input"
+              placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="submit">Search</button>
+            <button type="submit" className="search-button">
+              🔍
+            </button>
           </form>
           <a className="cart-icon">
             <FaShoppingCart onClick={() => history("/cart")} />

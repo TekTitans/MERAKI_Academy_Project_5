@@ -98,23 +98,6 @@
   color: var(--primary-color);
 }
 
-/* Search Bar Styling */
-.navbar-search input {
-  padding: 0.4rem 0.8rem; /* Reduced padding */
-  border: 1px solid #bdc3c7;
-  border-radius: 20px;
-  font-size: 0.9rem; /* Smaller font size */
-  width: 180px; /* Adjust width */
-  outline: none;
-  transition: box-shadow var(--transition-speed) ease,
-    border-color var(--transition-speed) ease;
-}
-
-.navbar-search input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 8px rgba(26, 188, 156, 0.5);
-}
-
 /* Navbar Toggle Button (Mobile) */
 .navbar-toggle {
   display: none;
@@ -226,9 +209,6 @@
     font-size: 1.2rem; /* Even smaller size */
   }
 
-  .navbar-search input {
-    width: 120px;
-  }
   .navbar-toggle {
     display: block;
   }
@@ -286,10 +266,6 @@
     font-size: 0.8rem; /* Reduced size for mobile */
   }
 
-  .navbar-search input {
-    width: 80px;
-  }
-
   .login-btn {
     font-size: 0.2rem;
     padding: 0.3rem 0.5rem;
@@ -299,21 +275,56 @@
     gap: 0.5rem; /* Reduced gap */
   }
 }
-.search-form input {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px 0 0 5px;
+
+.navbar-search {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 20px;
+  position: relative;
 }
 
-.search-form button {
-  padding: 5px 10px;
+/* Search input */
+.search-input {
+  width: 500px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: 1px solid #ecf0f1;
+  border-radius: 30px;
+  background-color: #34495e;
+  color: #ecf0f1;
+  transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: #bdc3c7;
+  font-size: 16px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: #2c3e50;
+}
+
+.search-input:hover {
+  border-color: #3498db;
+}
+
+/* Search button */
+.search-button {
+  position: absolute;
+  right: 2px;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: #fff;
   border: none;
-  background-color: #007bff;
-  color: white;
+  border-radius: 50%;
   cursor: pointer;
-  border-radius: 0 5px 5px 0;
+  transition: background-color 0.3s;
 }
 
-.search-form button:hover {
-  background-color: #0056b3;
+.search-button:hover {
+  background-color: #e65500;
 }

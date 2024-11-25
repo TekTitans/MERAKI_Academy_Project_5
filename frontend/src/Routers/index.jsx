@@ -45,7 +45,7 @@ export const router = createBrowserRouter(
         { path: "/Profile", element: <ProfilePage /> },
 
         { path: "*", element: <NotFound /> },
-        { path: "/search", element: <SearchPage /> },
+        { path: "/search/:query", element: <SearchPage /> },
         { path: "/category/:id", element: <Category /> },
         { path: "/products", element: <Products /> },
         { path: "/seller", element: <SellerDashboard /> },
