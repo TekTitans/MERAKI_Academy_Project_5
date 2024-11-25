@@ -55,6 +55,7 @@ const SellerProducts = () => {
 
       if (response.data.products) {
         dispatch(setProducts(response.data.products));
+        console.log(response.data.products);
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
 
@@ -288,6 +289,15 @@ const SellerProducts = () => {
                     </p>
                     <p className="SDB_product-subCategory">
                       Subcategory: {prod.subcategory_name}
+                    </p>
+                    <p className="SDB_product-times_ordered">
+                      Times ordered: {prod.times_ordered}
+                    </p>
+                    <p className="SDB_product-rating">
+                      Rate: {prod.rating} | {prod.number_of_reviews} Reviews
+                    </p>
+                    <p className="SDB_product-reviews">
+                      reviews: {prod.reviews}
                     </p>
                     <div className="product-actions">
                       <button

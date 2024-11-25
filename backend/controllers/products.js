@@ -311,48 +311,53 @@ const getSellerProduct = async (req, res) => {
   const offset = (page - 1) * size;
 
   const query = `SELECT 
-      p.id AS product_id,
-      p.title,
-      p.description,
-      p.price,
-      p.stock_status,
-      p.stock_quantity,
-      p.color_options,
-      p.size_options,
-      p.category_id,
-      c.name AS category_name,
-      p.subcategory_id,
-      sc.name AS subcategory_name,
-      p.product_image,
-      p.created_at,
-      COALESCE(AVG(r.rating), 0) AS average_rating,
-      COUNT(r.id) AS number_of_reviews,
-      COALESCE(
-          JSON_AGG(
-              JSON_BUILD_OBJECT(
-                  'review_id', r.id,
-                  'user_id', r.user_id,
-                  'rating', r.rating,
-                  'comment', r.comment,
-                  'created_at', r.created_at
-              )
-          ) FILTER (WHERE r.id IS NOT NULL),
-          '[]'
-      ) AS reviews
-  FROM 
-      products p
-  JOIN 
-      categories c ON p.category_id = c.id
-  JOIN 
-      subcategories sc ON p.subcategory_id = sc.id
-  LEFT JOIN 
-      reviews r ON r.product_id = p.id AND r.is_deleted = FALSE
-  WHERE 
-      p.seller_id = $1
-      AND p.is_deleted = FALSE
-  GROUP BY 
-      p.id, c.name, sc.name
-  LIMIT $2 OFFSET $3`;
+    p.id AS product_id,
+    p.title,
+    p.description,
+    p.price,
+    p.stock_status,
+    p.stock_quantity,
+    p.color_options,
+    p.size_options,
+    p.category_id,
+    c.name AS category_name,
+    p.subcategory_id,
+    sc.name AS subcategory_name,
+    p.product_image,
+    p.created_at,
+    COALESCE(AVG(r.rating), 0) AS average_rating,
+    COUNT(DISTINCT r.id) AS number_of_reviews,
+    COALESCE(
+        JSON_AGG(
+            DISTINCT CAST(
+                JSON_BUILD_OBJECT(
+                    'review_id', r.id,
+                    'user_id', r.user_id,
+                    'rating', r.rating,
+                    'comment', r.comment,
+                    'created_at', r.created_at
+                ) AS TEXT
+            )
+        ) FILTER (WHERE r.id IS NOT NULL),
+        '[]'
+    ) AS reviews,
+    COALESCE(SUM(o.quantity), 0) AS times_ordered
+FROM 
+    products p
+JOIN 
+    categories c ON p.category_id = c.id
+JOIN 
+    subcategories sc ON p.subcategory_id = sc.id
+LEFT JOIN 
+    reviews r ON r.product_id = p.id AND r.is_deleted = FALSE
+LEFT JOIN 
+    cart o ON o.product_id = p.id AND o.is_deleted = FALSE
+WHERE 
+    p.seller_id = $1
+    AND p.is_deleted = FALSE
+GROUP BY 
+    p.id, c.name, sc.name
+  LIMIT $2 OFFSET $3;`;
 
   const data = [seller_id, size, offset];
 
@@ -387,7 +392,6 @@ const getSellerProduct = async (req, res) => {
     });
   }
 };
-
 
 const getProductsByCategory = async (req, res) => {
   const category_id = req.params.cId;
