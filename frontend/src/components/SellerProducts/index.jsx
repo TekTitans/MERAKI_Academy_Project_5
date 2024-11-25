@@ -220,6 +220,14 @@ const SellerProducts = () => {
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
 
+  const renderSizeOptions = () => {
+    return size_options ? (
+      <div>
+        <strong>Sizes:</strong> {size_options.join(", ")}
+      </div>
+    ) : null;
+  };
+
   return (
     <div className="seller-page">
       <h2 className="page-title">Products Management</h2>
@@ -258,16 +266,28 @@ const SellerProducts = () => {
                     <p className="SDB_product-description">
                       {prod.description}
                     </p>
-                    <p className="SDB_product-price">${prod.price}</p>
+                    <p className="SDB_product-price">{prod.price}</p>
                     <p className="SDB_product-stock">
-                      Stock Status: {prod.stock_status} | Quantity:{" "}
-                      {prod.stock_quantity}
+                      Stock Status: {prod.stock_status.replace("_", " ")} |
+                      Quantity: {prod.stock_quantity}
                     </p>
                     <p className="SDB_product-colors">
-                      Colors: {prod.color_options.join(", ")}
+                      Colors:
+                      {prod.color_options ? (
+                        <div> {prod.color_options.join(", ")}</div>
+                      ) : null}
                     </p>
                     <p className="SDB_product-sizes">
-                      Sizes: {prod.size_options.join(", ")}
+                      Sizes:{" "}
+                      {prod.size_options ? (
+                        <div> {prod.size_options.join(", ")}</div>
+                      ) : null}
+                    </p>
+                    <p className="SDB_product-category">
+                      Category: {prod.category_name}
+                    </p>
+                    <p className="SDB_product-subCategory">
+                      Subcategory: {prod.subcategory_name}
                     </p>
                     <div className="product-actions">
                       <button

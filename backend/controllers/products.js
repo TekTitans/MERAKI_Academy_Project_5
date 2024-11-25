@@ -232,6 +232,7 @@ const getAllProducts = async (req, res) => {
         message: "No products found",
       });
     } else {
+      console.log("products: ", result.rows);
       res.json({
         success: true,
         message: "All products retrieved successfully",
@@ -305,19 +306,60 @@ const getProductById = async (req, res) => {
 
 const getSellerProduct = async (req, res) => {
   const seller_id = req.token.userId;
-
   const page = parseInt(req.query.page) || 1;
   const size = parseInt(req.query.size) || 8;
   const offset = (page - 1) * size;
 
-  const query = `SELECT * FROM products WHERE seller_id = $1 LIMIT $2 OFFSET $3`;
+  const query = `SELECT 
+      p.id AS product_id,
+      p.title,
+      p.description,
+      p.price,
+      p.stock_status,
+      p.stock_quantity,
+      p.color_options,
+      p.size_options,
+      p.category_id,
+      c.name AS category_name,
+      p.subcategory_id,
+      sc.name AS subcategory_name,
+      p.product_image,
+      p.created_at,
+      COALESCE(AVG(r.rating), 0) AS average_rating,
+      COUNT(r.id) AS number_of_reviews,
+      COALESCE(
+          JSON_AGG(
+              JSON_BUILD_OBJECT(
+                  'review_id', r.id,
+                  'user_id', r.user_id,
+                  'rating', r.rating,
+                  'comment', r.comment,
+                  'created_at', r.created_at
+              )
+          ) FILTER (WHERE r.id IS NOT NULL),
+          '[]'
+      ) AS reviews
+  FROM 
+      products p
+  JOIN 
+      categories c ON p.category_id = c.id
+  JOIN 
+      subcategories sc ON p.subcategory_id = sc.id
+  LEFT JOIN 
+      reviews r ON r.product_id = p.id AND r.is_deleted = FALSE
+  WHERE 
+      p.seller_id = $1
+      AND p.is_deleted = FALSE
+  GROUP BY 
+      p.id, c.name, sc.name
+  LIMIT $2 OFFSET $3`;
+
   const data = [seller_id, size, offset];
-  const countQuery = `SELECT COUNT(*) FROM products WHERE seller_id = $1`;
-  const countData = [seller_id];
 
   try {
     const result = await pool.query(query, data);
-    const countResult = await pool.query(countQuery, countData);
+    const countQuery = `SELECT COUNT(*) FROM products WHERE seller_id = $1 AND is_deleted = FALSE`;
+    const countResult = await pool.query(countQuery, [seller_id]);
     const totalProducts = parseInt(countResult.rows[0].count);
     const totalPages = Math.ceil(totalProducts / size);
 
@@ -337,6 +379,7 @@ const getSellerProduct = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log("Query Execution Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -344,6 +387,7 @@ const getSellerProduct = async (req, res) => {
     });
   }
 };
+
 
 const getProductsByCategory = async (req, res) => {
   const category_id = req.params.cId;
