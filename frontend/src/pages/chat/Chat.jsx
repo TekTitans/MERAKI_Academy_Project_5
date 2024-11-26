@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useSocket } from "./socketContext"; 
 import Messages from "./Messages";
+import  "./chat.css";
+
 
 const Chat = () => {
   const { socket } = useSocket(); 
