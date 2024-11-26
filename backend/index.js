@@ -11,6 +11,7 @@ const orderRouter = require("./routes/order");
 const cartRouter = require("./routes/cart");
 const wishRouter = require("./routes/wishlist");
 const productRouter = require("./routes/products");
+const messagesRouter=require("./routes/messages")
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
-
+app.use("/messages",messagesRouter);
 app.use("/users", userRouter);
 app.use("/roles", rolesRouter);
 app.use("/category", cateogryRouter);

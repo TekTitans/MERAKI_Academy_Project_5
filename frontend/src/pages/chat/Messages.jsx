@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllMessages } from "../../components/redux/reducers/auth";
+import { addToRecived, setAllMessages } from "../../components/redux/reducers/auth";
 import "./chat.css";
 
 const Messages = ({ socket }) => {
@@ -10,19 +10,22 @@ const Messages = ({ socket }) => {
   const allMessages = useSelector((state) => state.auth.allMessages);
   const userName = useSelector((state) => state.auth.userName);
   const userId = useSelector((state) => state.auth.userId);
+  const recived = useSelector((state) => state.auth.recived);
 
 
   const messagesEndRef = useRef(null);
-
   useEffect(() => {
     socket.on("message", (data) => {
       dispatch(setAllMessages([...allMessages, data]));
+      if(data.fromId!=userId){
+      dispatch(addToRecived([...recived, data]))};
+
     });
 
     return () => {
       socket.off("message");
     };
-  }, [allMessages, dispatch, socket]);
+  }, [allMessages, dispatch, socket,recived]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
