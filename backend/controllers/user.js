@@ -491,7 +491,7 @@ const getProfile = async (req, res) => {
 };
 
 const getUserbyId = async (req, res) => {
-  const { userId } = req.params.userId;
+  const  {userId}  = req.params;
 
   try {
     const query = `SELECT * FROM users WHERE id = $1`;

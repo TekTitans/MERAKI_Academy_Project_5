@@ -9,6 +9,7 @@ const UserProfile = () => {
   const { token } = useSelector((state) => state.auth);
   const history = useNavigate();
   const { userId } = useParams();
+  console.log(userId);
 
   const [userData, setUserData] = useState({
     firstName: "",
