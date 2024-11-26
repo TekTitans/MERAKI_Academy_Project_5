@@ -490,6 +490,36 @@ const getProfile = async (req, res) => {
   }
 };
 
+const getUserbyId = async (req, res) => {
+  const { userId } = req.params; 
+  console.log("test");
+  console.log("userId", userId);
+  try {
+    const query = `SELECT * FROM users WHERE id = $1`;
+    const result = await pool.query(query, [userId]);
+
+    if (result.rows.length) {
+      res.status(200).json({
+        success: true,
+        user: result.rows[0],
+      });
+      console.log("result", result.rows);
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message,
+    });
+    console.log("err", err);
+  }
+};
+
 const updateProfile = async (req, res) => {
   const { userId } = req.token;
   const { firstName, lastName, country, address, location, bio, social_media } =
@@ -1038,4 +1068,5 @@ module.exports = {
   resetPassword,
   googleLogin,
   completeRegister,
+  getUserbyId,
 };
