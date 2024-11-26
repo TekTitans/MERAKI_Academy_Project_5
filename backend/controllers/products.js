@@ -281,7 +281,10 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   const productId = req.params.pId;
-  const query = `SELECT * FROM products WHERE id = $1`;
+  const query = `SELECT products.*,users.id AS user_id, CONCAT(users.first_name, ' ', users.last_name) AS user_name 
+                                     FROM products
+                                     JOIN users ON products.seller_id = users.id
+                                      WHERE products.id = $1;`;
 
   const data = [productId];
   try {
@@ -445,10 +448,10 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
- const searchByName = async (req, res) => {
-  const  query1  = req.params.query;
+const searchByName = async (req, res) => {
+  const query1 = req.params.query;
   console.log(query1);
-  
+
   if (!query1 || query1.trim() === "") {
     return res.status(400).json({
       success: false,
@@ -456,7 +459,7 @@ const getProductsByCategory = async (req, res) => {
     });
   }
 
-  const searchQuery = `%${query1.trim()}%`; 
+  const searchQuery = `%${query1.trim()}%`;
 
   try {
     const result = await pool.query(
@@ -465,8 +468,8 @@ const getProductsByCategory = async (req, res) => {
        LEFT JOIN categories ON products.category_id = categories.id
        WHERE products.title ILIKE $1 
        OR products.description ILIKE $1 
-       OR categories.name ILIKE $1`, 
-      [searchQuery] 
+       OR categories.name ILIKE $1`,
+      [searchQuery]
     );
 
     if (result.rows.length === 0) {
@@ -490,9 +493,6 @@ const getProductsByCategory = async (req, res) => {
     });
   }
 };
-
-
-
 
 module.exports = {
   createProduct,
