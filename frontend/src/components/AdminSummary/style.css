@@ -30,12 +30,14 @@ body {
   text-align: center;
   font-weight: 600;
   color: var(--color-heading);
+  margin-bottom: 40px;
 }
 
 .seller-summary {
   background-color: var(--bg-light);
   border-radius: 12px;
   box-shadow: var(--box-shadow);
+  padding: 25px;
 }
 
 .summary-cards {
@@ -51,6 +53,7 @@ body {
   box-shadow: var(--box-shadow);
   text-align: center;
   transition: var(--transition);
+  border-left: 5px solid transparent; /* Default border to be overwritten */
 }
 
 .summary-card:hover {
@@ -71,70 +74,95 @@ body {
   color: var(--color-text);
   margin-bottom: 15px;
 }
-.summary-card.total-orders {
-  background-color: #f0f8ff;
-  border-left: 5px solid #4682b4;
+
+.summary-card ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-.summary-card.pending-orders {
-  background-color: #fff3cd;
-  border-left: 5px solid #ffc107;
+.summary-card ul li {
+  font-size: 18px;
+  color: var(--color-text);
+  margin-bottom: 8px;
 }
 
-.summary-card.confirmed-orders {
-  background-color: #d4edda;
-  border-left: 5px solid #28a745;
+.summary-card h4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-heading);
 }
 
-.summary-card.cancelled-orders {
-  background-color: #f8d7da;
-  border-left: 5px solid #dc3545;
+.summary-card p {
+  font-size: 18px;
+  color: var(--color-text);
 }
 
-.summary-card.shipped-orders {
-  background-color: #d1ecf1;
-  border-left: 5px solid #17a2b8;
+.summary-card p br {
+  margin-bottom: 5px;
 }
 
-.summary-card.completed-orders {
-  background-color: #e9f7ef;
-  border-left: 5px solid #28a745;
-}
-
-.summary-card.total-sales {
-  background-color: #f1f5f8;
-  border-left: 5px solid #6c757d;
-}
-
-.summary-card.total-products {
+/* Card Color Variations */
+.summary-card.total-users {
   background-color: #e9ecef;
   border-left: 5px solid #6c757d;
 }
 
-.summary-card.out-of-stock {
+.summary-card.blocked-users {
   background-color: #f8d7da;
   border-left: 5px solid #dc3545;
 }
 
-.summary-card.total-customers {
+.summary-card.new-users {
   background-color: #d1ecf1;
   border-left: 5px solid #17a2b8;
 }
 
-.summary-card.top-selling-product {
-  background-color: #f8f9fa;
-  border-left: 5px solid #343a40;
-}
-.summary-card.total-reviews {
-  background-color: #e2f7e1;
-  border-left: 5px solid #28a745;
+.summary-card.low-stock-products {
+  background-color: #f8d7da;
+  border-left: 5px solid #dc3545;
 }
 
-.summary-card.average-rating {
+.summary-card.most-reviewed-products {
   background-color: #f0f8ff;
   border-left: 5px solid #4682b4;
 }
 
+.summary-card.conversion-rate {
+  background-color: #e2f7e1;
+  border-left: 5px solid #28a745;
+}
+
+.summary-card.average-order-value {
+  background-color: #f1f5f8;
+  border-left: 5px solid #6c757d;
+}
+
+.summary-card.total-revenue {
+  background-color: #f1f5f8;
+  border-left: 5px solid #6c757d;
+}
+
+.summary-card.revenue-by-category {
+  background-color: #f0f8ff;
+  border-left: 5px solid #4682b4;
+}
+
+.summary-card.best-product {
+  background-color: #e9f7ef;
+  border-left: 5px solid #28a745;
+}
+
+.summary-card.best-seller {
+  background-color: #f8f9fa;
+  border-left: 5px solid #343a40;
+}
+
+.summary-card.geographic-distribution {
+  background-color: #f1f5f8;
+  border-left: 5px solid #6c757d;
+}
+
+/* Responsiveness */
 @media (max-width: 768px) {
   .summary-cards {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
