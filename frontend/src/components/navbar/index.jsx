@@ -93,8 +93,7 @@ const Navbar = () => {
     <span className="visually-hidden">New alerts</span>
   </span>
 </button>
-<button onClick={()=>{history(+1)}}>forward</button>
-<button onClick={()=>{history(-1)}}>back</button>
+
 
 
 
