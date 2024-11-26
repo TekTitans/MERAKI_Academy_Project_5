@@ -324,7 +324,6 @@
   display: inline-block;
 }
 
-/* Edit Button (Kept the original vibrant style) */
 .edit-button {
   background: linear-gradient(135deg, #6cbb6a, #4a9e44);
   color: #ffffff;
@@ -418,7 +417,11 @@
   color: white;
   opacity: 50%;
 }
-
+.internal_rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 @media (max-width: 768px) {
   .page-title {
     font-size: 1rem;

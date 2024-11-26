@@ -10,6 +10,7 @@ import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import EditProductForm from "../ProductEdit";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaUserAlt } from "react-icons/fa";
 
 const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
@@ -43,6 +44,7 @@ const SellerProducts = () => {
     search: "",
     minPrice: "",
     maxPrice: "",
+    status: "",
     selectedCategory: 0,
     selectedSubcategory: 0,
   });
@@ -50,7 +52,7 @@ const SellerProducts = () => {
   const [subcategories, setSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
 
-  const [ratingFilter, setRatingFilter] = useState("");
+  const [filterRating, setFilterRating] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -98,6 +100,7 @@ const SellerProducts = () => {
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
       dispatch(setLoading(false));
+      console.log("products: ", products);
     } catch (error) {
       dispatch(setLoading(false));
       dispatch(setError("Error fetching seller products"));
@@ -248,6 +251,19 @@ const SellerProducts = () => {
 
     console.log("Updated productToEdit:", productToEdit);
   };
+  const renderStars = (rating) => {
+    const maxStars = 5;
+    return (
+      <span className="rating-stars">
+        {Array.from({ length: maxStars }, (_, i) =>
+          i < rating ? "★" : "☆"
+        ).join("")}
+      </span>
+    );
+  };
+  const handleStarClick = (star) => {
+    setFilterRating(star);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -277,9 +293,11 @@ const SellerProducts = () => {
       search: "",
       minPrice: "",
       maxPrice: "",
+      status: "",
       selectedCategory: 0,
       selectedSubcategory: 0,
     });
+    setFilterRating(0);
   };
 
   const filteredProducts = products.filter((product) => {
@@ -299,8 +317,10 @@ const SellerProducts = () => {
       !filters.selectedSubcategory ||
       product.subcategory_id == filters.selectedSubcategory;
     const matchesRating =
-      !ratingFilter || product.rating >= parseFloat(ratingFilter);
-    const matchesStock = !filters.inStock || product.stock_quantity > 0;
+      !filterRating || product.average_rating >= parseFloat(filterRating);
+
+    const matchesStock =
+      !filters.status || product.stock_status === filters.status;
     return (
       matchesDate &&
       matchesSearch &&
@@ -418,41 +438,43 @@ const SellerProducts = () => {
               disabled={!filters.selectedCategory}
             >
               <option value="" disabled>
-                {product.category_id
-                  ? "Select Subcategory"
-                  : "Select a category first"}
+                All SubCategories
               </option>
-              <option value="">All SubCategories</option>
               {filteredSubcategories.map((subcategory) => (
                 <option key={subcategory.id} value={subcategory.id}>
                   {subcategory.name}
                 </option>
               ))}
             </select>
+
             <select
-              name="ratingFilter"
-              value={filters.ratingFilter}
+              name="status"
+              value={filters.status}
               onChange={handleFilterChange}
             >
-              <option value="">All Ratings</option>
-              <option value="1">1 Star & Up</option>
-              <option value="2">2 Stars & Up</option>
-              <option value="3">3 Stars & Up</option>
-              <option value="4">4 Stars & Up</option>
-              <option value="5">5 Stars</option>
+              <option value="">Status</option>
+              <option value="in_stock">In Stock</option>
+              <option value="out_of_stock">Out Of Stock</option>
+              <option value="on_demand">On Demand</option>
             </select>
-            <input
-              type="checkbox"
-              name="inStock"
-              checked={filters.inStock}
-              onChange={handleFilterChange}
-            />
-            <label>In Stock</label>
+            <div className="star-filter">
+              {Array.from({ length: 5 }, (_, index) => (
+                <span
+                  key={index}
+                  className={`star ${
+                    filterRating >= index + 1 ? "selected" : ""
+                  }`}
+                  onClick={() => handleStarClick(index + 1)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
             <button
               className="clear-filters-button"
               onClick={handleClearFilters}
             >
-              Clear All Filters
+              Clear
             </button>
           </div>
 
@@ -520,7 +542,20 @@ const SellerProducts = () => {
                     </p>
 
                     <div className="SDB_product-rating">
-                      <span>{prod.rating || "No Rating Yet"}</span>{" "}
+                      <span>
+                        <div className="internal_rating">
+                          {renderStars(prod.average_rating)}
+                          {prod.average_rating > 0 ? (
+                            <>
+                              {(parseFloat(prod.average_rating) || 0).toFixed(
+                                2
+                              )}
+                            </>
+                          ) : (
+                            "No Rating Yet"
+                          )}
+                        </div>
+                      </span>{" "}
                       &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
                       <span>({prod.number_of_reviews})</span>
                     </div>
@@ -638,10 +673,22 @@ const SellerProducts = () => {
                       ? selectedProduct.users_added_to_wishlist
                       : "Not Added Yet"}
                   </p>
-
                   <div className="SDB_product-rating">
-                    <span>{selectedProduct.rating || "No Rating Yet"}</span>{" "}
-                    <span>{"  "}</span> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+                    <span>
+                      <div className="internal_rating">
+                        {renderStars(selectedProduct.average_rating)}
+                        {selectedProduct.average_rating > 0 ? (
+                          <>
+                            {(
+                              parseFloat(selectedProduct.average_rating) || 0
+                            ).toFixed(2)}
+                          </>
+                        ) : (
+                          "No Rating Yet"
+                        )}
+                      </div>
+                    </span>{" "}
+                    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
                     <span>({selectedProduct.number_of_reviews})</span>
                   </div>
 
