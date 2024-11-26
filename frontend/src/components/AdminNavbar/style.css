@@ -1,0 +1,109 @@
+.admin-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    padding: 10px 10px;
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+  
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    align-items: center;
+  }
+  
+  .navbar-logo h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 20;
+    color: #facc15;
+    padding: 0;
+    margin-bottom: 0;
+  }
+  
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-links li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    width: fit-content;
+  }
+  
+  .navbar-links li:hover {
+    background-color: #3b82f6;
+    color: #ffffff;
+  }
+  
+  .navbar-links li.active {
+    background-color: #facc15;
+    color: #1e293b;
+    font-weight: bold;
+  }
+  
+  .navbar-icon {
+    font-size: 1.2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+      margin-left: auto;
+      margin-right: 10px;
+      padding: 2px;
+    }
+  
+    .navbar-links {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      display: none;
+      position: absolute;
+      top: 55px;
+      left: 0;
+      width: 100%;
+      background-color: #1e293b;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  
+    .navbar-links.open {
+      display: flex;
+    }
+  
+    .navbar-links li {
+      width: 100%;
+      text-align: left;
+      padding: 12px;
+    }
+  }
+  
