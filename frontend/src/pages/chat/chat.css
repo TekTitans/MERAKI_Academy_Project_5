@@ -1,0 +1,105 @@
+.chatBox {
+    border: 2px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    width: 40vw;
+    height: 50vh;
+    margin: auto;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .me {
+    background-color: #FF6347;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 5px;
+    max-width: 70%;
+  }
+  
+  .notMe {
+    background-color: #87CEEB;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 5px;
+    max-width: 70%;
+  }
+  
+  .chatBox::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .chatBox::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+  }
+  
+  .chatBox::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+  
+  .textBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    border-top: 2px solid #ccc;
+    background-color: #fff;
+    border-radius: 8px;
+    width: 40vw; 
+    margin: 0 auto; 
+    margin-top: 10px;  
+    position: relative;
+    bottom: 0;
+  }
+  
+  .textBox input {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  
+  .textBox button {
+    padding: 8px 16px;
+    background-color: #FF6347;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .textBox button:hover {
+    background-color: #FF4500;
+  }
+  .to{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 2px solid #ccc;
+    background-color: #fff;
+    border-radius: 8px;
+    width: 40vw; 
+    margin: 0 auto; 
+    margin-top: 10px;  
+    position: relative;
+    bottom: 0;
+
+  }

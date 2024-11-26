@@ -1,45 +1,77 @@
-import { useEffect,useState } from "react"
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addToRecived, setAllMessages } from "../../components/redux/reducers/auth";
+import "./chat.css";
+
+const Messages = ({ socket }) => {
+  const [message, setMessage] = useState("");
+  const [to, setTo] = useState("");
+  const dispatch = useDispatch();
+  const allMessages = useSelector((state) => state.auth.allMessages);
+  const userName = useSelector((state) => state.auth.userName);
+  const userId = useSelector((state) => state.auth.userId);
+  const recived = useSelector((state) => state.auth.recived);
 
 
-const Messages=({socket,userId,token})=>{
-    const [message,setMessage]=useState("")
-const [to,setTo]=useState("")
-const [allMessages,setAllMessages]=useState([])
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    socket.on("message", (data) => {
+      dispatch(setAllMessages([...allMessages, data]));
+      if(data.fromId!=userId){
+      dispatch(addToRecived([...recived, data]))};
 
+    });
 
-useEffect(()=>{
-    socket.on("message",(data)=>{
-        console.log(data)
-        setAllMessages([...allMessages,data])
-        return()=>{
-            socket.off("message")
-        }
-    })
+    return () => {
+      socket.off("message");
+    };
+  }, [allMessages, dispatch, socket,recived]);
 
-},[allMessages])
-const sendMessage=()=>{
-    socket.emit("message",{from:userId,to:to,message:message})
-}
-const renderMessages=allMessages?.map((elem,index)=>{
-    return(
-        <div key={index}>
-            <h4>from:{elem.from}</h4>
-            <p>
-                {elem.message}
-            </p>
-        </div>
-    )
-})
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [allMessages]);
 
+  const sendMessage = () => {
+    socket.emit("message", { from: userName,fromId:userId, to, message });
+    setMessage("");
+  };
 
-    return(
-        <div>
-            <input onChange={(e)=>{setMessage(e.target.value)}} type="text" placeholder="message"></input>
-            <input onChange={(e)=>{setTo(e.target.value)}} type="text" placeholder="to"></input>
-            <button onClick={()=>{sendMessage()}}>send</button>
+  const renderMessages = allMessages?.map((elem, index) => (
+    <div className={elem.from === userName ? "me" : "notMe"} key={index}>
+      <h4>{elem.from}</h4>
 
-            <div>{renderMessages}</div>
-        </div>
-    )
-}
-export default Messages
+      <p>{elem.message}</p>
+    </div>
+  ));
+
+  return (
+    <div className="chatContainer">
+      <div className="to">
+        <input
+          onChange={(e) => setTo(e.target.value)}
+          type="text"
+          placeholder="to"
+        />
+      </div>
+
+      <div className="chatBox">
+        {renderMessages}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="textBox">
+        <input
+          onChange={(e) => setMessage(e.target.value)}
+          type="text"
+          placeholder="message"
+          value={message}
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
+    </div>
+  );
+};
+
+export default Messages;

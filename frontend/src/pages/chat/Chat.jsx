@@ -1,55 +1,19 @@
-import socketInit from "./socket.server";
-import { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useSocket } from "./socketContext"; 
 import Messages from "./Messages";
+import  "./chat.css";
+
 
 const Chat = () => {
-  const [userId, setUserId] = useState("");
-  const [token, setToken] = useState("");
-  const [socket, setSocket] = useState(null);
-  useEffect(()=>{
-    socket?.on("connect",()=>{
-        console.log(true)
-    })
-    socket?.on("connect_error",(error)=>{
-      console.log(error)
-  })
-  return()=>{
-    socket?.close()
-    //socket.removeAllListeners()
-  }
-  },[socket])
+  const { socket } = useSocket(); 
 
   return (
     <div>
-      <h1> chat</h1>
-      <input
-        onChange={(e) => {
-          setUserId(e.target.value);
-        }}
-        type="text"
-        placeholder="user_id"
-      ></input>
-      <input
-        onChange={(e) => {
-          setToken(e.target.value);
-        }}
-        type="text"
-        placeholder="token"
-      ></input>
-      <button
-        onClick={() => {
-          setSocket(
-            socketInit({
-              userId,
-              token,
-            })
-          );
-        }}
-      >
-        connect
-      </button>
-     {socket? <Messages socket={socket} userId={userId} token={token}/>:<h1>no messages</h1>}
+      <h1>Chat</h1>
+    
+      {socket ? <Messages socket={socket} /> : <h1>No messages</h1>}
     </div>
   );
 };
+
 export default Chat;
