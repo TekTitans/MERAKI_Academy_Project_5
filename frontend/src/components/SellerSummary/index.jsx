@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setOrders, setLoading, setError } from "../redux/reducers/orders";
+import { setMessage, setLoading, setError } from "../redux/reducers/orders";
 import axios from "axios";
 import "./style.css";
 
@@ -8,7 +8,7 @@ const SellerSummary = () => {
   const dispatch = useDispatch();
   const sellerId = useSelector((state) => state.auth.userId);
   const { token } = useSelector((state) => state.auth);
-  const { loading, error } = useSelector((state) => state.order);
+  const { loading, error, message } = useSelector((state) => state.order);
 
   const [sellerSummary, setSellerSummary] = useState({
     totalReviews: 0,
@@ -76,6 +76,16 @@ const SellerSummary = () => {
     }
   }, [sellerId]);
 
+  useEffect(() => {
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
+
   if (loading) return <div className="loading-spinner">Loading...</div>;
 
   return (
@@ -83,6 +93,7 @@ const SellerSummary = () => {
       <h2 className="page-title">Seller Summary</h2>
 
       {error && <div className="error-message">Error: {error}</div>}
+      {message && <div className="success-message">{message}</div>}
 
       <div className="seller-summary">
         <div className="summary-cards">

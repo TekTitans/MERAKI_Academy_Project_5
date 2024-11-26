@@ -12,13 +12,14 @@ import Contact from "../pages/Contact";
 import Cart from "../pages/cart/Cart";
 import ProfilePage from "../pages/ProfilePage";
 
-import { Search } from "../pages/Serach";
+import SearchPage from "../pages/Serach";
 import Category from "../components/category";
 import Products from "../pages/Products";
 import SellerDashboard from "../pages/SellerDashboard";
 import Chat from "../pages/chat/Chat";
 
 import PlaceOrder from "../pages/place order/PlaceOrder";
+import AdminDashboard from "../pages/AdminDashboard copy";
 export const router = createBrowserRouter(
   [
     {
@@ -28,7 +29,6 @@ export const router = createBrowserRouter(
         { path: "/", element: <Home /> },
         { path: "/cart", element: <Cart /> },
         { path: "/placeOrder", element: <PlaceOrder /> },
-
 
         { path: "/users", element: <Register /> },
         { path: "/users/login", element: <Login /> },
@@ -46,12 +46,12 @@ export const router = createBrowserRouter(
         { path: "/Profile", element: <ProfilePage /> },
 
         { path: "*", element: <NotFound /> },
-        { path: "/search", element: <Search /> },
+        { path: "/search/:query", element: <SearchPage /> },
         { path: "/category/:id", element: <Category /> },
         { path: "/products", element: <Products /> },
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
-
+        { path: "/Admin", element: <AdminDashboard /> },
       ],
     },
   ],

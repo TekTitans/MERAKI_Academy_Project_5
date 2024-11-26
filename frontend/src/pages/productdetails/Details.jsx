@@ -20,19 +20,25 @@ const Details = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [editComment, setEditComment] = useState("");
   const [editRating, setEditRating] = useState(0);
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [modalMessage, setModalMessage] = useState(""); // State for modal message
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
-//comment
+  const [avgrate, setAvgrate] = useState();
+  //comment
   useEffect(() => {
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
       setProduct(response.data.product);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
-      setReviews(response.data.result);
-      //console.log(reviews);
+      const allReview = response.data.result;
+      setReviews(allReview);
+      const total = allReview.reduce((sum, review) => sum + review.rating, 0);
+      const avg =
+        allReview.length > 0 ? (total / allReview.length).toFixed(2) : null;
+      setAvgrate(avg);
     });
   }, [pId]);
+  console.log(reviews);
 
   const addToCart = () => {
     if (!token) {
@@ -51,7 +57,6 @@ const Details = () => {
     axios
       .delete(`http://localhost:5000/review/${reviewId}`, { headers })
       .then((response) => {
-        // Update the state to reflect the deleted review
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review.id !== reviewId)
         );
@@ -63,11 +68,11 @@ const Details = () => {
       });
   };
 
-
- 
-
   const createReview = () => {
-    if (newComment.trim() && rating > 0) {
+    if (!token) {
+      setModalMessage("Need to login first ");
+      setShowModal(true);
+    } else if (newComment.trim() && rating > 0) {
       axios
         .post(
           `http://localhost:5000/review/${pId}`,
@@ -106,8 +111,8 @@ const Details = () => {
         )
         .then((response) => {
           setReviews(
-            reviews.map((review) =>
-              review.id === reviewId ? response.data.result : review
+            reviews?.map((review) =>
+              review.id === reviewId ? response.data : review
             )
           );
           setEditingReview(null);
@@ -131,7 +136,6 @@ const Details = () => {
   return (
     <div className="details-container">
       <div className="productpage">
-        {/* Product Image Section */}
         <div className="productimage">
           <img
             src={product.product_image || "https://via.placeholder.com/400x400"}
@@ -139,12 +143,11 @@ const Details = () => {
           />
         </div>
 
-        {/* Product Details Section */}
         <div className="productdetails">
           <h1 className="producttitle">{product.title}</h1>
           <p className="productprice">{product.price} JD</p>
           <p className="productdescription">{product.description}</p>
-          {/* Add to Cart Section */}
+
           <div className="add-to-cart">
             <input
               type="number"
@@ -159,11 +162,20 @@ const Details = () => {
           </div>
         </div>
       </div>
-
+      <div className="avgrating">
+        <span className="ratingstart">Rating</span>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            className={`star ${avgrate >= star ? "filled" : ""}`}
+          >
+            ★
+          </span>
+        ))}
+      </div>
       <div className="reviews-section">
         <h2>Reviews</h2>
 
-        {/* New Review Form */}
         <div className="new-review-form">
           <div className="rating">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -184,18 +196,17 @@ const Details = () => {
           <button onClick={createReview}>Submit Review</button>
         </div>
 
-        {/* Reviews List */}
         <div>
           {reviews.length > 0 ? (
             reviews
               .slice(0, showAllComments ? reviews.length : 5)
-              .map((review) => (
+              ?.map((review) => (
                 <div className="review-card" key={review?.id}>
                   <div className="review-header">
-                    <span className="review-author">User {userName}</span>
-                    {/* <span className="review-date">
+                    <span className="review-author">{review.user_name}</span>
+                    <span className="review-date">
                       {new Date(review.created_at).toLocaleString()}
-                    </span> */}
+                    </span>
                   </div>
                   <div className="review-rating">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -210,7 +221,7 @@ const Details = () => {
                     ))}
                   </div>
                   <p className="review-comment">{review?.comment}</p>
-                  {/* Edit and Delete buttons */}
+
                   {review?.user_id === parseInt(userId) && (
                     <div className="edit-delete-buttons">
                       <button
@@ -228,7 +239,6 @@ const Details = () => {
                     </div>
                   )}
 
-                  {/* Edit Review Form */}
                   {editingReview?.id === review?.id && (
                     <div>
                       <div className="rating">
@@ -262,14 +272,14 @@ const Details = () => {
           ) : (
             <p>No reviews yet. Be the first to review!</p>
           )}
-          {/* Show 'Show All' or 'Show Less' button */}
+
           {reviews.length > 5 && (
             <button onClick={toggleShowAllComments} className="show-all-button">
               {showAllComments ? "Show Less" : "Show All"}
             </button>
           )}
         </div>
-        {/* Modal Component */}
+
         {showModal && (
           <Modal message={modalMessage} onClose={() => setShowModal(false)} />
         )}
