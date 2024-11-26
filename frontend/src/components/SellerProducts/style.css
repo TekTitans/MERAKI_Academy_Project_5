@@ -107,17 +107,17 @@
   font-size: 1rem;
   color: #555;
   margin-bottom: 1rem;
-  line-height: 1.5; 
-  white-space: normal; 
-  word-wrap: break-word; 
-  overflow-y: auto; 
-  overflow-x: hidden; 
-  height: 5rem; 
-  max-height: 5rem; 
+  line-height: 1.5;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 5rem;
+  max-height: 5rem;
 }
 .SDB_product-description {
-  word-break: break-word; 
-  overflow-wrap: break-word; 
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .SDB_product-description::-webkit-scrollbar {
   width: 5px;
@@ -312,26 +312,6 @@
   padding: 1rem;
 }
 
-.statistics-button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-block;
-  background: linear-gradient(135deg, #008cba, #00b0f4);
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.statistics-button:hover {
-  background: linear-gradient(135deg, #00b0f4, #008cba);
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 .edit-button,
 .delete-button {
   padding: 0.6rem 1.2rem;
@@ -344,28 +324,71 @@
   display: inline-block;
 }
 
+/* Edit Button (Kept the original vibrant style) */
 .edit-button {
-  background: linear-gradient(135deg, #28a745, #5cd65c);
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #6cbb6a, #4a9e44);
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  margin: 20px auto;
+  max-width: 220px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .edit-button:hover {
-  background: linear-gradient(135deg, #5cd65c, #28a745);
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #4a9e44, #388e3c);
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.statistics-button {
+  background: linear-gradient(135deg, #6a9db6, #8faab3);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 20px auto;
+  max-width: 220px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.statistics-button:hover {
+  background: linear-gradient(135deg, #8faab3, #6a9db6);
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .delete-button {
-  background: linear-gradient(135deg, #e63946, #d00000);
+  background: linear-gradient(135deg, #f6a7a7, #f28d8d);
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 20px auto;
+  max-width: 220px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .delete-button:hover {
-  background: linear-gradient(135deg, #d00000, #e63946);
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #f28d8d, #f6a7a7);
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .no-products-message {

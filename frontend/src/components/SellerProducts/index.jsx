@@ -37,6 +37,26 @@ const SellerProducts = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedReviews, setSelectedReviews] = useState(null);
+  const [updated, setUpdated] = useState(false);
+  const [filters, setFilters] = useState({
+    selectedDate: "",
+    search: "",
+    minPrice: "",
+    maxPrice: "",
+    selectedCategory: "",
+    selectedSubcategory: "",
+  });
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [ratingFilter, setRatingFilter] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get("http://localhost:5000/categories");
+      setCategories(res.data);
+    };
+    fetchCategories();
+  }, []);
 
   const fetchProducts = async (page = 1) => {
     if (!token) {
@@ -58,10 +78,8 @@ const SellerProducts = () => {
 
       if (response.data.products) {
         dispatch(setProducts(response.data.products));
-        console.log(response.data);
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
-
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
@@ -71,9 +89,7 @@ const SellerProducts = () => {
 
   useEffect(() => {
     fetchProducts(currentPage);
-    console.log("product", product);
-    console.log("editProduct", editProduct);
-  }, [dispatch, token, currentPage]);
+  }, [dispatch, token, currentPage, updated]);
 
   const validateForm = () => {
     if (!product.title || !product.price || !product.stock_quantity) {
@@ -95,14 +111,11 @@ const SellerProducts = () => {
       ...product,
       [name]: value,
     });
-    console.log("handleChange");
-    console.log("product change", product);
   };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    console.log("handleFileChange");
     setIsUploading(true);
     dispatch(setError(null));
     const formData = new FormData();
@@ -134,10 +147,7 @@ const SellerProducts = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    console.log("handleUpdate");
     if (!validateForm()) {
-      console.error("Validation failed:", product);
-
       return;
     }
 
@@ -159,9 +169,6 @@ const SellerProducts = () => {
     };
     dispatch(setLoading(true));
     try {
-      console.log("product.id", product.id);
-      console.log("Submitting product:", formattedProduct);
-
       const response = await axios.put(
         `http://localhost:5000/products/${product.product_id}`,
         formattedProduct,
@@ -171,7 +178,6 @@ const SellerProducts = () => {
           },
         }
       );
-      console.log("Update response:", response.data);
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
       dispatch(setMessage("Product updated successfully!"));
@@ -188,6 +194,7 @@ const SellerProducts = () => {
         category_id: "",
         subcategory_id: "",
       });
+      setUpdated(!updated);
       setImagePreview("");
     } catch (error) {
       dispatch(setError("Failed to update product."));
@@ -224,13 +231,52 @@ const SellerProducts = () => {
 
     console.log("Updated productToEdit:", productToEdit);
   };
-  useEffect(() => {
-    console.log("editProduct has been updated:", editProduct);
-  }, [editProduct]);
 
-  useEffect(() => {
-    console.log("product has been updated:", product);
-  }, [product]);
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      selectedDate: "",
+
+      search: "",
+    });
+  };
+
+  const filteredProducts = products.filter((product) => {
+    const matchesDate =
+      !filters.selectedDate ||
+      new Date(product.created_at) <= new Date(filters.selectedDate);
+    const matchesSearch =
+      !filters.search || product.title.toString().includes(filters.search);
+    const matchesPrice =
+      (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
+      (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
+
+    const matchesCategory =
+      !filters.selectedCategory ||
+      product.category_name === filters.selectedCategory;
+    const matchesSubcategory =
+      !filters.selectedSubcategory ||
+      product.subcategory_name === filters.selectedSubcategory;
+    const matchesRating =
+      !ratingFilter || product.rating >= parseFloat(ratingFilter);
+    const matchesStock = !filters.inStock || product.stock_quantity > 0;
+    return (
+      matchesDate &&
+      matchesSearch &&
+      matchesPrice &&
+      matchesCategory &&
+      matchesSubcategory &&
+      matchesRating &&
+      matchesStock
+    );
+  });
 
   const paginationControls = (
     <div className="pagination-controls">
@@ -289,11 +335,79 @@ const SellerProducts = () => {
         />
       ) : (
         <div className="SDB_product-list">
+          <div className="filters">
+            <input
+              type="date"
+              name="selectedDate"
+              placeholder="Before Date"
+              value={filters.selectedDate}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="text"
+              name="search"
+              placeholder="Search By Product Name"
+              value={filters.search}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="number"
+              name="minPrice"
+              placeholder="Min Price"
+              value={filters.minPrice}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="number"
+              name="maxPrice"
+              placeholder="Max Price"
+              value={filters.maxPrice}
+              onChange={handleFilterChange}
+            />
+            <select
+              name="selectedCategory"
+              value={filters.selectedCategory}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <select
+              name="ratingFilter"
+              value={filters.ratingFilter}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Ratings</option>
+              <option value="1">1 Star & Up</option>
+              <option value="2">2 Stars & Up</option>
+              <option value="3">3 Stars & Up</option>
+              <option value="4">4 Stars & Up</option>
+              <option value="5">5 Stars</option>
+            </select>
+            <input
+              type="checkbox"
+              name="inStock"
+              checked={filters.inStock}
+              onChange={handleFilterChange}
+            />
+            <label>In Stock</label>
+            <button
+              className="clear-filters-button"
+              onClick={handleClearFilters}
+            >
+              Clear All Filters
+            </button>
+          </div>
+
           <div className="SDB_product-grid">
             {loading ? (
               <div className="loading-spinner">Loading...</div>
             ) : products.length > 0 ? (
-              products.map((prod) => (
+              filteredProducts.map((prod) => (
                 <div key={prod.id} className="SDB_product-card">
                   <img
                     src={

@@ -36,20 +36,40 @@ const EditProductForm = ({
         <div className="product__picture-container">
           <div className="image-upload">
             {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="Product Preview"
-                className="product_image"
-              />
-            ) : (
               <label className="product_image-placeholder">
-                <FaImage size={60} className="image-icon" />
-                <span className="placeholder-text">Upload Image</span>
+                <img
+                  src={imagePreview}
+                  alt="Product Preview"
+                  className="product_image"
+                />
                 <input
                   type="file"
                   onChange={handleFileChange}
                   className="file-input"
                 />
+              </label>
+            ) : product.product_image ? (
+              <label className="product_image-placeholder">
+                <img
+                  src={product.product_image}
+                  alt="Product Preview"
+                  className="product_image"
+                />
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="file-input"
+                />
+              </label>
+            ) : (
+              <label className="product_image-placeholder">
+                <FaImage size={60} className="image-icon" />
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="file-input"
+                />
+                <span className="placeholder-text">Upload Image</span>
               </label>
             )}
             {isUploading && (
@@ -149,7 +169,7 @@ const EditProductForm = ({
         </div>
         <div className="Edit_Action_Btns">
           <button type="submit" className="edit_action-button">
-            {loading ? "Updating..." : "Update Product"}
+            {loading ? "Updating..." : "Update"}
           </button>
           <button
             className="edit_back-button"
@@ -157,7 +177,7 @@ const EditProductForm = ({
               setEditProduct(null);
             }}
           >
-            Back to Product List
+            Back
           </button>
         </div>
       </form>
