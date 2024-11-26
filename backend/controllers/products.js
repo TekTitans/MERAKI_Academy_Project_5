@@ -281,7 +281,12 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   const productId = req.params.pId;
-  const query = `SELECT * FROM products WHERE id = $1`;
+  const query = `SELECT * FROM 
+      products p
+    JOIN 
+      users u ON p.seller_id = u.id
+    WHERE 
+      p.id = $1`;
 
   const data = [productId];
   try {
