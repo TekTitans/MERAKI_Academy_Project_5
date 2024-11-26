@@ -445,33 +445,54 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
-const getProductByName = async (req, res) => {
-  const name = req.params.title;
-  const query = `SELECT * FROM products WHERE title LIKE '%${name}%' `;
+ const searchByName = async (req, res) => {
+  const  query1  = req.params.query;
+  console.log(query1);
+  
+  if (!query1 || query1.trim() === "") {
+    return res.status(400).json({
+      success: false,
+      message: "Query parameter is required",
+    });
+  }
+
+  const searchQuery = `%${query1.trim()}%`; 
 
   try {
-    const result = await pool.query(query);
-    if (result.rows.length == 0) {
-      res.json({
-        success: false,
-        message: "no product with this title",
-      });
-    } else {
-      res.json({
+    const result = await pool.query(
+      `SELECT products.*, categories.name AS category_name 
+       FROM products 
+       LEFT JOIN categories ON products.category_id = categories.id
+       WHERE products.title ILIKE $1 
+       OR products.description ILIKE $1 
+       OR categories.name ILIKE $1`, 
+      [searchQuery] 
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
         success: true,
-        message: "product Details",
-        product: result.rows,
+        message: "No products found matching your search",
+        products: [],
       });
     }
+
+    return res.status(200).json({
+      success: true,
+      products: result.rows,
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+    console.error("Error executing search:", error);
+    return res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      error: error.message,
     });
   }
 };
+
+
+
 
 module.exports = {
   createProduct,
@@ -482,5 +503,6 @@ module.exports = {
   getProductById,
   getSellerProduct,
   getProductsByCategory,
-  getProductByName,
+
+  searchByName,
 };

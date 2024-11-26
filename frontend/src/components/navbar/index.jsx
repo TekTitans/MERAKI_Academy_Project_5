@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "./style.css";
 import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
-import { RiAccountCircleFill } from "react-icons/ri";
+//import { RiAccountCircleFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
-import { setSearch } from "../redux/reducers/product/product";
+//import { setSearch } from "../redux/reducers/product/product";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -13,9 +13,14 @@ const Navbar = () => {
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const { userName } = useSelector((state) => state.auth);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e) => {
-    dispatch(setSearch(e.target.value));
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      history(`/search/${encodeURIComponent(searchQuery.trim())}`);
+    }
+    setSearchQuery("");
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -48,20 +53,25 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-icons">
-          <div className="navbar-search">
+          <form className="navbar-search" onSubmit={handleSearch}>
             <input
               type="text"
-              placeholder="Search..."
-              onChange={handleSearch}
+              className="search-input"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-          <a  className="cart-icon">
+            <button type="submit" className="search-button">
+              🔍
+            </button>
+          </form>
+          <a className="cart-icon">
             <FaShoppingCart onClick={() => history("/cart")} />
           </a>
 
           {isLoggedIn && (
             <div className="navbar-user" onClick={() => history("/Profile")}>
-              <span className="navbar-username" >{userName}</span>
+              <span className="navbar-username">{userName}</span>
             </div>
           )}
 

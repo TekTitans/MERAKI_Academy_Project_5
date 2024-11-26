@@ -12,7 +12,7 @@ import Contact from "../pages/Contact";
 import Cart from "../pages/cart/Cart";
 import ProfilePage from "../pages/ProfilePage";
 
-import { Search } from "../pages/Serach";
+import SearchPage from "../pages/Serach";
 import Category from "../components/category";
 import Products from "../pages/Products";
 import SellerDashboard from "../pages/SellerDashboard";
@@ -46,7 +46,7 @@ export const router = createBrowserRouter(
         { path: "/Profile", element: <ProfilePage /> },
 
         { path: "*", element: <NotFound /> },
-        { path: "/search", element: <Search /> },
+        { path: "/search/:query", element: <SearchPage /> },
         { path: "/category/:id", element: <Category /> },
         { path: "/products", element: <Products /> },
         { path: "/seller", element: <SellerDashboard /> },

@@ -1,28 +1,25 @@
-/* General styles */
-
 .details-container {
   width: 80%;
   margin: 0 auto;
 }
 
-/* Product Section */
 .productpage {
   display: flex;
   justify-content: space-between;
   margin-top: 50px;
 }
 
-/* Wrapper for the image to hide overflow */
+
 .productimage {
   position: relative;
-  overflow: hidden; /* Hide the zoomed portion of the image */
+  overflow: hidden; 
   width: 100%;
   height: auto;
   display: flex;
-  justify-content: center; /* Center the image */
+  justify-content: center; 
 }
 
-/* Style for the image itself */
+
 .productimage img {
   width: 100%;
   height: auto;
@@ -114,16 +111,6 @@
   display: flex;
   gap: 15px;
 }
-
-.star {
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.star.filled {
-  color: #f39c12;
-}
-
 textarea {
   padding: 12px;
   font-size: 1rem;
@@ -149,7 +136,7 @@ textarea {
   background-color: #2ecc71;
 }
 
-/* Review Item */
+
 .review-item {
   margin-top: 20px;
   padding: 20px;
@@ -177,7 +164,7 @@ textarea {
   background-color: #e67e22;
 }
 
-/* Edit Form */
+
 .edit-form {
   margin-top: 15px;
   padding: 20px;
@@ -271,9 +258,8 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Star Rating Styling */
 .star {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #ccc;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -287,7 +273,7 @@ button:hover {
   color: #ffd700;
 }
 
-/* Review Card Styling */
+
 .review-card {
   background-color: #fff;
   padding: 20px;
@@ -365,4 +351,10 @@ button:hover {
 
 .new-review-form .rating .star.filled {
   color: #ffd700;
+}
+.avgrating {
+  color: #27ae60;
+}
+.ratingstart {
+  font-size: 25px;
 }

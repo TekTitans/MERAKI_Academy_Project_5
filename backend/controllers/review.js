@@ -84,11 +84,19 @@ const removeReview = async (req, res) => {
 };
 
 const getProductReviews = (req, res) => {
-  const product_id = req.params.id;
+  const product_id = parseInt(req.params.id);
 
-  const query = `SELECT *,CAST(ROUND(AVG(rating) OVER (PARTITION BY product_id), 2) AS DECIMAL(10, 2)) AS avgrating 
-FROM reviews 
-WHERE product_id = $1; `;
+  const query = `SELECT 
+    reviews.id, 
+    reviews.rating, 
+    reviews.comment, 
+    reviews.created_at, 
+    reviews.user_id,
+    CONCAT(users.first_name, ' ', users.last_name) AS user_name, 
+    users.userName
+  FROM reviews
+  JOIN users ON reviews.user_id = users.id
+  WHERE reviews.product_id = $1 `;
 
   const data = [product_id];
   pool
@@ -131,6 +139,8 @@ const createSellerReviews = (req, res) => {
       });
     })
     .catch((err) => {
+      console.log(err);
+
       res.status(500).json({
         success: false,
         message: "Server error",
@@ -158,7 +168,7 @@ const getSellerReviews = (req, res) => {
     ORDER BY reviews.created_at DESC;
   `;
 
-  const data = [78];//sellerId
+  const data = [78]; //sellerId
   pool
     .query(query, data)
     .then((result) => {
