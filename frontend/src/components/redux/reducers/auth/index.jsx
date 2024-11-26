@@ -7,8 +7,14 @@ export const authSlice = createSlice({
     userId: sessionStorage.getItem("userId"),
     userName: sessionStorage.getItem("userName"),
     isLoggedIn: JSON.parse(sessionStorage.getItem("isLoggedIn")) || false,
+    allMessages:[]
   },
   reducers: {
+    setAllMessages: (state, action) => {
+      const messages = action.payload;
+      state.allMessages = messages;
+      
+    },
     setLogin: (state, action) => {
       const token = action.payload;
       state.token = token;
@@ -40,6 +46,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setLogin, setUserId, setUserName, setLogout } =
+export const { setLogin, setUserId, setUserName, setLogout,setAllMessages } =
   authSlice.actions;
 export default authSlice.reducer;

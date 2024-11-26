@@ -1,16 +1,20 @@
 import { useEffect,useState } from "react"
+import { useDispatch, useSelector } from "react-redux";
+import { setAllMessages } from "../../components/redux/reducers/auth";
 
 
 const Messages=({socket,userId,token})=>{
+    const dispatch=useDispatch()
     const [message,setMessage]=useState("")
 const [to,setTo]=useState("")
-const [allMessages,setAllMessages]=useState([])
-
+const allMessages = useSelector((state) => {
+    return state.auth.allMessages;
+  });
 
 useEffect(()=>{
     socket.on("message",(data)=>{
         console.log(data)
-        setAllMessages([...allMessages,data])
+       dispatch( setAllMessages([...allMessages,data]))
         return()=>{
             socket.off("message")
         }
@@ -30,7 +34,7 @@ const renderMessages=allMessages?.map((elem,index)=>{
         </div>
     )
 })
-
+console.log(allMessages)
 
     return(
         <div>
