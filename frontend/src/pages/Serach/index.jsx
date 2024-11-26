@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import "./style.css";
 
 const SearchResults = () => {
-  const { query } = useParams(); // Access the path parameter
+  const { query } = useParams();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
@@ -21,7 +21,7 @@ const SearchResults = () => {
           setError(response.data.message || "No products found");
         }
       } catch (err) {
-        setError("No Product Found");
+        setError("Something went wrong");
       }
     };
 
@@ -30,41 +30,40 @@ const SearchResults = () => {
 
   return (
     <div className="search-results-container">
-      <h2 className="search-header">Results for "{query}"</h2>
-      {error ? (
-        <p className="error-message">{error}</p>
-      ) : (
-        <div className="products-grid">
-          {products.length === 0 ? (
-            <p className="no-results">No products match your search criteria.</p>
-          ) : (
-            products.map((product) => (
-              <div className="product-card" key={product.id}>
+      <div className="hero-section">
+        <h1>Results for "{query}"</h1>
+      </div>
+
+      <div className="error-message-container">
+        {error && <p className="error-message">{error}</p>}
+      </div>
+
+      <div className="product-grid">
+        {products.length === 0 ? (
+          <p className="no-results">No products found matching your query.</p>
+        ) : (
+          products.map((product) => (
+            <div className="product-card" key={product.id}>
+              <div className="product-image-container">
                 <img
                   src={product.image_url || "https://via.placeholder.com/150"}
                   alt={product.title}
                   className="product-image"
                 />
-                <div className="product-info">
-                  <h3 className="product-title">{product.title}</h3>
-                  <p className="product-description">{product.description}</p>
-                  <div className="product-details">
-                    <p className="product-category">
-                      <strong>Category:</strong> {product.category_name}
-                    </p>
-                    <p className="product-price">
-                      <strong>Price:</strong> {product.price} JD
-                    </p>
-                  </div>
-                </div>
-                <Link to={`/details/${product.id}`} className="details-link">
-                  View Details
-                </Link>
               </div>
-            ))
-          )}
-        </div>
-      )}
+              <div className="product-info">
+                <h3>{product.title}</h3>
+                
+                <div className="product-category">Category: {product.category_name}</div>
+                <div className="product-price">Price: {product.price} JD</div>
+              </div>
+              <Link to={`/details/${product.id}`} className="view-details-link">
+                View Details
+              </Link>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
