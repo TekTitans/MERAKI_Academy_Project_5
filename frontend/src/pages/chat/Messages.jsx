@@ -9,6 +9,8 @@ const Messages = ({ socket }) => {
   const dispatch = useDispatch();
   const allMessages = useSelector((state) => state.auth.allMessages);
   const userName = useSelector((state) => state.auth.userName);
+  const userId = useSelector((state) => state.auth.userId);
+
 
   const messagesEndRef = useRef(null);
 
@@ -29,13 +31,14 @@ const Messages = ({ socket }) => {
   }, [allMessages]);
 
   const sendMessage = () => {
-    socket.emit("message", { from: userName, to, message });
+    socket.emit("message", { from: userName,fromId:userId, to, message });
     setMessage("");
   };
 
   const renderMessages = allMessages?.map((elem, index) => (
     <div className={elem.from === userName ? "me" : "notMe"} key={index}>
       <h4>{elem.from}</h4>
+
       <p>{elem.message}</p>
     </div>
   ));
