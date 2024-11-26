@@ -30,7 +30,7 @@ const CheckoutForm = () => {
     }
 
     try {
-      const response = await axios.post("/http://localhost:5000/pay", {
+      const response = await axios.post("http://localhost:5000/pay", {
         paymentMethodId: paymentMethod.id,
       });
 

@@ -84,10 +84,10 @@ const getCartItems=(req,res)=>{
     
 
     // const user_id = u_id//req.token.userId;
- 
      const query = `SELECT 
     t1.price,
-    t1.id, 
+    t1.id,
+    t1.product_image,
     t1.description, 
     t2.quantity,
     t1.title,

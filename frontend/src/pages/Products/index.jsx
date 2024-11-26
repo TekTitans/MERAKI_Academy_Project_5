@@ -100,7 +100,7 @@ const Products = () => {
   const showAllProducts = (filterProducts || []).map((product, index) => (
     <div key={index} className="product-card">
       <img
-        src={product.image || "https://via.placeholder.com/150"}
+        src={product.product_image || "https://via.placeholder.com/150"}
         alt={product.title}
         className="product-image"
       />

@@ -78,57 +78,61 @@ const Cart = () => {
 
   return (
     <div className="myCart">
-      <table className="cartTable">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          {localCart?.map((elem, index) => (
-            <tr key={index}>
-              <td>{elem.title}</td>
-              <td>{elem.price}</td>
-              <td>
-                <button onClick={() => removeFromCart(elem.id)}>remove</button>
-                <input
-                  type="number"
-                  value={elem.quantity}
-                  min={1}
-                  onChange={(e) => handleQuantityChange(e, elem)}
-                />
-                {console.log(elem.quantity)}
-              </td>
-              <td>{elem.price * elem.quantity}.00</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <table className="cartTable">
-        <thead>
-          <tr>
-            <th colSpan="2">Your Order</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Total</td>
-            <td>{totalAmount}.00</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan="2">
-              <button onClick={() => navigate("/placeOrder")}>Checkout</button>
+  <h1>Your Shopping Cart</h1>
+  <div className="cartTableWrapper">
+    <table className="cartTable">
+      <thead>
+        <tr>
+          <th>Remove</th>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {localCart?.map((elem, index) => (
+          <tr key={index}>
+            <td>
+              <button
+                className="remove-btn"
+                onClick={() => removeFromCart(elem.id)}
+              >
+                Remove
+              </button>
             </td>
+            <td>
+              <img
+                src={elem.product_image || "https://via.placeholder.com/150"}
+                alt={elem.title}
+                className="product-images"
+              />
+            </td>
+            <td>{elem.title}</td>
+            <td>{elem.price} JD</td>
+            <td>
+              <input
+                type="number"
+                value={elem.quantity}
+                min={1}
+                onChange={(e) => handleQuantityChange(e, elem)}
+              />
+            </td>
+            <td>{elem.price * elem.quantity}.00 JD</td>
           </tr>
-        </tfoot>
-      </table>
-    </div>
+        ))}
+      </tbody>
+      <thead>
+        <tr>
+        <th colSpan="6">total : {totalAmount} JD</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+  
   );
 };
 
