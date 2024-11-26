@@ -281,6 +281,7 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   const productId = req.params.pId;
+
   const query = `SELECT products.*,users.id AS user_id, CONCAT(users.first_name, ' ', users.last_name) AS user_name 
                                      FROM products
                                      JOIN users ON products.seller_id = users.id

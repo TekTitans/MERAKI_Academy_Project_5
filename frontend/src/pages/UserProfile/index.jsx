@@ -28,6 +28,9 @@ const UserProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log("test");
+    console.log("userId", userId);
+
     const fetchUserData = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/users/${userId}`, {
@@ -41,6 +44,7 @@ const UserProfile = () => {
             : userDetails.role_id === 2
             ? "Seller"
             : "Admin";
+        console.log("res", res);
 
         setUserData({
           firstName: userDetails.first_name || "",
