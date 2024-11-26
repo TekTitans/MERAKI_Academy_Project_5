@@ -15,13 +15,36 @@ const Products = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   const search = useSelector((state) => {
     return state.product.search;
   });
   const products = useSelector((state) => {
     return state.product.products;
   });
+  const handleWishlist = (productId) => {
+    // Placeholder functionality
+    console.log(`Product ${productId} added to wishlist`);
 
+    // Optionally, send a POST request to the server
+    axios
+      .post("http://localhost:5000/wishlist", { productId },{headers})
+      .then((response) => {
+        if (response.data.success) {
+          alert("Product added to wishlist!");
+        } else {
+          alert("Failed to add product to wishlist.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding to wishlist:", error);
+        alert("An error occurred.");
+      });
+  };
   const dispatch = useDispatch();
   useEffect(() => {
     const filtered = products?.filter((product) =>
@@ -100,10 +123,17 @@ const Products = () => {
   const showAllProducts = (filterProducts || []).map((product, index) => (
     <div key={index} className="product-card">
       <img
-        src={product.image || "https://via.placeholder.com/150"}
+        src={product.product_image || "https://via.placeholder.com/150"}
         alt={product.title}
         className="product-image"
       />
+      <button
+        className="wishlist-button"
+        onClick={() => handleWishlist(product.id)}
+        title="Add to Wishlist"
+      >
+        ❤️
+      </button>
       <div className="product-info">
         <h3 className="product-title">{product.title}</h3>
         <p className="product-description">{product.description}</p>
