@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./details.css";
 import Modal from "../modal/Modal";
@@ -28,6 +28,7 @@ const Details = () => {
   useEffect(() => {
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
       setProduct(response.data.product);
+      console.log(response.data);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
       const allReview = response.data.result;
@@ -160,6 +161,12 @@ const Details = () => {
               Add to Cart
             </button>
           </div>
+          <p>
+            <strong>Added by:</strong>
+            <Link to={`/users/${product.seller_id}`} className="user-link">
+              {product.user_name}
+            </Link>
+          </p>
         </div>
       </div>
       <div className="avgrating">
