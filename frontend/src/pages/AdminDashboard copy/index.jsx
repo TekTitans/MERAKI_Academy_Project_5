@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import AdminNavbar from "../../components/AdminNavbar";
 import AdminManageProducts from "../../components/AdminManageProducts";
-import AddCategories from "../../components/AddCategories";
+import AddCategories from "../../components/AddCategory";
 import AdminManageOrders from "../../components/AdminManageOrders";
 import AdminSummary from "../../components/AdminSummary";
 import "./style.css";
+import AdminManageUsers from "../../components/AdminManageUsers";
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("summary");

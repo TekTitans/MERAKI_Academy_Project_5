@@ -470,6 +470,123 @@ const getSellerSummary = async (req, res) => {
     });
   }
 };
+const getAdminSummary = async (req, res) => {
+  try {
+    console.log("getAdminSummary");
+
+    const summaryQuery = `
+      SELECT 
+        (SELECT COUNT(*) FROM users WHERE is_deleted = FALSE) AS total_users,
+        (SELECT COUNT(*) FROM products WHERE is_deleted = FALSE) AS total_products,
+        (SELECT COUNT(*) FROM orders WHERE is_deleted = FALSE) AS total_orders,
+        (SELECT COUNT(*) FROM orders WHERE order_status = 'pending' AND is_deleted = FALSE) AS pending_orders,
+        (SELECT COUNT(*) FROM orders WHERE order_status = 'completed' AND is_deleted = FALSE) AS completed_orders,
+        (SELECT COALESCE(SUM(products.price * cart.quantity), 0) 
+         FROM orders
+         JOIN cart ON orders.id = cart.order_id
+         JOIN products ON cart.product_id = products.id
+         WHERE orders.is_deleted = FALSE AND products.is_deleted = FALSE) AS total_revenue
+    `;
+
+    const topSellingQuery = `
+      SELECT 
+        p.title AS top_selling_product,
+        SUM(c.quantity) AS units_sold
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE p.is_deleted = FALSE
+      GROUP BY p.id
+      ORDER BY units_sold DESC
+      LIMIT 1;
+    `;
+
+    const totalReviewsQuery = `
+    SELECT 
+      COUNT(*) AS total_reviews
+    FROM reviews
+    WHERE is_deleted = FALSE;
+  `;
+
+    const bestProductQuery = `
+    SELECT 
+        p.name AS product_name, 
+        AVG(r.rating) AS average_rating
+    FROM reviews r
+    JOIN products p ON r.product_id = p.id
+    WHERE r.is_deleted = FALSE
+    GROUP BY p.id
+    ORDER BY average_rating DESC
+    LIMIT 1;
+  `;
+
+    const bestSellerQuery = `
+    SELECT 
+        u.name AS seller_name, 
+        AVG(sr.rating) AS average_rating
+    FROM sellerReviews sr
+    JOIN users u ON sr.seller_id = u.id
+    WHERE sr.is_deleted = FALSE
+    GROUP BY u.id
+    ORDER BY average_rating DESC
+    LIMIT 1;
+  `;
+
+    const totalReviewsResult = await pool.query(totalReviewsQuery);
+    const bestProductResult = await pool.query(bestProductQuery);
+    const bestSellerResult = await pool.query(bestSellerQuery);
+
+    const totalReviews = totalReviewsResult.rows[0]?.total_reviews || 0;
+    const bestProduct = bestProductResult.rows[0] || null;
+    const bestSeller = bestSellerResult.rows[0] || null;
+
+    const summaryResult = await pool.query(summaryQuery);
+    const topSellingResult = await pool.query(topSellingQuery);
+
+    const summary = summaryResult.rows[0];
+    const topSellingProduct = topSellingResult.rows[0] || {
+      top_selling_product: null,
+      units_sold: 0,
+    };
+    console.log("summary: ", summary);
+    res.status(200).json({
+      success: true,
+      message: "Admin summary retrieved successfully",
+      summary: {
+        totalUsers: parseInt(summary.total_users, 10),
+        totalProducts: parseInt(summary.total_products, 10),
+        totalOrders: parseInt(summary.total_orders, 10),
+        pendingOrders: parseInt(summary.pending_orders, 10),
+        completedOrders: parseInt(summary.completed_orders, 10),
+        totalRevenue: parseFloat(summary.total_revenue).toFixed(2),
+        topSellingProduct: {
+          name: topSellingProduct.top_selling_product,
+          unitsSold: parseInt(topSellingProduct.units_sold, 10),
+        },
+        totalReviews,
+        totalReviews,
+        bestProduct: bestProduct
+          ? {
+              name: bestProduct.product_name,
+              averageRating: parseFloat(bestProduct.average_rating).toFixed(2),
+            }
+          : null,
+        bestSeller: bestSeller
+          ? {
+              name: bestSeller.seller_name,
+              averageRating: parseFloat(bestSeller.average_rating).toFixed(2),
+            }
+          : null,
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching admin summary:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message || err,
+    });
+  }
+};
 
 module.exports = {
   cancelOrder,
@@ -480,4 +597,5 @@ module.exports = {
   updateOrderStatus,
   generateInvoice,
   getSellerSummary,
+  getAdminSummary,
 };

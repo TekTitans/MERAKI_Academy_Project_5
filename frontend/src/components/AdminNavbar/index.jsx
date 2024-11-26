@@ -7,7 +7,7 @@ import {
   FaBoxOpen,
   FaPlus,
   FaShoppingCart,
-  FaStar,
+  FaUserCog,
 } from "react-icons/fa";
 
 const AdminNavbar = ({ activeSection, setActiveSection }) => {
@@ -20,7 +20,7 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
   return (
     <nav className="admin-navbar">
       <div className="navbar-logo">
-        <h1>Seller Dashboard</h1>
+        <h1>Admin Dashboard</h1>
       </div>
       <button className="menu-toggle" onClick={toggleMenu}>
         {isMenuOpen ? <FaTimes /> : <FaBars />}
@@ -53,7 +53,7 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
             setIsMenuOpen(false);
           }}
         >
-          <FaStar className="navbar-icon" />
+          <FaUserCog className="navbar-icon" />
           Manage Users
         </li>
         <li
