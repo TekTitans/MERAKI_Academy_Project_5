@@ -32,17 +32,6 @@ body {
   color: var(--color-heading);
 }
 
-.error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 30px;
-  text-align: center;
-  box-shadow: var(--box-shadow);
-  font-size: 18px;
-}
-
 .seller-summary {
   background-color: var(--bg-light);
   border-radius: 12px;

@@ -1,3 +1,17 @@
+:root {
+  --bg-light: #f9f9f9;
+  --color-text: #4a4a4a;
+  --color-heading: #333;
+  --color-primary: #1e72b8;
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-info: #17a2b8;
+  --color-bg: #ffffff;
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease-in-out;
+}
+
 .seller-dashboard-container {
   display: flex;
   flex-direction: column;
@@ -25,9 +39,47 @@
   font-weight: bold;
 }
 
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  box-shadow: var(--box-shadow);
+  font-size: 18px;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  box-shadow: var(--box-shadow);
+  font-size: 18px;
+}
+
 @media (max-width: 768px) {
   .seller-dashboard-content {
     margin: 10px;
     padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .error-message {
+    font-size: 16px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-message {
+    font-size: 14px;
+    padding: 12px;
   }
 }

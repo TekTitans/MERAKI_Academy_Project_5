@@ -6,17 +6,13 @@ import {
   updateProduct,
   removeProduct,
 } from "../redux/reducers/product/product";
+import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
-import { FaImage } from "react-icons/fa";
-import { RingLoader } from "react-spinners";
+import EditProductForm from "../ProductEdit";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-const SellerProducts = ({
-  message,
-  setMessage,
-  showMessage,
-  iseditProduct,
-  setIseditProduct,
-}) => {
+import { FaUserAlt } from "react-icons/fa";
+
+const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -32,26 +28,66 @@ const SellerProducts = ({
   });
 
   const dispatch = useDispatch();
+  const { loading, error, message } = useSelector((state) => state.order);
   const [imagePreview, setImagePreview] = useState("");
   const products = useSelector((state) => state.product.products);
-  const [loading, setLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const { token } = useSelector((state) => state.auth);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedReviews, setSelectedReviews] = useState(false);
+  const [updated, setUpdated] = useState(false);
+  const [filters, setFilters] = useState({
+    selectedDate: "",
+    search: "",
+    minPrice: "",
+    maxPrice: "",
+    status: "",
+    selectedCategory: 0,
+    selectedSubcategory: 0,
+  });
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
+
+  const [filterRating, setFilterRating] = useState(0);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/category/");
+        setCategories(response.data.category);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    const fetchSubcategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/subcateogry");
+        setSubcategories(response.data.subCategory);
+      } catch (error) {
+        console.error("Error fetching subcategories:", error);
+      }
+    };
+
+    fetchCategories();
+    fetchSubcategories();
+  }, []);
 
   const fetchProducts = async (page = 1) => {
     if (!token) {
-      console.error("No token found.");
-      setLoading(false);
+      dispatch(setLoading(false));
+      dispatch(setError("No token found."));
       return;
     }
-
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await axios.get(
-        "http://localhost:5000/products/seller",
+        `http://localhost:5000/products/seller?page=${page}&size=${pageSize}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,25 +99,29 @@ const SellerProducts = ({
         dispatch(setProducts(response.data.products));
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
-
-      setLoading(false);
+      dispatch(setLoading(false));
+      console.log("products: ", products);
     } catch (error) {
-      console.error("Error fetching seller products", error);
-      setLoading(false);
+      dispatch(setLoading(false));
+      dispatch(setError("Error fetching seller products"));
     }
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [dispatch, token]);
+    fetchProducts(currentPage);
+    console.log("selectedProduct: ", selectedProduct);
+    console.log("selectedReviews: ", selectedReviews);
+  }, [dispatch, token, currentPage, updated]);
 
   const validateForm = () => {
     if (!product.title || !product.price || !product.stock_quantity) {
-      showMessage("Title, Price, and Stock Quantity are required.", "error");
+      dispatch(setLoading(false));
+      dispatch(setError("Title, Price, and Stock Quantity are required."));
       return false;
     }
     if (isNaN(product.price) || isNaN(product.stock_quantity)) {
-      showMessage("Price and Stock Quantity must be numbers.", "error");
+      dispatch(setLoading(false));
+      dispatch(setError("Price and Stock Quantity must be numbers."));
       return false;
     }
     return true;
@@ -98,13 +138,10 @@ const SellerProducts = ({
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setIsUploading(true);
-    setMessage(null);
-
+    dispatch(setError(null));
     const formData = new FormData();
     formData.append("product_image", file);
-
     try {
       const res = await axios.post(
         "http://localhost:5000/products/upload_Image",
@@ -116,15 +153,15 @@ const SellerProducts = ({
           },
         }
       );
-
+      setIsUploading(false);
       setImagePreview(URL.createObjectURL(file));
       setProduct((prevState) => ({
         ...prevState,
         product_image: res.data.url,
       }));
     } catch (error) {
-      console.error("Error uploading product image:", error);
-      showMessage("Failed to upload image. Try again.", "error");
+      dispatch(setError("Failed to upload image. Try again."));
+      setIsUploading(false);
     } finally {
       setIsUploading(false);
     }
@@ -132,7 +169,6 @@ const SellerProducts = ({
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) {
       return;
     }
@@ -153,11 +189,10 @@ const SellerProducts = ({
       category_id: parseInt(product.category_id, 10),
       subcategory_id: parseInt(product.subcategory_id, 10),
     };
-    setIsSaving(true);
-
+    dispatch(setLoading(true));
     try {
       const response = await axios.put(
-        `http://localhost:5000/products/${editProduct.id}`,
+        `http://localhost:5000/products/${product.product_id}`,
         formattedProduct,
         {
           headers: {
@@ -165,10 +200,10 @@ const SellerProducts = ({
           },
         }
       );
-      showMessage("Product updated successfully!", "success");
       dispatch(updateProduct(response.data.product));
       setEditProduct(null);
-      setIseditProduct(false);
+      dispatch(setMessage("Product updated successfully!"));
+      dispatch(setLoading(false));
       setProduct({
         title: "",
         description: "",
@@ -181,15 +216,13 @@ const SellerProducts = ({
         category_id: "",
         subcategory_id: "",
       });
+      setUpdated(!updated);
       setImagePreview("");
-      setIsUploading(false);
     } catch (error) {
-      showMessage(
-        error.response?.data?.message || "Failed to update product.",
-        "error"
-      );
+      dispatch(setError("Failed to update product."));
+      dispatch(setLoading(false));
     } finally {
-      setIsSaving(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -200,30 +233,113 @@ const SellerProducts = ({
           Authorization: `Bearer ${token}`,
         },
       });
-      showMessage("Product deleted successfully!", "success");
+      dispatch(setLoading(false));
+      dispatch(setMessage("Product deleted successfully!"));
       dispatch(removeProduct(productId));
+      fetchProducts(currentPage);
     } catch (error) {
-      showMessage("Failed to delete product.", "error");
+      dispatch(setLoading(false));
+      dispatch(setError("Failed to delete product."));
     }
   };
 
   const handleEdit = (productToEdit) => {
     setEditProduct(productToEdit);
-    setIseditProduct(true);
     setProduct({
       ...productToEdit,
-      color_options: productToEdit.color_options.join(", "),
-      size_options: productToEdit.size_options.join(", "),
+      color_options: productToEdit.color_options?.join(", ") || "",
+      size_options: productToEdit.size_options?.join(", ") || "",
     });
+
+    console.log("Updated productToEdit:", productToEdit);
+  };
+  const renderStars = (rating) => {
+    const maxStars = 5;
+    return (
+      <span className="rating-stars">
+        {Array.from({ length: maxStars }, (_, i) =>
+          i < rating ? "★" : "☆"
+        ).join("")}
+      </span>
+    );
+  };
+  const handleStarClick = (star) => {
+    setFilterRating(star);
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+
+    if (name === "selectedCategory") {
+      setFilteredSubcategories(
+        subcategories.filter(
+          (subcategory) => subcategory.category_id === parseInt(value)
+        )
+      );
+      setProduct((prev) => ({ ...prev, subcategory_id: "" }));
+    }
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      selectedDate: "",
+      search: "",
+      minPrice: "",
+      maxPrice: "",
+      status: "",
+      selectedCategory: 0,
+      selectedSubcategory: 0,
+    });
+    setFilterRating(0);
+  };
+
+  const filteredProducts = products.filter((product) => {
+    const matchesDate =
+      !filters.selectedDate ||
+      new Date(product.created_at) <= new Date(filters.selectedDate);
+    const matchesSearch =
+      !filters.search || product.title.toString().includes(filters.search);
+    const matchesPrice =
+      (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
+      (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
+
+    const matchesCategory =
+      !filters.selectedCategory ||
+      product.category_id == filters.selectedCategory;
+    const matchesSubcategory =
+      !filters.selectedSubcategory ||
+      product.subcategory_id == filters.selectedSubcategory;
+    const matchesRating =
+      !filterRating || product.average_rating >= parseFloat(filterRating);
+
+    const matchesStock =
+      !filters.status || product.stock_status === filters.status;
+    return (
+      matchesDate &&
+      matchesSearch &&
+      matchesPrice &&
+      matchesCategory &&
+      matchesSubcategory &&
+      matchesRating &&
+      matchesStock
+    );
+  });
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
   const paginationControls = (
     <div className="pagination-controls">
       <div
         className={`pagination-arrow ${
           currentPage === 1 || totalPages === 0 ? "disabled" : ""
         }`}
-        onClick={() => currentPage > 1 && fetchProducts(currentPage - 1)}
+        onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
         aria-disabled={currentPage === 1}
       >
         <FaArrowLeft size={20} />
@@ -236,7 +352,7 @@ const SellerProducts = ({
           currentPage === totalPages || totalPages === 0 ? "disabled" : ""
         }`}
         onClick={() =>
-          currentPage < totalPages && fetchProducts(currentPage + 1)
+          currentPage < totalPages && setCurrentPage(currentPage + 1)
         }
         aria-disabled={currentPage === totalPages}
       >
@@ -245,153 +361,129 @@ const SellerProducts = ({
     </div>
   );
 
+  useEffect(() => {
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
+
+  if (loading) return <div className="loading-spinner">Loading...</div>;
+
   return (
     <div className="seller-page">
       <h2 className="page-title">Products Management</h2>
-      {message?.text && (
-        <div className={`message ${message.type} show`}>{message.text}</div>
-      )}
+      {error && <div className="error-message">Error: {error}</div>}
+      {message && <div className="success-message">{message}</div>}
       {editProduct ? (
-        <div className="product-edit-form-container">
-          <form onSubmit={handleUpdate} className="product-edit-form">
-            <h2>Edit Product</h2>
-            <div className="product__picture-container">
-              <div className="image-upload">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Product Preview"
-                    className="product_image"
-                  />
-                ) : (
-                  <label className="product_image-placeholder">
-                    <FaImage size={60} className="image-icon" />
-                    <span className="placeholder-text">Upload Image</span>
-                    <input
-                      type="file"
-                      onChange={handleFileChange}
-                      className="file-input"
-                    />
-                  </label>
-                )}
-                {isUploading && (
-                  <div className="upload-spinner">
-                    <RingLoader color="#36d7b7" size={50} />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="title" className="form-label">
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={product.title}
-                onChange={handleChange}
-                placeholder="Title"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={product.description}
-                onChange={handleChange}
-                placeholder="Description"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="price" className="form-label">
-                Price
-              </label>
-              <input
-                type="text"
-                id="price"
-                name="price"
-                value={product.price}
-                onChange={handleChange}
-                placeholder="Price"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="stock_quantity" className="form-label">
-                Stock Quantity
-              </label>
-              <input
-                type="text"
-                id="stock_quantity"
-                name="stock_quantity"
-                value={product.stock_quantity}
-                onChange={handleChange}
-                placeholder="Stock Quantity"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="color_options" className="form-label">
-                Color Options (comma separated)
-              </label>
-              <input
-                type="text"
-                id="color_options"
-                name="color_options"
-                value={product.color_options}
-                onChange={handleChange}
-                placeholder="Color Options (comma separated)"
-                className="input-field"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="size_options" className="form-label">
-                Size Options (comma separated)
-              </label>
-              <input
-                type="text"
-                id="size_options"
-                name="size_options"
-                value={product.size_options}
-                onChange={handleChange}
-                placeholder="Size Options (comma separated)"
-                className="input-field"
-              />
-            </div>
-            <div className="Edit_Action_Btns">
-              <button type="submit" className="edit_action-button">
-                {isSaving ? "Updating..." : "Update Product"}
-              </button>
-              <button
-                className="edit_back-button"
-                onClick={() => {
-                  setEditProduct(null);
-                  setIseditProduct(false);
-                }}
-              >
-                Back to Product List
-              </button>
-            </div>
-          </form>
-        </div>
+        <EditProductForm
+          product={product}
+          imagePreview={imagePreview}
+          isUploading={isUploading}
+          handleChange={handleChange}
+          handleFileChange={handleFileChange}
+          handleUpdate={handleUpdate}
+          setEditProduct={setEditProduct}
+        />
       ) : (
         <div className="SDB_product-list">
+          <div className="filters">
+            <input
+              type="date"
+              name="selectedDate"
+              placeholder="Before Date"
+              value={filters.selectedDate}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="text"
+              name="search"
+              placeholder="Search By Product Name"
+              value={filters.search}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="number"
+              name="minPrice"
+              placeholder="Min Price"
+              value={filters.minPrice}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="number"
+              name="maxPrice"
+              placeholder="Max Price"
+              value={filters.maxPrice}
+              onChange={handleFilterChange}
+            />
+            <select
+              name="selectedCategory"
+              value={filters.selectedCategory}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <select
+              name="selectedSubcategory"
+              value={product.subcategory_id}
+              onChange={handleFilterChange}
+              required
+              disabled={!filters.selectedCategory}
+            >
+              <option value="" disabled>
+                All SubCategories
+              </option>
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+            >
+              <option value="">Status</option>
+              <option value="in_stock">In Stock</option>
+              <option value="out_of_stock">Out Of Stock</option>
+              <option value="on_demand">On Demand</option>
+            </select>
+            <div className="star-filter">
+              {Array.from({ length: 5 }, (_, index) => (
+                <span
+                  key={index}
+                  className={`star ${
+                    filterRating >= index + 1 ? "selected" : ""
+                  }`}
+                  onClick={() => handleStarClick(index + 1)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <button
+              className="clear-filters-button"
+              onClick={handleClearFilters}
+            >
+              Clear
+            </button>
+          </div>
+
           <div className="SDB_product-grid">
             {loading ? (
               <div className="loading-spinner">Loading...</div>
             ) : products.length > 0 ? (
-              products.map((prod) => (
+              filteredProducts.map((prod) => (
                 <div key={prod.id} className="SDB_product-card">
                   <img
                     src={
@@ -406,29 +498,85 @@ const SellerProducts = ({
                   <div className="SDB_product-info">
                     <h3 className="SDB_product-title">{prod.title}</h3>
                     <p className="SDB_product-description">
-                      {prod.description}
+                      {prod.description || "No Description"}
                     </p>
-                    <p className="SDB_product-price">${prod.price}</p>
-                    <p className="SDB_product-stock">
-                      Stock Status: {prod.stock_status} | Quantity:{" "}
-                      {prod.stock_quantity}
-                    </p>
+                    <div className="SDB_product-price">
+                      <span className="status">
+                        {prod.price ? `${prod.price}` : "Price Not Available"}
+                      </span>
+                    </div>
+
+                    <div className="SDB_product-stock">
+                      <span className="status">
+                        {prod.stock_status
+                          ? prod.stock_status.replace("_", " ")
+                          : "Status Unknown"}
+                      </span>
+                      &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+                      <span className="quantity">
+                        {prod.stock_quantity || "0"}
+                      </span>
+                    </div>
+
                     <p className="SDB_product-colors">
-                      Colors: {prod.color_options.join(", ")}
+                      <span className="color-list">
+                        {prod.color_options && prod.color_options.length > 0
+                          ? prod.color_options.join(", ")
+                          : "No Colors"}
+                      </span>
                     </p>
+
                     <p className="SDB_product-sizes">
-                      Sizes: {prod.size_options.join(", ")}
+                      <span className="size-list">
+                        {prod.size_options && prod.size_options.length > 0
+                          ? prod.size_options.join(", ")
+                          : "One Size"}
+                      </span>
                     </p>
+
+                    <p className="SDB_product-category">
+                      {prod.category_name || "Category Not Specified"}
+                    </p>
+
+                    <p className="SDB_product-subCategory">
+                      {prod.subcategory_name || "Subcategory Not Specified"}
+                    </p>
+
+                    <div className="SDB_product-rating">
+                      <span>
+                        <div className="internal_rating">
+                          {renderStars(prod.average_rating)}
+                          {prod.average_rating > 0 ? (
+                            <>
+                              {(parseFloat(prod.average_rating) || 0).toFixed(
+                                2
+                              )}
+                            </>
+                          ) : (
+                            "No Rating Yet"
+                          )}
+                        </div>
+                      </span>{" "}
+                      &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                      <span>({prod.number_of_reviews})</span>
+                    </div>
+
                     <div className="product-actions">
                       <button
                         onClick={() => handleEdit(prod)}
-                        className="action-button edit-button"
+                        className="edit-button"
                       >
                         Edit
                       </button>
                       <button
+                        onClick={() => setSelectedProduct(prod)}
+                        className="statistics-button"
+                      >
+                        Statistics
+                      </button>
+                      <button
                         onClick={() => handleDelete(prod.id)}
-                        className="action-button delete-button"
+                        className="delete-button"
                       >
                         Delete
                       </button>
@@ -441,6 +589,140 @@ const SellerProducts = ({
             )}
           </div>
           {paginationControls}
+        </div>
+      )}
+      {selectedProduct && (
+        <div className="order-details-modal-wrapper">
+          <div className="order-details-modal">
+            <button
+              className="close-button"
+              onClick={() => setSelectedProduct(null)}
+            >
+              ×
+            </button>
+            <h3>{selectedProduct.title}</h3>
+            {selectedReviews ? (
+              <div className="reviews-list">
+                {selectedProduct.reviews
+                  .map((reviewString) => JSON.parse(reviewString))
+                  .map((review) => (
+                    <div
+                      key={review.id}
+                      className="review-card"
+                      data-rating={
+                        review.rating >= 4
+                          ? "positive"
+                          : review.rating === 3
+                          ? "neutral"
+                          : "negative"
+                      }
+                    >
+                      <div className="profile-wrapper">
+                        {review.profile_image ? (
+                          <img
+                            src={review.profile_image}
+                            alt={`${review.user_name}'s profile`}
+                            className="review-profile-image"
+                          />
+                        ) : (
+                          <FaUserAlt className="fallback-icon" />
+                        )}
+                      </div>
+                      <div className="review-content">
+                        <div className="review-header">
+                          <strong>{review.user_name}</strong> -{" "}
+                          {formatDate(review.created_at)}
+                        </div>
+                        {renderStars(review.rating)}
+                        <p className="review-comment">{review.comment}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="content">
+                <div className="SDB_product-info">
+                  <p className="SDB_product-times_ordered">
+                    {selectedProduct.total_orders_containing_product > 0
+                      ? selectedProduct.total_orders_containing_product
+                      : "Not Ordered Yet"}
+                  </p>
+
+                  <p className="SDB_product-quantity_ordered">
+                    {selectedProduct.quantity_ordered > 0
+                      ? selectedProduct.quantity_ordered
+                      : "Not Ordered Yet"}
+                  </p>
+
+                  <div className="SDB_product-total_revenue">
+                    <span>
+                      {selectedProduct.total_revenue > 0
+                        ? `${(
+                            parseFloat(selectedProduct.revenue_percentage) || 0
+                          ).toFixed(2)}`
+                        : "Not Ordered Yet"}
+                    </span>{" "}
+                    &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;
+                    <span>
+                      {selectedProduct.revenue_percentage > 0 &&
+                        `${parseFloat(
+                          selectedProduct.revenue_percentage
+                        ).toFixed(2)}`}
+                    </span>
+                  </div>
+
+                  <p className="SDB_product-users_added_to_wishlist">
+                    {selectedProduct.users_added_to_wishlist > 0
+                      ? selectedProduct.users_added_to_wishlist
+                      : "Not Added Yet"}
+                  </p>
+                  <div className="SDB_product-rating">
+                    <span>
+                      <div className="internal_rating">
+                        {renderStars(selectedProduct.average_rating)}
+                        {selectedProduct.average_rating > 0 ? (
+                          <>
+                            {(
+                              parseFloat(selectedProduct.average_rating) || 0
+                            ).toFixed(2)}
+                          </>
+                        ) : (
+                          "No Rating Yet"
+                        )}
+                      </div>
+                    </span>{" "}
+                    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                    <span>({selectedProduct.number_of_reviews})</span>
+                  </div>
+
+                  <div className="SDB_product-reviews">
+                    {selectedProduct.reviews &&
+                    selectedProduct.reviews.length > 0 ? (
+                      <button
+                        onClick={() => {
+                          setSelectedReviews(!selectedReviews);
+                        }}
+                        className="cancel"
+                      >
+                        Reviews
+                      </button>
+                    ) : (
+                      "No Reviews Yet"
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="footer">
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="cancel"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
