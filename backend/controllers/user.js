@@ -491,6 +491,7 @@ const getProfile = async (req, res) => {
 };
 
 const getUserbyId = async (req, res) => {
+
   const  {userId}  = req.params;
 
   try {
@@ -502,6 +503,7 @@ const getUserbyId = async (req, res) => {
         success: true,
         user: result.rows[0],
       });
+
     } else {
       res.status(404).json({
         success: false,
@@ -514,6 +516,7 @@ const getUserbyId = async (req, res) => {
       message: "Server error",
       error: err.message,
     });
+
   }
 };
 const updateProfile = async (req, res) => {
@@ -1064,5 +1067,6 @@ module.exports = {
   resetPassword,
   googleLogin,
   completeRegister,
+
   getUserbyId
 };
