@@ -4,6 +4,17 @@ import { setMessage, setLoading, setError } from "../redux/reducers/orders";
 import axios from "axios";
 import "./style.css";
 
+const RatingStars = ({ rating }) => {
+  const maxStars = 5;
+  return (
+    <span className="rating-stars">
+      {Array.from({ length: maxStars }, (_, i) =>
+        i < rating ? "★" : "☆"
+      ).join("")}
+    </span>
+  );
+};
+
 const AdminSummary = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
@@ -17,8 +28,9 @@ const AdminSummary = () => {
     completedOrders: 0,
     totalRevenue: 0,
     totalReviews: 0,
-    averageRating: 0,
     topSellingProduct: null,
+    bestProduct: null,
+    bestSeller: null,
   });
 
   const fetchAdminSummary = async () => {
@@ -38,6 +50,7 @@ const AdminSummary = () => {
       if (response.data.success) {
         const summary = response.data.summary;
         console.log(response.data);
+
         setAdminSummary({
           totalUsers: summary.totalUsers,
           totalProducts: summary.totalProducts,
@@ -47,7 +60,6 @@ const AdminSummary = () => {
           totalRevenue: parseFloat(summary.totalRevenue).toFixed(2),
           totalReviews: summary.totalReviews || 0,
           topSellingProduct: summary.topSellingProduct || null,
-          totalReviews: summary.totalReviews || 0,
           bestProduct: summary.bestProduct || null,
           bestSeller: summary.bestSeller || null,
         });
@@ -115,10 +127,11 @@ const AdminSummary = () => {
           <div className="summary-card best-product">
             <h4>Best Product</h4>
             {adminSummary.bestProduct ? (
-              <p>
-                Product: {adminSummary.bestProduct.product_name}, Avg. Rating:{" "}
-                {adminSummary.bestProduct.averageRating}
-              </p>
+              <>
+                <p>{adminSummary.bestProduct.name}</p>
+                <p>Avg. Rating: {adminSummary.bestProduct.averageRating}</p>
+                <RatingStars rating={adminSummary.bestProduct.averageRating} />
+              </>
             ) : (
               <p>No product data available</p>
             )}
@@ -127,10 +140,11 @@ const AdminSummary = () => {
           <div className="summary-card best-seller">
             <h4>Best Seller</h4>
             {adminSummary.bestSeller ? (
-              <p>
-                Seller: {adminSummary.bestSeller.seller_name}, Avg. Rating:{" "}
-                {adminSummary.bestSeller.averageRating}
-              </p>
+              <>
+                <p>{adminSummary.bestSeller.name}</p>
+                <p>Avg. Rating: {adminSummary.bestSeller.averageRating}</p>
+                <RatingStars rating={adminSummary.bestSeller.averageRating} />
+              </>
             ) : (
               <p>No seller data available</p>
             )}

@@ -509,7 +509,7 @@ const getAdminSummary = async (req, res) => {
 
     const bestProductQuery = `
     SELECT 
-        p.name AS product_name, 
+        p.title AS product_name, 
         AVG(r.rating) AS average_rating
     FROM reviews r
     JOIN products p ON r.product_id = p.id
@@ -521,7 +521,7 @@ const getAdminSummary = async (req, res) => {
 
     const bestSellerQuery = `
     SELECT 
-        u.name AS seller_name, 
+        u.userName AS seller_name, 
         AVG(sr.rating) AS average_rating
     FROM sellerReviews sr
     JOIN users u ON sr.seller_id = u.id
