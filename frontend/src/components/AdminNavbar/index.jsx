@@ -7,10 +7,10 @@ import {
   FaBoxOpen,
   FaPlus,
   FaShoppingCart,
-  FaStar,
+  FaUserCog,
 } from "react-icons/fa";
 
-const SellerNavbar = ({ activeSection, setActiveSection }) => {
+const AdminNavbar = ({ activeSection, setActiveSection }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -18,14 +18,13 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
   };
 
   return (
-    <nav className="seller-navbar">
+    <nav className="admin-navbar">
       <div className="navbar-logo">
-        <h1>Seller Dashboard</h1>
-       
+        <h1>Admin Dashboard</h1>
       </div>
       <button className="menu-toggle" onClick={toggleMenu}>
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
+        {isMenuOpen ? <FaTimes /> : <FaBars />}
+      </button>
       <ul className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
         <li
           className={activeSection === "summary" ? "active" : ""}
@@ -38,6 +37,36 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
           Summary
         </li>
         <li
+          className={activeSection === "addCategory" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("addCategory");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaPlus className="navbar-icon" />
+          Add Category/SubCategory
+        </li>
+        <li
+          className={activeSection === "manageUsers" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("manageUsers");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaUserCog className="navbar-icon" />
+          Manage Users
+        </li>
+        <li
+          className={activeSection === "manageOrders" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("manageOrders");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaShoppingCart className="navbar-icon" />
+          Manage Orders
+        </li>
+        <li
           className={activeSection === "manageProduct" ? "active" : ""}
           onClick={() => {
             setActiveSection("manageProduct");
@@ -47,39 +76,9 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
           <FaBoxOpen className="navbar-icon" />
           Products Management
         </li>
-        <li
-          className={activeSection === "addProduct" ? "active" : ""}
-          onClick={() => {
-            setActiveSection("addProduct");
-            setIsMenuOpen(false);
-          }}
-        >
-          <FaPlus className="navbar-icon" />
-          Add Product
-        </li>
-        <li
-          className={activeSection === "myOrders" ? "active" : ""}
-          onClick={() => {
-            setActiveSection("myOrders");
-            setIsMenuOpen(false);
-          }}
-        >
-          <FaShoppingCart className="navbar-icon" />
-          Orders
-        </li>
-        <li
-          className={activeSection === "myReviews" ? "active" : ""}
-          onClick={() => {
-            setActiveSection("myReviews");
-            setIsMenuOpen(false);
-          }}
-        >
-          <FaStar className="navbar-icon" />
-          Reviews
-        </li>
       </ul>
     </nav>
   );
 };
 
-export default SellerNavbar;
+export default AdminNavbar;

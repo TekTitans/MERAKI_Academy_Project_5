@@ -10,6 +10,7 @@ const {
   updateOrderStatus,
   generateInvoice,
   getSellerSummary,
+  getAdminSummary,
 } = require("../controllers/order");
 
 const orderRouter = express.Router();
@@ -22,5 +23,6 @@ orderRouter.get("/seller/summary", auth, getSellerSummary);
 orderRouter.get("/seller/:sellerId", auth, getSellerOrders);
 orderRouter.put("/:id/status", auth, updateOrderStatus);
 orderRouter.get("/:id/invoice", generateInvoice);
+orderRouter.get("/admin/summary", auth, getAdminSummary);
 
 module.exports = orderRouter;

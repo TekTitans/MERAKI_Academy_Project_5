@@ -19,6 +19,7 @@ import SellerDashboard from "../pages/SellerDashboard";
 import Chat from "../pages/chat/Chat";
 
 import PlaceOrder from "../pages/place order/PlaceOrder";
+import AdminDashboard from "../pages/AdminDashboard copy";
 export const router = createBrowserRouter(
   [
     {
@@ -50,6 +51,7 @@ export const router = createBrowserRouter(
         { path: "/products", element: <Products /> },
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
+        { path: "/Admin", element: <AdminDashboard /> },
       ],
     },
   ],

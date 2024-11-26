@@ -6,7 +6,7 @@ import { FaImage } from "react-icons/fa";
 import { RingLoader } from "react-spinners";
 import "./style.css";
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
-const AddProduct = () => {
+const AddCategories = () => {
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -316,4 +316,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default AddCategories;

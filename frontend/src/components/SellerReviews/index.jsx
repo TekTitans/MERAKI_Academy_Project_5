@@ -8,6 +8,7 @@ import {
 } from "../redux/reducers/sellerReviews";
 import axios from "axios";
 import "./style.css";
+import { setMessage } from "../redux/reducers/orders";
 
 const SellerReviews = () => {
   const dispatch = useDispatch();
@@ -123,9 +124,16 @@ const SellerReviews = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, dispatch]);
+
+  if (loading) return <div className="loading-spinner">Loading...</div>;
 
   if (error) {
     return <div className="error-message">Error: {error}</div>;

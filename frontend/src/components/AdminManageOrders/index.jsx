@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import "./style.css";
 
-const SellerOrders = () => {
+const AdminManageOrders = () => {
   const dispatch = useDispatch();
   const sellerId = useSelector((state) => state.auth.userId);
   const { token } = useSelector((state) => state.auth);
@@ -452,4 +452,4 @@ const SellerOrders = () => {
   );
 };
 
-export default SellerOrders;
+export default AdminManageOrders;

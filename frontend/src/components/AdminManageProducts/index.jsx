@@ -12,7 +12,7 @@ import EditProductForm from "../ProductEdit";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { FaUserAlt } from "react-icons/fa";
 
-const SellerProducts = () => {
+const AdminManageProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [product, setProduct] = useState({
     title: "",
@@ -729,4 +729,4 @@ const SellerProducts = () => {
   );
 };
 
-export default SellerProducts;
+export default AdminManageProducts;

@@ -1,9 +1,13 @@
+const express=require("express")
+
 const {Server}=require ("socket.io")
 const Sauth=require("../socket io/Sauth")
 const {message}=require("../controllers/message")
 const example=require("../socket io/example")
-
-const io =new Server(8080,{cors:{origin:"*"}})
+const http=require("http")
+const io =new Server(8081,{cors:{origin:"*"}})
+const app=express()
+const server=http.createServer(app)
 io.use(Sauth)
 const clients=[]
 io.on("connection",(socket)=>{
@@ -29,3 +33,4 @@ socket.on("disconnect",()=>{
 })
 
 })
+//server.listen(3000,()=>{console.log("Server is running")})

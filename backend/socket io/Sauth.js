@@ -3,7 +3,7 @@ const Sauth=(socket,next)=>{
     if(!headers.token){
         next(new Error("invalid"))
     }else{
-        socket.join("room-"+headers.userid)
+        socket.join("room-"/*+headers.userid*/)
         socket.user={token:headers.token,userid:headers.userid}
         next()
     }
