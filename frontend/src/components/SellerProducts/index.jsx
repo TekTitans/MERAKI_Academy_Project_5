@@ -43,19 +43,36 @@ const SellerProducts = () => {
     search: "",
     minPrice: "",
     maxPrice: "",
-    selectedCategory: "",
-    selectedSubcategory: "",
+    selectedCategory: 0,
+    selectedSubcategory: 0,
   });
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
+
   const [ratingFilter, setRatingFilter] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await axios.get("http://localhost:5000/categories");
-      setCategories(res.data);
+      try {
+        const response = await axios.get("http://localhost:5000/category/");
+        setCategories(response.data.category);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
     };
+
+    const fetchSubcategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/subcateogry");
+        setSubcategories(response.data.subCategory);
+      } catch (error) {
+        console.error("Error fetching subcategories:", error);
+      }
+    };
+
     fetchCategories();
+    fetchSubcategories();
   }, []);
 
   const fetchProducts = async (page = 1) => {
@@ -234,17 +251,34 @@ const SellerProducts = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
+    console.log("name: ", name);
+    console.log("value: ", value);
+
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
     }));
+
+    if (name === "selectedCategory") {
+      console.log("name === selectedCategory: ", true);
+
+      setFilteredSubcategories(
+        subcategories.filter(
+          (subcategory) => subcategory.category_id === parseInt(value)
+        )
+      );
+      setProduct((prev) => ({ ...prev, subcategory_id: "" }));
+    }
   };
 
   const handleClearFilters = () => {
     setFilters({
       selectedDate: "",
-
       search: "",
+      minPrice: "",
+      maxPrice: "",
+      selectedCategory: 0,
+      selectedSubcategory: 0,
     });
   };
 
@@ -260,10 +294,10 @@ const SellerProducts = () => {
 
     const matchesCategory =
       !filters.selectedCategory ||
-      product.category_name === filters.selectedCategory;
+      product.category_id == filters.selectedCategory;
     const matchesSubcategory =
       !filters.selectedSubcategory ||
-      product.subcategory_name === filters.selectedSubcategory;
+      product.subcategory_id == filters.selectedSubcategory;
     const matchesRating =
       !ratingFilter || product.rating >= parseFloat(ratingFilter);
     const matchesStock = !filters.inStock || product.stock_quantity > 0;
@@ -371,8 +405,27 @@ const SellerProducts = () => {
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.name}>
+                <option key={category.id} value={category.id}>
                   {category.name}
+                </option>
+              ))}
+            </select>
+            <select
+              name="selectedSubcategory"
+              value={product.subcategory_id}
+              onChange={handleFilterChange}
+              required
+              disabled={!filters.selectedCategory}
+            >
+              <option value="" disabled>
+                {product.category_id
+                  ? "Select Subcategory"
+                  : "Select a category first"}
+              </option>
+              <option value="">All SubCategories</option>
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
                 </option>
               ))}
             </select>
