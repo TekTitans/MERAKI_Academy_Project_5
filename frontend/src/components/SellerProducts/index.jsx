@@ -37,7 +37,7 @@ const SellerProducts = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedReviews, setSelectedReviews] = useState(null);
+  const [selectedReviews, setSelectedReviews] = useState(false);
   const [updated, setUpdated] = useState(false);
   const [filters, setFilters] = useState({
     selectedDate: "",
@@ -109,6 +109,8 @@ const SellerProducts = () => {
 
   useEffect(() => {
     fetchProducts(currentPage);
+    console.log("selectedProduct: ", selectedProduct);
+    console.log("selectedReviews: ", selectedReviews);
   }, [dispatch, token, currentPage, updated]);
 
   const validateForm = () => {
@@ -267,8 +269,6 @@ const SellerProducts = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    console.log("name: ", name);
-    console.log("value: ", value);
 
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -276,8 +276,6 @@ const SellerProducts = () => {
     }));
 
     if (name === "selectedCategory") {
-      console.log("name === selectedCategory: ", true);
-
       setFilteredSubcategories(
         subcategories.filter(
           (subcategory) => subcategory.category_id === parseInt(value)
@@ -331,7 +329,10 @@ const SellerProducts = () => {
       matchesStock
     );
   });
-
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
   const paginationControls = (
     <div className="pagination-controls">
       <div
@@ -602,39 +603,41 @@ const SellerProducts = () => {
             <h3>{selectedProduct.title}</h3>
             {selectedReviews ? (
               <div className="reviews-list">
-                {selectedReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="review-card"
-                    data-rating={
-                      review.rating >= 4
-                        ? "positive"
-                        : review.rating === 3
-                        ? "neutral"
-                        : "negative"
-                    }
-                  >
-                    <div className="profile-wrapper">
-                      {review.profile_image ? (
-                        <img
-                          src={review.profile_image}
-                          alt={`${review.user_name}'s profile`}
-                          className="review-profile-image"
-                        />
-                      ) : (
-                        <FaUserAlt className="fallback-icon" />
-                      )}
-                    </div>
-                    <div className="review-content">
-                      <div className="review-header">
-                        <strong>{review.user_name}</strong> -{" "}
-                        {formatDate(review.created_at)}
+                {selectedProduct.reviews
+                  .map((reviewString) => JSON.parse(reviewString))
+                  .map((review) => (
+                    <div
+                      key={review.id}
+                      className="review-card"
+                      data-rating={
+                        review.rating >= 4
+                          ? "positive"
+                          : review.rating === 3
+                          ? "neutral"
+                          : "negative"
+                      }
+                    >
+                      <div className="profile-wrapper">
+                        {review.profile_image ? (
+                          <img
+                            src={review.profile_image}
+                            alt={`${review.user_name}'s profile`}
+                            className="review-profile-image"
+                          />
+                        ) : (
+                          <FaUserAlt className="fallback-icon" />
+                        )}
                       </div>
-                      {renderStars(review.rating)}
-                      <p className="review-comment">{review.comment}</p>
+                      <div className="review-content">
+                        <div className="review-header">
+                          <strong>{review.user_name}</strong> -{" "}
+                          {formatDate(review.created_at)}
+                        </div>
+                        {renderStars(review.rating)}
+                        <p className="review-comment">{review.comment}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             ) : (
               <div className="content">
@@ -696,9 +699,9 @@ const SellerProducts = () => {
                     {selectedProduct.reviews &&
                     selectedProduct.reviews.length > 0 ? (
                       <button
-                        onClick={() =>
-                          setSelectedReviews(selectedProduct.reviews)
-                        }
+                        onClick={() => {
+                          setSelectedReviews(!selectedReviews);
+                        }}
                         className="cancel"
                       >
                         Reviews
