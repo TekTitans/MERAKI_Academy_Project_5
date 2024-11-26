@@ -4,7 +4,7 @@ const auth = require("../middleware/authentication");
 const authorization = require("../middleware/authorization");
 const checkBlockedkUser = require("../middleware/checkBlockedkUser");
 const adminAuth = require("../middleware/adminAuth");
-const upload = require("../middleware/upload");  
+const upload = require("../middleware/upload");
 
 const userRouter = express.Router();
 const {
@@ -25,6 +25,7 @@ const {
   resetPassword,
   googleLogin,
   completeRegister,
+  getUserbyId,
 } = require("../controllers/user");
 
 // Public Routes (No Auth or status check)
@@ -42,6 +43,8 @@ userRouter.post("/google-complete-register/:userId", completeRegister);
 
 // Protected User Routes ( Auth )
 userRouter.get("/profile", auth, getProfile);
+userRouter.get("/:userId", auth, getUserbyId);
+
 userRouter.put("/profile", auth, upload.single("profile_image"), updateProfile);
 userRouter.put("/change-password", auth, updatePassword);
 userRouter.delete("/profile", auth, deleteUserAccount);
