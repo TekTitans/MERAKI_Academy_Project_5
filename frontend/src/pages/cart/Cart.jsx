@@ -28,7 +28,7 @@ const Cart = () => {
       .catch((err) => {
         console.log("Error fetching cart data:", err);
       });
-  }, [headers]);
+  }, []);
 
   const sendQuantityUpdate = (id, quantity) => {
     axios
@@ -100,6 +100,7 @@ const Cart = () => {
                   min={1}
                   onChange={(e) => handleQuantityChange(e, elem)}
                 />
+                {console.log(elem.quantity)}
               </td>
               <td>{elem.price * elem.quantity}.00</td>
             </tr>
