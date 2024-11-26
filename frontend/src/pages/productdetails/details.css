@@ -354,29 +354,23 @@ button:hover {
   font-size: 25px;
 }
 
-.product-footer {
-  margin-top: 1rem;
-  padding-top: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.5rem;
-  color: #555;
-}
-
-.seller-label {
-  font-weight: bold;
-  color: #777;
-}
-
-.seller-name {
+.user-link {
   color: #007bff;
   text-decoration: none;
   font-weight: bold;
-  transition: color 0.3s;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
-.seller-name:hover {
+.user-link:hover {
   color: #0056b3;
   text-decoration: underline;
+}
+.added-by {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #555;
+}
+
+.added-by strong {
+  color: #000;
 }

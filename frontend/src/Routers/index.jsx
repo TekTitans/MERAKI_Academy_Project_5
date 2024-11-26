@@ -53,7 +53,8 @@ export const router = createBrowserRouter(
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },
-        { path: "/users/:userId", element: <UserProfile /> },
+
+        { path: "/users/:userId", element: <UserProfile/>}
       ],
     },
   ],
