@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const Products = () => {
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const userId = useSelector((state) => state.auth.userId);
   const [categories, setCategories] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -26,6 +28,7 @@ const Products = () => {
   const products = useSelector((state) => {
     return state.product.products;
   });
+
   const handleWishlist = (productId) => {
     // Placeholder functionality
     console.log(`Product ${productId} added to wishlist`);
@@ -130,9 +133,8 @@ const Products = () => {
       <button
         className="wishlist-button"
         onClick={() => handleWishlist(product.id)}
-        title="Add to Wishlist"
       >
-        ❤️
+        ♥
       </button>
       <div className="product-info">
         <h3 className="product-title">{product.title}</h3>
