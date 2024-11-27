@@ -13,6 +13,7 @@ const EditCategoryForm = ({
   handleFileChange,
   handleUpdate,
   setEditCategory,
+  handleBackToCategories,
 }) => {
   const { loading, error, message } = useSelector((state) => state.order);
   const dispatch = useDispatch();
@@ -114,9 +115,7 @@ const EditCategoryForm = ({
           </button>
           <button
             className="edit_back-button"
-            onClick={() => {
-              setEditCategory(null);
-            }}
+            onClick={handleBackToCategories}
           >
             Back
           </button>

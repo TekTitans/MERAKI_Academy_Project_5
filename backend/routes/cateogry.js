@@ -21,7 +21,7 @@ cateogryRouter.post(
   uploadCategoryImage
 );
 
-cateogryRouter.put("/:catId", updateCategory);
+cateogryRouter.put("/:catId", auth, updateCategory);
 cateogryRouter.delete("/:catId", removeCateegory);
 cateogryRouter.get("/", getAllCategory);
 

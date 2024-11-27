@@ -97,6 +97,7 @@ const getAllSubCategory = async (req, res) => {
     SELECT s.id, s.name, s.description, s.category_id, c.name AS category_name
     FROM subcategories s
     JOIN categories c ON c.id = s.category_id
+    ORDER BY created_at DESC 
     LIMIT $1 OFFSET $2;
   `;
   const countQuery = `SELECT COUNT(*) FROM subcategories;`;

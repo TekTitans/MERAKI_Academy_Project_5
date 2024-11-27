@@ -112,14 +112,17 @@ const AdminManageCatigories = () => {
     }
   };
 
-  const handleEdit = (categoryToEdit) => {
-    setEditCategory(categoryToEdit);
-    setFormData(categoryToEdit);
 
-    console.log("Updated productToEdit:", categoryToEdit);
-  };
 
-    const validateForm = () => {
+
+
+
+
+ 
+
+ 
+*/
+  const validateForm = () => {
     if (!formData.name || !formData.description) {
       dispatch(setLoading(false));
       dispatch(setError("name and description are required."));
@@ -127,12 +130,21 @@ const AdminManageCatigories = () => {
     }
     return true;
   };
+  const handleEdit = (categoryToEdit) => {
+    setEditCategory({ ...categoryToEdit });
+    setFormData({ ...categoryToEdit });
 
+    console.log("Updated categoryToEdit:", categoryToEdit);
+    console.log("formData: ", formData);
+    console.log("editCategory:", editCategory);
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    console.log(formData);
+    setEditCategory({ ...editCategory, [name]: value });
+    console.log(editCategory);
   };
-
   const handleFileChange = async (e, isCategory = true, categoryId = null) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -166,7 +178,6 @@ const AdminManageCatigories = () => {
       setIsUploading(false);
     }
   };
-
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -175,15 +186,14 @@ const AdminManageCatigories = () => {
     dispatch(setLoading(true));
     try {
       const response = await axios.put(
-        `http://localhost:5000/products/${product.product_id}`,
-        formattedProduct,
+        `http://localhost:5000/category/${editCategory.id}`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setEditCategory(null);
       dispatch(setMessage("Product updated successfully!"));
       dispatch(setLoading(false));
       setUpdated(!updated);
@@ -196,8 +206,6 @@ const AdminManageCatigories = () => {
     }
   };
 
-
-*/
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({
@@ -264,6 +272,7 @@ const AdminManageCatigories = () => {
     setEditCategory(null);
     setSubcategories([]);
     setCurrentPage(1);
+    setImagePreview("");
   };
   const handleBackToSubCategories = () => {
     setEditCategory(null);
@@ -298,16 +307,18 @@ const AdminManageCatigories = () => {
       {editCategory ? (
         <>
           <button onClick={handleBackToCategories}>Back</button>{" "}
-        </> /* <EditCategoryForm
-  editCategory={editCategory}
-  formData={formData}
-  imagePreview={imagePreview}
-  isUploading={isUploading}
-  handleChange={handleChange}
-  handleFileChange={handleFileChange}
-  handleUpdate={handleUpdate}
-  setEditCategory={setEditCategory}
-/>*/
+          <EditCategoryForm
+            editCategory={editCategory}
+            formData={formData}
+            imagePreview={imagePreview}
+            isUploading={isUploading}
+            handleChange={handleChange}
+            handleFileChange={handleFileChange}
+            handleUpdate={handleUpdate}
+            setEditCategory={setEditCategory}
+            handleBackToCategories={handleBackToCategories}
+          />
+        </>
       ) : (
         <>
           {selectedCategory ? (
@@ -354,11 +365,9 @@ const AdminManageCatigories = () => {
 
                         <div className="product-actions">
                           <button
-                            onClick={
-                              () => {
-                                setEditCategory(true);
-                              } /* handleEdit(cat)*/
-                            }
+                            onClick={() => {
+                              handleEdit(cat);
+                            }}
                             className="edit-button"
                           >
                             Edit
@@ -425,11 +434,9 @@ const AdminManageCatigories = () => {
 
                         <div className="product-actions">
                           <button
-                            onClick={
-                              () => {
-                                setEditCategory(true);
-                              } /*handleEdit(cat)*/
-                            }
+                            onClick={() => {
+                              handleEdit(cat);
+                            }}
                             className="edit-button"
                           >
                             Edit
