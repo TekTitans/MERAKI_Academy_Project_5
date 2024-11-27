@@ -95,27 +95,23 @@ const AdminManageCatigories = () => {
     fetchCategories(currentPage);
   }, [dispatch, token, currentPage, updated]);
 
-  /*
-
-  const handleDelete = async (productId) => {
+  const handleDelete = async (catId) => {
     try {
-      await axios.delete(`http://localhost:5000/products/${productId}`, {
+      console.log("catId: ", catId);
+      await axios.delete(`http://localhost:5000/category/${catId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       dispatch(setLoading(false));
-      dispatch(setMessage("Product deleted successfully!"));
-      dispatch(removeProduct(productId));
-      fetchProducts(currentPage);
+      dispatch(setMessage("Category deleted successfully!"));
+      fetchCategories(currentPage);
     } catch (error) {
       dispatch(setLoading(false));
-      dispatch(setError("Failed to delete product."));
+      dispatch(setError("Failed to delete category."));
     }
   };
 
-
-*/
   const validateForm = () => {
     if (!formData.name || !formData.description) {
       dispatch(setLoading(false));
@@ -520,11 +516,9 @@ const AdminManageCatigories = () => {
                           </button>
 
                           <button
-                            onClick={
-                              () => {
-                                console.log("Delete");
-                              } /* handleDelete(cat.id)*/
-                            }
+                            onClick={() => {
+                              handleDelete(cat.id);
+                            }}
                             className="delete-button"
                           >
                             Delete

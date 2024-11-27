@@ -60,26 +60,33 @@ const updateCategory = async (req, res) => {
   }
 };
 
-const removeCateegory = async (req, res) => {
+const removeCategory = async (req, res) => {
   const catId = req.params.catId;
-
-  const query = `DELETE FROM categories WHERE id = ${catId};`;
+  const query = `DELETE FROM categories WHERE id = $1 RETURNING *;`;
+  console.log("catId: ", catId);
 
   try {
-    const result = await pool.query(query);
-    if (result.rows.length !== 0) {
+    const result = await pool.query(query, [catId]);
+    console.log("result: ", result);
+
+    if (result.rowCount > 0) {
       res.json({
         success: true,
         message: "Category Deleted",
+        deletedCategory: result.rows[0],
       });
     } else {
-      throw new Error("Error happened while deleting Category");
+      res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
     }
   } catch (error) {
+    console.error("Error deleting category:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
@@ -168,7 +175,7 @@ const uploadCategoryImage = async (req, res) => {
 module.exports = {
   createCategory,
   updateCategory,
-  removeCateegory,
+  removeCategory,
   getAllCategory,
   uploadCategoryImage,
 };

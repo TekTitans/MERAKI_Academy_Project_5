@@ -52,7 +52,7 @@ const updateSubCategory = async (req, res) => {
       });
     } else {
       console.log("Request body:", req.body);
-console.log("SubCategory ID:", req.params.id);
+      console.log("SubCategory ID:", req.params.id);
 
       throw new Error("Error happened while updating SubCategory");
     }
@@ -67,34 +67,46 @@ console.log("SubCategory ID:", req.params.id);
   }
 };
 
-const removeSubCateegory = async (req, res) => {
-  const subCatIdatId = req.params.subId;
+const removeSubCategory = async (req, res) => {
+  const catId = req.params.catId;
 
-  const query = `DELETE FROM subcategories WHERE id = ${subCatIdatId};`;
+  if (isNaN(subCatId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid subcategory ID",
+    });
+  }
+
+  const query = `DELETE FROM subcategories WHERE id = $1;`;
 
   try {
-    const result = await pool.query(query);
-    if (result.rows.length !== 0) {
+    const result = await pool.query(query, [subCatId]);
+
+    if (result.rowCount > 0) {
       res.json({
         success: true,
-        message: "subCategory Deleted",
+        message: "Subcategory deleted successfully",
       });
     } else {
-      throw new Error("Error happened while deleting subCategory");
+      res.status(404).json({
+        success: false,
+        message: "Subcategory not found",
+      });
     }
   } catch (error) {
+    console.error("Error deleting subcategory:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
 
 const getAllSubCategory = async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
-  const size = parseInt(req.query.size) || 10; 
-  const offset = (page - 1) * size; 
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 10;
+  const offset = (page - 1) * size;
 
   const query = `
     SELECT s.id, s.name, s.description, s.category_id, c.name AS category_name
@@ -115,7 +127,7 @@ const getAllSubCategory = async (req, res) => {
       success: true,
       message: "All Subcategories",
       subCategory: result.rows,
-      totalSubcategories: totalSubcategories, 
+      totalSubcategories: totalSubcategories,
     });
   } catch (error) {
     console.error("Error fetching subcategories:", error);
@@ -173,8 +185,6 @@ const getAllSubCategoryByCategoryId = async (req, res) => {
   }
 };
 
-
-
 const uploadSubCategoryImage = async (req, res) => {
   const admin_id = req.token.userId;
   console.log("admin_id :", admin_id);
@@ -221,8 +231,8 @@ const uploadSubCategoryImage = async (req, res) => {
 module.exports = {
   createSubCategory,
   updateSubCategory,
-  removeSubCateegory,
+  removeSubCategory,
   getAllSubCategory,
   uploadSubCategoryImage,
-  getAllSubCategoryByCategoryId
+  getAllSubCategoryByCategoryId,
 };
