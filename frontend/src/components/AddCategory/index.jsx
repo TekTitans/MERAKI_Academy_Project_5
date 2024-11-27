@@ -11,7 +11,7 @@ const AddCategories = () => {
     name: "",
     description: "",
     category_image: "",
-    subCategory_image: "",
+    subcategory_image: "",
     category_id: "",
     isCategory: true,
   });
@@ -42,32 +42,32 @@ const AddCategories = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = async (e, isCategory = true, categoryId = null) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setIsUploading(true);
+
     const formDataToUpload = new FormData();
-    formDataToUpload.append("category_image", file);
-    formDataToUpload.append("subcategory_image", file);
+    const fileKey = isCategory ? "category_image" : "subcategory_image";
+    formDataToUpload.append(fileKey, file);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/category/upload_Image",
-        formDataToUpload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const endpoint = isCategory
+        ? "http://localhost:5000/category/upload_Image"
+        : `http://localhost:5000/subcategory/upload_Image`;
+
+      const res = await axios.post(endpoint, formDataToUpload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setImagePreview(URL.createObjectURL(file));
       setFormData((prevState) => ({
         ...prevState,
-        category_image: res.data.url,
-        subCategory_image: res.data.url,
+        [fileKey]: res.data.url,
       }));
     } catch (error) {
       dispatch(setError("Failed to upload image. Try again."));
@@ -80,45 +80,44 @@ const AddCategories = () => {
     e.preventDefault();
 
     const {
-      title,
+      name,
       description,
       category_image,
-      subCategory_image,
+      subcategory_image,
       category_id,
       isCategory,
     } = formData;
 
-    if (!title || !description) {
+    if (!name || !description) {
       dispatch(setError("Please fill all required fields."));
+      return;
+    }
+
+    if (!isCategory && !category_id) {
+      dispatch(setError("Please select a category for the subcategory."));
       return;
     }
 
     dispatch(setLoading(true));
     try {
-      console.log("isCategory: ", isCategory);
-      const endpoint = isCategory;
-      console.log("endpoint: ", endpoint);
-      console.log("title: ", title);
-      console.log("description: ", description);
-      console.log("category_image: ", category_image);
-      console.log("subCategory_image: ", subCategory_image);
-      console.log("category_id: ", parseInt(category_id, 10))
+      const endpoint = isCategory
         ? "http://localhost:5000/category"
-        : "http://localhost:5000/subcateogry";
+        : `http://localhost:5000/subcategory/${category_id}`;
+      console.log("category_id", category_id);
       const data = isCategory
-        ? { title, description, category_image }
+        ? { name, description, category_image }
         : {
-            title,
+            name,
             description,
-            category_id: parseInt(category_id, 10),
-            subCategory_image,
+            subcategory_image,
           };
+
+      console.log("Endpoint:", endpoint);
+      console.log("Data sent to API:", data);
 
       const response = await axios.post(endpoint, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log("response: ", response);
 
       dispatch(
         setMessage(
@@ -127,17 +126,19 @@ const AddCategories = () => {
             : "SubCategory added successfully!"
         )
       );
+
       setFormData({
-        title: "",
+        name: "",
         description: "",
         category_image: "",
-        subCategory_image: "",
+        subcategory_image: "",
         category_id: "",
         isCategory: true,
       });
 
       setImagePreview("");
     } catch (error) {
+      console.error("Error:", error);
       dispatch(
         setError(
           isCategory
@@ -145,7 +146,6 @@ const AddCategories = () => {
             : "Failed to add SubCategory. Please try again."
         )
       );
-      console.log("error: ", error);
     } finally {
       dispatch(setLoading(false));
     }
@@ -211,8 +211,8 @@ const AddCategories = () => {
           <div className="product__form-container">
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               placeholder="Title"
               required

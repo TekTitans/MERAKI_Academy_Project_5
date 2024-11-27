@@ -1,8 +1,14 @@
-const pool = require("../models/db");
-
+const e = require("express");
+const pool = require("../models/db.js");
+const cloudinary = require("cloudinary").v2;
+const { uploadToCloudinary } = require("../services/cloudinary");
 const createSubCategory = async (req, res) => {
   const category_id = req.params.catId;
   const { name, description, subcategory_image } = req.body;
+  console.log("name: ", name);
+  console.log("description: ", description);
+  console.log("subCategory_image: ", subcategory_image);
+  console.log("category_id: ", category_id);
 
   const query = `INSERT INTO subcategories (name, category_id,description,subcategory_image)VALUES($1,$2,$3,$4)RETURNING *`;
   // console.log(query);
@@ -11,6 +17,7 @@ const createSubCategory = async (req, res) => {
   try {
     const result = await pool.query(query, data);
     //console.log(result);
+    console.log("result: ", result);
 
     res.json({
       success: true,
@@ -104,9 +111,53 @@ const getAllSubCategory = async (req, res) => {
   }
 };
 
+const uploadSubCategoryImage = async (req, res) => {
+  const admin_id = req.token.userId;
+  console.log("admin_id :", admin_id);
+
+  if (req.file) {
+    console.log("File provided in the request.");
+    const fileSizeLimit = 5 * 1024 * 1024;
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (req.file.size > fileSizeLimit) {
+      return res
+        .status(400)
+        .json({ success: false, message: "File is too large" });
+    }
+
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid file type" });
+    }
+
+    try {
+      const uploadResponse = await uploadToCloudinary(req.file.buffer);
+      const subcategoryImageUrl = uploadResponse.url;
+
+      console.log("Uploaded SubCategory image URL:", subcategoryImageUrl);
+
+      return res.status(200).json({
+        success: true,
+        message: "File uploaded successfully",
+        url: subcategoryImageUrl,
+      });
+    } catch (error) {
+      console.error("Error uploading category image:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error uploading category image.",
+        err: error.message,
+      });
+    }
+  }
+};
+
 module.exports = {
   createSubCategory,
   updateSubCategory,
   removeSubCateegory,
   getAllSubCategory,
+  uploadSubCategoryImage,
 };

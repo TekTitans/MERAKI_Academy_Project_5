@@ -6,9 +6,6 @@ const { uploadToCloudinary } = require("../services/cloudinary");
 const createCategory = async (req, res) => {
   const { name, description, category_image } = req.body;
   // console.log(name, description, category_image);
-  console.log("name: ", name);
-  console.log("description: ", description);
-  console.log("category_image: ", category_image);
 
   const query = `INSERT INTO categories (name, description,category_image)VALUES($1,$2,$3)RETURNING *`;
   // console.log(query);
@@ -109,44 +106,48 @@ const getAllCategory = async (req, res) => {
 
 const uploadCategoryImage = async (req, res) => {
   const admin_id = req.token.userId;
-  console.log("admin_id :", admin_id);
+  console.log("Admin uploading category image...");
 
-  if (req.file) {
-    console.log("File provided in the request.");
-    const fileSizeLimit = 5 * 1024 * 1024;
-    const allowedTypes = ["image/jpeg", "image/png"];
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: "No file provided. Please upload an image.",
+    });
+  }
 
-    if (req.file.size > fileSizeLimit) {
-      return res
-        .status(400)
-        .json({ success: false, message: "File is too large" });
-    }
+  const fileSizeLimit = 5 * 1024 * 1024; 
+  const allowedTypes = ["image/jpeg", "image/png"];
 
-    if (!allowedTypes.includes(req.file.mimetype)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid file type" });
-    }
+  if (req.file.size > fileSizeLimit) {
+    return res
+      .status(400)
+      .json({ success: false, message: "File is too large" });
+  }
 
-    try {
-      const uploadResponse = await uploadToCloudinary(req.file.buffer);
-      const categoryImageUrl = uploadResponse.url;
+  if (!allowedTypes.includes(req.file.mimetype)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid file type" });
+  }
 
-      console.log("Uploaded category image URL:", categoryImageUrl);
+  try {
+    const uploadResponse = await uploadToCloudinary(req.file.buffer);
+    const categoryImageUrl = uploadResponse.url;
 
-      return res.status(200).json({
-        success: true,
-        message: "File uploaded successfully",
-        url: categoryImageUrl,
-      });
-    } catch (error) {
-      console.error("Error uploading category image:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Error uploading category image.",
-        err: error.message,
-      });
-    }
+    console.log("Uploaded category image URL:", categoryImageUrl);
+
+    return res.status(200).json({
+      success: true,
+      message: "File uploaded successfully",
+      url: categoryImageUrl,
+    });
+  } catch (error) {
+    console.error("Error uploading category image:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error uploading category image.",
+      err: error.message,
+    });
   }
 };
 
