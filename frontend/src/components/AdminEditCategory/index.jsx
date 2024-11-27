@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const EditCategoryForm = ({
   editCategory,
+  formData,
   imagePreview,
   isUploading,
   handleChange,
@@ -14,6 +15,10 @@ const EditCategoryForm = ({
   handleUpdate,
   setEditCategory,
   handleBackToCategories,
+  categories,
+  setFormData,
+  handleBackToSubCategories,
+  isCategory,
 }) => {
   const { loading, error, message } = useSelector((state) => state.order);
   const dispatch = useDispatch();
@@ -110,12 +115,18 @@ const EditCategoryForm = ({
         </div>
 
         <div className="Edit_Action_Btns">
-          <button type="submit" className="edit_action-button">
+          <button
+            type="submit"
+            className="edit_action-button"
+            disabled={loading || isUploading}
+          >
             {loading ? "Updating..." : "Update"}
           </button>
           <button
             className="edit_back-button"
-            onClick={handleBackToCategories}
+            onClick={
+              isCategory ? handleBackToCategories : handleBackToSubCategories
+            }
           >
             Back
           </button>

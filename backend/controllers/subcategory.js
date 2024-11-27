@@ -51,6 +51,9 @@ const updateSubCategory = async (req, res) => {
         category: result.rows[0],
       });
     } else {
+      console.log("Request body:", req.body);
+console.log("SubCategory ID:", req.params.id);
+
       throw new Error("Error happened while updating SubCategory");
     }
   } catch (error) {

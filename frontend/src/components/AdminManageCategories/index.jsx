@@ -8,16 +8,18 @@ import EditCategoryForm from "../AdminEditCategory";
 
 const AdminManageCatigories = () => {
   const [editCategory, setEditCategory] = useState(null);
+  const [isCategory, setIsCategory] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     category_image: "",
     subcategory_image: "",
     category_id: "",
-    isCategory: true,
+    isCategory: isCategory,
   });
 
   const dispatch = useDispatch();
+  const [mainCat, setMainCat] = useState("");
   const { loading, error, message } = useSelector((state) => state.order);
   const [imagePreview, setImagePreview] = useState("");
   const { token } = useSelector((state) => state.auth);
@@ -113,14 +115,6 @@ const AdminManageCatigories = () => {
   };
 
 
-
-
-
-
-
- 
-
- 
 */
   const validateForm = () => {
     if (!formData.name || !formData.description) {
@@ -131,13 +125,20 @@ const AdminManageCatigories = () => {
     return true;
   };
   const handleEdit = (categoryToEdit) => {
-    setEditCategory({ ...categoryToEdit });
-    setFormData({ ...categoryToEdit });
+    setEditCategory({
+      ...categoryToEdit,
+      isCategory: isCategory,
+    });
+    setFormData({
+      ...categoryToEdit,
+      isCategory: isCategory,
+    });
 
     console.log("Updated categoryToEdit:", categoryToEdit);
     console.log("formData: ", formData);
     console.log("editCategory:", editCategory);
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -185,22 +186,58 @@ const AdminManageCatigories = () => {
     }
     dispatch(setLoading(true));
     try {
-      const response = await axios.put(
-        `http://localhost:5000/category/${editCategory.id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const {
+        name,
+        description,
+        category_image,
+        subcategory_image,
+        category_id,
+        isCategory,
+      } = formData;
+      console.log("isCategory: ", isCategory);
+      console.log("editCategory.id: ", editCategory.id);
+
+      const endpoint = isCategory
+        ? `http://localhost:5000/category/${editCategory.id}`
+        : `http://localhost:5000/subcategory/${editCategory.id}`;
+      const data = isCategory
+        ? { name, description, category_image }
+        : {
+            name,
+            description,
+            subcategory_image,
+          };
+
+      const response = await axios.put(endpoint, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      dispatch(
+        setMessage(
+          isCategory
+            ? "Category updated successfully!"
+            : "SubCategory updated successfully!"
+        )
       );
-      dispatch(setMessage("Product updated successfully!"));
+      setFormData({
+        name: "",
+        description: "",
+        category_image: "",
+        subcategory_image: "",
+        category_id: "",
+        isCategory: true,
+      });
+
+      setImagePreview("");
       dispatch(setLoading(false));
       setUpdated(!updated);
       setImagePreview("");
     } catch (error) {
-      dispatch(setError("Failed to update product."));
-      dispatch(setLoading(false));
+      setError(
+        isCategory
+          ? "Failed to add Category. Please try again."
+          : "Failed to add SubCategory. Please try again."
+      );
     } finally {
       dispatch(setLoading(false));
     }
@@ -221,14 +258,22 @@ const AdminManageCatigories = () => {
 
   const filteredCategories = categories.filter((category) => {
     const matchesSearch =
-      !filters.search || category.name.toString().includes(filters.search);
+      !filters.search ||
+      category.name
+        .toString()
+        .toLowerCase()
+        .includes(filters.search.toLowerCase());
 
     return matchesSearch;
   });
 
   const filteredSubCategories = subcategories.filter((category) => {
     const matchesSearch =
-      !filters.search || category.name.toString().includes(filters.search);
+      !filters.search ||
+      category.name
+        .toString()
+        .toLowerCase()
+        .includes(filters.search.toLowerCase());
 
     return matchesSearch;
   });
@@ -261,22 +306,26 @@ const AdminManageCatigories = () => {
     </div>
   );
 
-  const handleShowSub = (catId) => {
+  const handleShowSub = (catId, catName) => {
     setSelectedCategory(catId);
     setCurrentPage(1);
     fetchSubcategories(1, catId);
+    setMainCat(catName);
+    setIsCategory(false);
   };
 
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setEditCategory(null);
     setSubcategories([]);
-    setCurrentPage(1);
+    setCurrentPage(currentPage);
     setImagePreview("");
+    setIsCategory(true);
   };
   const handleBackToSubCategories = () => {
     setEditCategory(null);
-    setCurrentPage(1);
+    setCurrentPage(currentPage);
+    setImagePreview("");
   };
 
   useEffect(() => {
@@ -306,7 +355,6 @@ const AdminManageCatigories = () => {
       {message && <div className="success-message">{message}</div>}
       {editCategory ? (
         <>
-          <button onClick={handleBackToCategories}>Back</button>{" "}
           <EditCategoryForm
             editCategory={editCategory}
             formData={formData}
@@ -317,80 +365,103 @@ const AdminManageCatigories = () => {
             handleUpdate={handleUpdate}
             setEditCategory={setEditCategory}
             handleBackToCategories={handleBackToCategories}
+            categories={categories}
+            setFormData={setFormData}
+            handleBackToSubCategories={handleBackToSubCategories}
+            isCategory={isCategory}
           />
         </>
       ) : (
         <>
           {selectedCategory ? (
-            <div className="SDB_product-list">
-              <div className="filters">
-                <input
-                  type="text"
-                  name="search"
-                  placeholder="Search By Category Name"
-                  value={filters.search}
-                  onChange={handleFilterChange}
-                />
-                <button
-                  className="clear-filters-button"
-                  onClick={handleClearFilters}
-                >
-                  Clear
-                </button>
-                <button onClick={handleBackToCategories}>Back</button>{" "}
-              </div>
+            filteredSubCategories.length ? (
+              <div className="SDB_product-list">
+                <h3>{mainCat}Hi</h3>
+                <div className="filters">
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder="Search By Category Name"
+                    value={filters.search}
+                    onChange={handleFilterChange}
+                  />
+                  <button
+                    className="clear-filters-button"
+                    onClick={handleClearFilters}
+                  >
+                    Clear
+                  </button>
+                  <button
+                    className="edit_back-button"
+                    onClick={handleBackToCategories}
+                  >
+                    Back
+                  </button>{" "}
+                </div>
 
-              <div className="SDB_product-grid">
-                {loading ? (
-                  <div className="loading-spinner">Loading...</div>
-                ) : (
-                  filteredSubCategories.map((cat) => (
-                    <div key={cat.id} className="SDB_product-card">
-                      <img
-                        src={
-                          cat.category_image ||
-                          "https://via.placeholder.com/150"
-                        }
-                        alt={cat.name}
-                        className="SDB_product-image"
-                        onError={(e) =>
-                          (e.target.src = "https://via.placeholder.com/150")
-                        }
-                      />
-                      <div className="SDB_product-info">
-                        <h3 className="SDB_product-title">{cat.name}</h3>
-                        <p className="SDB_product-description">
-                          {cat.description || "No Description"}
-                        </p>
+                <div className="SDB_product-grid">
+                  {loading ? (
+                    <div className="loading-spinner">Loading...</div>
+                  ) : (
+                    filteredSubCategories.map((cat) => (
+                      <div key={cat.id} className="SDB_product-card">
+                        <img
+                          src={
+                            cat.category_image ||
+                            "https://via.placeholder.com/150"
+                          }
+                          alt={cat.name}
+                          className="SDB_product-image"
+                          onError={(e) =>
+                            (e.target.src = "https://via.placeholder.com/150")
+                          }
+                        />
+                        <div className="SDB_product-info">
+                          <h3 className="SDB_product-title">{cat.name}</h3>
+                          <p className="SDB_product-description">
+                            {cat.description || "No Description"}
+                          </p>
 
-                        <div className="product-actions">
-                          <button
-                            onClick={() => {
-                              handleEdit(cat);
-                            }}
-                            className="edit-button"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={
-                              () => {
-                                console.log("Delete");
+                          <div className="product-actions">
+                            <button
+                              onClick={() => {
+                                handleEdit(cat);
+                              }}
+                              className="edit-button"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={
+                                () => {
+                                  console.log("Delete");
+                                }
+                                /*handleDelete(cat.id)*/
                               }
-                              /*handleDelete(cat.id)*/
-                            }
-                            className="delete-button"
-                          >
-                            Delete
-                          </button>
+                              className="delete-button"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
+                {paginationControls}
               </div>
-              {paginationControls}
-            </div>
+            ) : (
+              <>
+                {" "}
+                <p className="no-products-message">No SubCategories</p>{" "}
+                <button
+                  className="edit_back-button"
+                  onClick={handleBackToCategories}
+                >
+                  Back
+                </button>{" "}
+              </>
+            )
           ) : (
             <div className="SDB_product-list">
               <div className="filters">
@@ -442,11 +513,12 @@ const AdminManageCatigories = () => {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleShowSub(cat.id)}
+                            onClick={() => handleShowSub(cat.id, cat.name)}
                             className="statistics-button"
                           >
                             SubCategories
                           </button>
+
                           <button
                             onClick={
                               () => {
