@@ -85,24 +85,38 @@ const removeCateegory = async (req, res) => {
 };
 
 const getAllCategory = async (req, res) => {
-  const query = `SELECT * FROM categories;`;
+  const page = parseInt(req.query.page) || 1; 
+  const size = parseInt(req.query.size) || 10; 
+  const offset = (page - 1) * size; 
+
+  const query = `
+    SELECT * FROM categories 
+    LIMIT $1 OFFSET $2;
+  `;
+  const countQuery = `SELECT COUNT(*) FROM categories;`;
 
   try {
-    const result = await pool.query(query);
+    const result = await pool.query(query, [size, offset]);
+
+    const countResult = await pool.query(countQuery);
+    const totalCategories = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      message: "All Category",
+      message: "All Categories",
       category: result.rows,
+      totalCategories: totalCategories, 
     });
   } catch (error) {
+    console.error("Error fetching categories:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
+
 
 const uploadCategoryImage = async (req, res) => {
   const admin_id = req.token.userId;

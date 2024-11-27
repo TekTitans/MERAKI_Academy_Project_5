@@ -3,9 +3,8 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
-import EditProductForm from "../ProductEdit";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { FaUserAlt } from "react-icons/fa";
+import EditCategoryForm from "../AdminEditCategory";
 
 const AdminManageCatigories = () => {
   const [editCategory, setEditCategory] = useState(null);
@@ -23,37 +22,34 @@ const AdminManageCatigories = () => {
   const [imagePreview, setImagePreview] = useState("");
   const { token } = useSelector((state) => state.auth);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(12);
+  const [pageSize] = useState(9);
   const [totalPages, setTotalPages] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [updated, setUpdated] = useState(false);
   const [filters, setFilters] = useState({
-    selectedDate: "",
     search: "",
-    minPrice: "",
-    maxPrice: "",
-    status: "",
-    selectedCategory: 0,
-    selectedSubcategory: 0,
   });
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
 
-  const [filterRating, setFilterRating] = useState(0);
-
   const fetchCategories = async (page = 1) => {
     try {
+      // dispatch(setLoading(true));
+
       if (!token) {
         dispatch(setLoading(false));
         dispatch(setError("No token found."));
         return;
       }
       const response = await axios.get(
-        `http://localhost:5000/category?page=${page}&size=${pageSize}`
+        `http://localhost:5000/category?page=${page}&size=${pageSize}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
+      setTotalPages(Math.ceil(response.data.totalCategories / pageSize));
       dispatch(setLoading(false));
       setCategories(response.data.category);
     } catch (error) {
@@ -63,19 +59,27 @@ const AdminManageCatigories = () => {
     }
   };
 
-  const fetchSubcategories = async (page = 1) => {
+  const fetchSubcategories = async (page = 1, catId) => {
     try {
       if (!token) {
         dispatch(setLoading(false));
         dispatch(setError("No token found."));
         return;
       }
+      console.log("fetchSubcategories");
+
+      console.log("catId: ", catId);
       const response = await axios.get(
-        `http://localhost:5000/subcateogry?page=${page}&size=${pageSize}`
+        `http://localhost:5000/subcategory/${catId}?page=${page}&size=${pageSize}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
-      dispatch(setLoading(false));
+      console.log("response: ", response.data);
+
+      setTotalPages(Math.ceil(response.data.totalSubcategories / pageSize));
       setSubcategories(response.data.subCategory);
+      dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
       dispatch(setError("Error fetching subcategories"));
@@ -85,10 +89,35 @@ const AdminManageCatigories = () => {
 
   useEffect(() => {
     fetchCategories(currentPage);
-    fetchSubcategories(currentPage);
   }, [dispatch, token, currentPage, updated, categories]);
 
-  const validateForm = () => {
+  /*
+
+  const handleDelete = async (productId) => {
+    try {
+      await axios.delete(`http://localhost:5000/products/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(setLoading(false));
+      dispatch(setMessage("Product deleted successfully!"));
+      dispatch(removeProduct(productId));
+      fetchProducts(currentPage);
+    } catch (error) {
+      dispatch(setLoading(false));
+      dispatch(setError("Failed to delete product."));
+    }
+  };
+
+  const handleEdit = (categoryToEdit) => {
+    setEditCategory(categoryToEdit);
+    setFormData(categoryToEdit);
+
+    console.log("Updated productToEdit:", categoryToEdit);
+  };
+
+    const validateForm = () => {
     if (!formData.name || !formData.description) {
       dispatch(setLoading(false));
       dispatch(setError("name and description are required."));
@@ -136,30 +165,37 @@ const AdminManageCatigories = () => {
     }
   };
 
-  const handleDelete = async (productId) => {
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    dispatch(setLoading(true));
     try {
-      await axios.delete(`http://localhost:5000/products/${productId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:5000/products/${product.product_id}`,
+        formattedProduct,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEditCategory(null);
+      dispatch(setMessage("Product updated successfully!"));
       dispatch(setLoading(false));
-      dispatch(setMessage("Product deleted successfully!"));
-      dispatch(removeProduct(productId));
-      fetchProducts(currentPage);
+      setUpdated(!updated);
+      setImagePreview("");
     } catch (error) {
+      dispatch(setError("Failed to update product."));
       dispatch(setLoading(false));
-      dispatch(setError("Failed to delete product."));
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
-  const handleEdit = (categoryToEdit) => {
-    setEditCategory(categoryToEdit);
-    setFormData(categoryToEdit);
 
-    console.log("Updated productToEdit:", categoryToEdit);
-  };
-
+*/
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
 
@@ -177,7 +213,6 @@ const AdminManageCatigories = () => {
       setProduct((prev) => ({ ...prev, subcategory_id: "" }));
     }
   };
-
   const handleClearFilters = () => {
     setFilters({
       search: "",
@@ -191,10 +226,6 @@ const AdminManageCatigories = () => {
     return matchesSearch;
   });
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
   const paginationControls = (
     <div className="pagination-controls">
       <div
@@ -223,6 +254,14 @@ const AdminManageCatigories = () => {
     </div>
   );
 
+  const handleShowSub = (catId) => {
+    setSelectedCategory(true);
+    fetchSubcategories(currentPage, catId);
+    console.log("handleShowSub");
+    console.log("currentPage: ", currentPage);
+    console.log("catId: ", catId);
+  };
+
   useEffect(() => {
     if (error || message) {
       const timer = setTimeout(() => {
@@ -241,16 +280,18 @@ const AdminManageCatigories = () => {
       {error && <div className="error-message">Error: {error}</div>}
       {message && <div className="success-message">{message}</div>}
       {editCategory ? (
-        <EditProductForm
-          category={formData}
+        <></>
+      ) : (
+        /* <EditCategoryForm
+          editCategory={editCategory}
+          formData={formData}
           imagePreview={imagePreview}
           isUploading={isUploading}
           handleChange={handleChange}
           handleFileChange={handleFileChange}
           handleUpdate={handleUpdate}
           setEditCategory={setEditCategory}
-        />
-      ) : (
+        />*/
         <div className="SDB_product-list">
           <div className="filters">
             <input
@@ -271,7 +312,7 @@ const AdminManageCatigories = () => {
           <div className="SDB_product-grid">
             {loading ? (
               <div className="loading-spinner">Loading...</div>
-            ) : categories.length > 0 ? (
+            ) : (
               filteredCategories.map((cat) => (
                 <div key={cat.id} className="SDB_product-card">
                   <img
@@ -292,19 +333,27 @@ const AdminManageCatigories = () => {
 
                     <div className="product-actions">
                       <button
-                        onClick={() => handleEdit(cat)}
+                        onClick={
+                          () => {
+                            console.log("Edit");
+                          } /*handleEdit(cat)*/
+                        }
                         className="edit-button"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => setSelectedCategory(cat)}
+                        onClick={() => handleShowSub(cat.id)}
                         className="statistics-button"
                       >
-                        Statistics
+                        SubCategories
                       </button>
                       <button
-                        onClick={() => handleDelete(cat.id)}
+                        onClick={
+                          () => {
+                            console.log("Delete");
+                          } /* handleDelete(cat.id)*/
+                        }
                         className="delete-button"
                       >
                         Delete
@@ -313,42 +362,86 @@ const AdminManageCatigories = () => {
                   </div>
                 </div>
               ))
-            ) : (
-              <p className="no-products-message">No Categories found.</p>
             )}
           </div>
           {paginationControls}
         </div>
       )}
       {selectedCategory && (
-        <div className="order-details-modal-wrapper">
-          <div className="order-details-modal">
+        <div className="SDB_product-list">
+          <div className="filters">
+            <input
+              type="text"
+              name="search"
+              placeholder="Search By Category Name"
+              value={filters.search}
+              onChange={handleFilterChange}
+            />
             <button
-              className="close-button"
-              onClick={() => setSelectedCategory(null)}
+              className="clear-filters-button"
+              onClick={handleClearFilters}
             >
-              ×
+              Clear
             </button>
-            <h3>{selectedCategory.name}</h3>
-            <div className="content">
-              <div className="SDB_product-info">
-                <p className="SDB_product-times_ordered">
-                  {selectedProduct.total_orders_containing_product > 0
-                    ? selectedProduct.total_orders_containing_product
-                    : "Not Ordered Yet"}
-                </p>
-              </div>
-            </div>
-
-            <div className="footer">
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="cancel"
-              >
-                Close
-              </button>
-            </div>
           </div>
+
+          <div className="SDB_product-grid">
+            {loading ? (
+              <div className="loading-spinner">Loading...</div>
+            ) : (
+              subcategories.map((cat) => (
+                <div key={cat.id} className="SDB_product-card">
+                  <img
+                    src={
+                      cat.category_image || "https://via.placeholder.com/150"
+                    }
+                    alt={cat.name}
+                    className="SDB_product-image"
+                    onError={(e) =>
+                      (e.target.src = "https://via.placeholder.com/150")
+                    }
+                  />
+                  <div className="SDB_product-info">
+                    <h3 className="SDB_product-title">{cat.name}</h3>
+                    <p className="SDB_product-description">
+                      {cat.description || "No Description"}
+                    </p>
+
+                    <div className="product-actions">
+                      <button
+                        onClick={
+                          () => {
+                            console.log("Delete");
+                          } /* handleEdit(cat)*/
+                        }
+                        className="edit-button"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setSelectedCategory(false)}
+                        className="statistics-button"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={
+                          () => {
+                            console.log("Delete");
+                          }
+                          /*handleDelete(cat.id)*/
+                        }
+                        className="delete-button"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          {paginationControls}
         </div>
       )}
     </div>

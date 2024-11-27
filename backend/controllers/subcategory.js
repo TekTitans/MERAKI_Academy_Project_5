@@ -89,27 +89,87 @@ const removeSubCateegory = async (req, res) => {
 };
 
 const getAllSubCategory = async (req, res) => {
-  //const query = `SELECT s.name,s.description ,c.name,s.id,c.id FROM subcategories s JOIN categories c ON c.id=s.category_id;`;
-  const query = `SELECT * FROM subcategories ; `;
+  const page = parseInt(req.query.page) || 1; 
+  const size = parseInt(req.query.size) || 10; 
+  const offset = (page - 1) * size; 
+
+  const query = `
+    SELECT s.id, s.name, s.description, s.category_id, c.name AS category_name
+    FROM subcategories s
+    JOIN categories c ON c.id = s.category_id
+    LIMIT $1 OFFSET $2;
+  `;
+  const countQuery = `SELECT COUNT(*) FROM subcategories;`;
 
   try {
-    const result = await pool.query(query);
+    const result = await pool.query(query, [size, offset]);
+
+    const countResult = await pool.query(countQuery);
+    const totalSubcategories = parseInt(countResult.rows[0].count);
 
     res.json({
       success: true,
-      message: "All subCategory",
+      message: "All Subcategories",
       subCategory: result.rows,
+      totalSubcategories: totalSubcategories, 
     });
   } catch (error) {
-    console.log(error);
-
+    console.error("Error fetching subcategories:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
+
+const getAllSubCategoryByCategoryId = async (req, res) => {
+  const { categoryId } = req.params; // Get category ID from route parameters
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 10;
+  const offset = (page - 1) * size;
+
+  // Modified query to filter by category ID
+  const query = `
+    SELECT s.id, s.name, s.description, s.category_id, c.name AS category_name
+    FROM subcategories s
+    JOIN categories c ON c.id = s.category_id
+    WHERE s.category_id = $1
+    LIMIT $2 OFFSET $3;
+  `;
+
+  // Count query to get total subcategories for the specified category
+  const countQuery = `
+    SELECT COUNT(*) 
+    FROM subcategories 
+    WHERE category_id = $1;
+  `;
+
+  try {
+    // Fetch subcategories for the given category ID with pagination
+    const result = await pool.query(query, [categoryId, size, offset]);
+
+    // Fetch total count of subcategories for the given category ID
+    const countResult = await pool.query(countQuery, [categoryId]);
+    const totalSubcategories = parseInt(countResult.rows[0].count);
+
+    res.json({
+      success: true,
+      message: `Subcategories for category ID: ${categoryId}`,
+      subCategory: result.rows,
+      totalSubcategories: totalSubcategories,
+    });
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      err: error.message,
+    });
+  }
+};
+
+
 
 const uploadSubCategoryImage = async (req, res) => {
   const admin_id = req.token.userId;
@@ -160,4 +220,5 @@ module.exports = {
   removeSubCateegory,
   getAllSubCategory,
   uploadSubCategoryImage,
+  getAllSubCategoryByCategoryId
 };

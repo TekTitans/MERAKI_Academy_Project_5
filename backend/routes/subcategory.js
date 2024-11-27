@@ -8,6 +8,7 @@ const {
   removeSubCateegory,
   getAllSubCategory,
   uploadSubCategoryImage,
+  getAllSubCategoryByCategoryId,
 } = require("../controllers/subcategory.js");
 
 const subcategoriesRouter = express.Router();
@@ -22,5 +23,6 @@ subcategoriesRouter.post("/:catId", auth, createSubCategory);
 subcategoriesRouter.put("/:subId", updateSubCategory);
 subcategoriesRouter.delete("/:subId", removeSubCateegory);
 subcategoriesRouter.get("/", getAllSubCategory);
+subcategoriesRouter.get("/:categoryId", auth, getAllSubCategoryByCategoryId);
 
 module.exports = subcategoriesRouter;
