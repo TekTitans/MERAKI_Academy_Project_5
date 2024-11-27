@@ -29,6 +29,9 @@ const AdminManageCatigories = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [updated, setUpdated] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [chosenId, setChosenId] = useState(0);
+
   const [filters, setFilters] = useState({
     search: "",
   });
@@ -95,10 +98,19 @@ const AdminManageCatigories = () => {
     fetchCategories(currentPage);
   }, [dispatch, token, currentPage, updated]);
 
+  useEffect(() => {
+    fetchSubcategories(currentPage, chosenId);
+  }, [deleted, updated]);
+
   const handleDelete = async (catId) => {
     try {
       console.log("catId: ", catId);
-      await axios.delete(`http://localhost:5000/category/${catId}`, {
+
+      const endpoint = isCategory
+        ? `http://localhost:5000/category/${catId}`
+        : `http://localhost:5000/subcategory/${catId}`;
+
+      const response = await axios.delete(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -106,6 +118,7 @@ const AdminManageCatigories = () => {
       dispatch(setLoading(false));
       dispatch(setMessage("Category deleted successfully!"));
       fetchCategories(currentPage);
+      setDeleted(!deleted);
     } catch (error) {
       dispatch(setLoading(false));
       dispatch(setError("Failed to delete category."));
@@ -308,6 +321,11 @@ const AdminManageCatigories = () => {
     fetchSubcategories(1, catId);
     setMainCat(catName);
     setIsCategory(false);
+    setChosenId(catId);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleBackToCategories = () => {
@@ -317,11 +335,19 @@ const AdminManageCatigories = () => {
     setCurrentPage(currentPage);
     setImagePreview("");
     setIsCategory(true);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
   const handleBackToSubCategories = () => {
     setEditCategory(null);
     setCurrentPage(currentPage);
     setImagePreview("");
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   useEffect(() => {
@@ -334,10 +360,16 @@ const AdminManageCatigories = () => {
 
   useEffect(() => {
     if (error || message) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       const timer = setTimeout(() => {
         dispatch(setError(null));
         dispatch(setMessage(null));
       }, 5000);
+
       return () => clearTimeout(timer);
     }
   }, [error, message, dispatch]);
@@ -428,12 +460,9 @@ const AdminManageCatigories = () => {
                               Edit
                             </button>
                             <button
-                              onClick={
-                                () => {
-                                  console.log("Delete");
-                                }
-                                /*handleDelete(cat.id)*/
-                              }
+                              onClick={() => {
+                                handleDelete(cat.id);
+                              }}
                               className="delete-button"
                             >
                               Delete
