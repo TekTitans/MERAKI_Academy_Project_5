@@ -21,19 +21,17 @@ wishRouter.delete(
   clearWishlist
 );
 
-wishRouter.get("/", auth, authorization("can_view_wishlist"), getwishlist);
+wishRouter.get("/", auth, getwishlist);
 
 wishRouter.delete(
   "/:productId",
   auth,
-  authorization("can_remove_from_wishlist"),
   removeFromwishlist
 );
 
 wishRouter.get(
   "/count",
   auth,
-  authorization("can_view_wishlist"),
   getWishlistCount
 );
 
