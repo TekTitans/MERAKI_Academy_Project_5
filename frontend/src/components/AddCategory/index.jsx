@@ -35,7 +35,7 @@ const AddCategories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
