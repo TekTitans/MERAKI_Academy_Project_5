@@ -472,98 +472,200 @@ const getSellerSummary = async (req, res) => {
 };
 const getAdminSummary = async (req, res) => {
   try {
-    console.log("getAdminSummary");
+    console.log("Fetching Admin Summary");
 
-    const summaryQuery = `
+    const queries = {
+      summary: `
+        SELECT 
+          (SELECT COUNT(*) FROM users WHERE is_deleted = FALSE) AS total_users,
+          (SELECT COUNT(*) FROM users WHERE is_deleted = FALSE AND is_blocked = TRUE) AS blocked_users,
+          (SELECT COUNT(*) FROM users WHERE is_deleted = FALSE AND created_at >= NOW() - INTERVAL '7 days') AS new_users,
+          (SELECT COUNT(*) FROM products WHERE is_deleted = FALSE) AS total_products,
+          (SELECT COUNT(*) FROM orders WHERE is_deleted = FALSE) AS total_orders,
+          (SELECT COUNT(*) FROM orders WHERE order_status = 'pending' AND is_deleted = FALSE) AS pending_orders,
+          (SELECT COUNT(*) FROM orders WHERE order_status = 'completed' AND is_deleted = FALSE) AS completed_orders,
+          (SELECT COALESCE(SUM(products.price * cart.quantity), 0) 
+           FROM orders
+           JOIN cart ON orders.id = cart.order_id
+           JOIN products ON cart.product_id = products.id
+           WHERE orders.is_deleted = FALSE AND products.is_deleted = FALSE) AS total_revenue
+      `,
+      topSellingProduct: `
+        SELECT 
+          p.title AS top_selling_product,
+          SUM(c.quantity) AS units_sold
+        FROM cart c
+        JOIN products p ON c.product_id = p.id
+        WHERE p.is_deleted = FALSE
+        GROUP BY p.id
+        ORDER BY units_sold DESC
+        LIMIT 1;
+      `,
+      mostReviewedProducts: `
+        SELECT 
+          p.title AS product_name,
+          COUNT(r.id) AS review_count
+        FROM reviews r
+        JOIN products p ON r.product_id = p.id
+        WHERE r.is_deleted = FALSE
+        GROUP BY p.id
+        ORDER BY review_count DESC
+        LIMIT 5;
+      `,
+      lowStockProducts: `
+        SELECT 
+          p.title AS product_name, 
+          p.stock_quantity
+        FROM products p
+        WHERE p.is_deleted = FALSE AND p.stock_quantity < 10
+        ORDER BY p.stock_quantity ASC
+        LIMIT 10;
+      `,
+      revenueByCategory: `
+        SELECT 
+          c.name AS category_name,
+          SUM(p.price * cart.quantity) AS revenue
+        FROM products p
+        JOIN categories c ON p.category_id = c.id
+        JOIN cart ON p.id = cart.product_id
+        WHERE p.is_deleted = FALSE
+        GROUP BY c.name
+        ORDER BY revenue DESC;
+      `,
+      orderConversionRate: `
+        SELECT 
+          COUNT(*) FILTER (WHERE order_status = 'completed')::DECIMAL / NULLIF(COUNT(*), 0) AS conversion_rate
+        FROM orders
+        WHERE is_deleted = FALSE;
+      `,
+      averageOrderValue: `
+        SELECT 
+          COALESCE(AVG(total_price), 0) AS average_value
+        FROM (
+          SELECT SUM(p.price * c.quantity) AS total_price
+          FROM orders o
+          JOIN cart c ON o.id = c.order_id
+          JOIN products p ON c.product_id = p.id
+          WHERE o.is_deleted = FALSE AND p.is_deleted = FALSE
+          GROUP BY o.id
+        ) AS order_totals;
+      `,
+
+      geographicDistribution: `
+        SELECT 
+          u.country, 
+          COUNT(*) AS user_count
+        FROM users u
+        WHERE u.is_deleted = FALSE
+        GROUP BY u.country
+        ORDER BY user_count DESC;
+      `,
+      bestProduct: `
       SELECT 
-        (SELECT COUNT(*) FROM users WHERE is_deleted = FALSE) AS total_users,
-        (SELECT COUNT(*) FROM products WHERE is_deleted = FALSE) AS total_products,
-        (SELECT COUNT(*) FROM orders WHERE is_deleted = FALSE) AS total_orders,
-        (SELECT COUNT(*) FROM orders WHERE order_status = 'pending' AND is_deleted = FALSE) AS pending_orders,
-        (SELECT COUNT(*) FROM orders WHERE order_status = 'completed' AND is_deleted = FALSE) AS completed_orders,
-        (SELECT COALESCE(SUM(products.price * cart.quantity), 0) 
-         FROM orders
-         JOIN cart ON orders.id = cart.order_id
-         JOIN products ON cart.product_id = products.id
-         WHERE orders.is_deleted = FALSE AND products.is_deleted = FALSE) AS total_revenue
-    `;
-
-    const topSellingQuery = `
-      SELECT 
-        p.title AS top_selling_product,
-        SUM(c.quantity) AS units_sold
-      FROM cart c
-      JOIN products p ON c.product_id = p.id
-      WHERE p.is_deleted = FALSE
-      GROUP BY p.id
-      ORDER BY units_sold DESC
-      LIMIT 1;
-    `;
-
-    const totalReviewsQuery = `
-    SELECT 
-      COUNT(*) AS total_reviews
-    FROM reviews
-    WHERE is_deleted = FALSE;
-  `;
-
-    const bestProductQuery = `
-    SELECT 
         p.title AS product_name, 
         AVG(r.rating) AS average_rating
-    FROM reviews r
-    JOIN products p ON r.product_id = p.id
-    WHERE r.is_deleted = FALSE
-    GROUP BY p.id
-    ORDER BY average_rating DESC
-    LIMIT 1;
-  `;
-
-    const bestSellerQuery = `
-    SELECT 
+      FROM reviews r
+      JOIN products p ON r.product_id = p.id
+      WHERE r.is_deleted = FALSE
+      GROUP BY p.id
+      ORDER BY average_rating DESC
+      LIMIT 1;
+    `,
+      bestSeller: `
+      SELECT 
         u.userName AS seller_name, 
         AVG(sr.rating) AS average_rating
-    FROM sellerReviews sr
-    JOIN users u ON sr.seller_id = u.id
-    WHERE sr.is_deleted = FALSE
-    GROUP BY u.id
-    ORDER BY average_rating DESC
-    LIMIT 1;
-  `;
+      FROM sellerReviews sr
+      JOIN users u ON sr.seller_id = u.id
+      WHERE sr.is_deleted = FALSE
+      GROUP BY u.id
+      ORDER BY average_rating DESC
+      LIMIT 1;
+    `,
+    };
 
-    const totalReviewsResult = await pool.query(totalReviewsQuery);
-    const bestProductResult = await pool.query(bestProductQuery);
-    const bestSellerResult = await pool.query(bestSellerQuery);
+    // Execute all queries concurrently
+    const [
+      summaryResult,
+      topSellingResult,
+      mostReviewedResult,
+      lowStockResult,
+      revenueByCategoryResult,
+      conversionRateResult,
+      averageOrderValueResult,
+      geographicDistributionResult,
+      bestProductResult,
+      bestSellerResult,
+    ] = await Promise.all([
+      pool.query(queries.summary),
+      pool.query(queries.topSellingProduct),
+      pool.query(queries.mostReviewedProducts),
+      pool.query(queries.lowStockProducts),
+      pool.query(queries.revenueByCategory),
+      pool.query(queries.orderConversionRate),
+      pool.query(queries.averageOrderValue),
+      pool.query(queries.geographicDistribution),
+      pool.query(queries.bestProduct),
+      pool.query(queries.bestSeller),
+    ]);
 
-    const totalReviews = totalReviewsResult.rows[0]?.total_reviews || 0;
-    const bestProduct = bestProductResult.rows[0] || null;
-    const bestSeller = bestSellerResult.rows[0] || null;
-
-    const summaryResult = await pool.query(summaryQuery);
-    const topSellingResult = await pool.query(topSellingQuery);
-
+    // Extract and format results
     const summary = summaryResult.rows[0];
     const topSellingProduct = topSellingResult.rows[0] || {
       top_selling_product: null,
       units_sold: 0,
     };
-    console.log("summary: ", summary);
+    const mostReviewedProducts = mostReviewedResult.rows.map((row) => ({
+      name: row.product_name,
+      reviews: row.review_count,
+    }));
+    const lowStockProducts = lowStockResult.rows.map((row) => ({
+      name: row.product_name,
+      stock: row.stock_quantity,
+    }));
+    const revenueByCategory = revenueByCategoryResult.rows.map((row) => ({
+      category: row.category_name,
+      revenue: parseFloat(row.revenue).toFixed(2),
+    }));
+    const orderConversionRate =
+      parseFloat(conversionRateResult.rows[0]?.conversion_rate || 0) * 100;
+    const averageOrderValue = parseFloat(
+      averageOrderValueResult.rows[0]?.average_value || 0
+    ).toFixed(2);
+    const geographicDistribution = geographicDistributionResult.rows.map(
+      (row) => ({
+        country: row.country,
+        users: row.user_count,
+      })
+    );
+    const bestProduct = bestProductResult.rows[0] || null;
+    const bestSeller = bestSellerResult.rows[0] || null;
     res.status(200).json({
       success: true,
       message: "Admin summary retrieved successfully",
       summary: {
-        totalUsers: parseInt(summary.total_users, 10),
-        totalProducts: parseInt(summary.total_products, 10),
-        totalOrders: parseInt(summary.total_orders, 10),
-        pendingOrders: parseInt(summary.pending_orders, 10),
-        completedOrders: parseInt(summary.completed_orders, 10),
-        totalRevenue: parseFloat(summary.total_revenue).toFixed(2),
+        totalUsers: parseInt(summary.total_users, 10) || 0,
+        totalProducts: parseInt(summary.total_products, 10) || 0,
+        totalOrders: parseInt(summary.total_orders, 10) || 0,
+        pendingOrders: parseInt(summary.pending_orders, 10) || 0,
+        completedOrders: parseInt(summary.completed_orders, 10) || 0,
+        totalRevenue: parseFloat(summary.total_revenue || 0).toFixed(2),
+        totalReviews: parseInt(summary.total_reviews || 0, 10),
         topSellingProduct: {
           name: topSellingProduct.top_selling_product,
-          unitsSold: parseInt(topSellingProduct.units_sold, 10),
+          unitsSold: parseInt(topSellingProduct.units_sold || 0, 10),
         },
-        totalReviews,
-        totalReviews,
+        bestProduct: null, // Placeholder; modify if needed
+        bestSeller: null, // Placeholder; modify if needed
+        blockedUsers: parseInt(summary.blocked_users, 10) || 0,
+        newUsers: parseInt(summary.new_users, 10) || 0,
+        activeUsers: parseInt(summary.active_users, 10) || 0,
+        orderConversionRate,
+        averageOrderValue,
+        lowStockProducts,
+        mostReviewedProducts,
+        revenueByCategory,
+        geographicDistribution,
         bestProduct: bestProduct
           ? {
               name: bestProduct.product_name,
