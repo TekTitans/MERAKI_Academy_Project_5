@@ -36,7 +36,7 @@ const AdminManageCatigories = () => {
 
   const fetchCategories = async (page = 1) => {
     try {
-      // dispatch(setLoading(true));
+      dispatch(setLoading(true));
 
       if (!token) {
         dispatch(setLoading(false));
@@ -61,6 +61,8 @@ const AdminManageCatigories = () => {
 
   const fetchSubcategories = async (page = 1, catId) => {
     try {
+      dispatch(setLoading(true));
+
       if (!token) {
         dispatch(setLoading(false));
         dispatch(setError("No token found."));
@@ -89,7 +91,7 @@ const AdminManageCatigories = () => {
 
   useEffect(() => {
     fetchCategories(currentPage);
-  }, [dispatch, token, currentPage, updated, categories]);
+  }, [dispatch, token, currentPage, updated]);
 
   /*
 
@@ -198,28 +200,25 @@ const AdminManageCatigories = () => {
 */
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
     }));
-
-    if (name === "selectedCategory") {
-      setFilteredSubcategories(
-        subcategories.filter(
-          (subcategory) => subcategory.category_id === parseInt(value)
-        )
-      );
-      setProduct((prev) => ({ ...prev, subcategory_id: "" }));
-    }
+    setCurrentPage(1);
   };
   const handleClearFilters = () => {
-    setFilters({
-      search: "",
-    });
+    setFilters({ search: "" });
+    setCurrentPage(1);
   };
 
   const filteredCategories = categories.filter((category) => {
+    const matchesSearch =
+      !filters.search || category.name.toString().includes(filters.search);
+
+    return matchesSearch;
+  });
+
+  const filteredSubCategories = subcategories.filter((category) => {
     const matchesSearch =
       !filters.search || category.name.toString().includes(filters.search);
 
@@ -232,7 +231,7 @@ const AdminManageCatigories = () => {
         className={`pagination-arrow ${
           currentPage === 1 || totalPages === 0 ? "disabled" : ""
         }`}
-        onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+        onClick={() => currentPage > 1 && setCurrentPage((prev) => prev - 1)}
         aria-disabled={currentPage === 1}
       >
         <FaArrowLeft size={20} />
@@ -245,7 +244,7 @@ const AdminManageCatigories = () => {
           currentPage === totalPages || totalPages === 0 ? "disabled" : ""
         }`}
         onClick={() =>
-          currentPage < totalPages && setCurrentPage(currentPage + 1)
+          currentPage < totalPages && setCurrentPage((prev) => prev + 1)
         }
         aria-disabled={currentPage === totalPages}
       >
@@ -255,12 +254,29 @@ const AdminManageCatigories = () => {
   );
 
   const handleShowSub = (catId) => {
-    setSelectedCategory(true);
-    fetchSubcategories(currentPage, catId);
-    console.log("handleShowSub");
-    console.log("currentPage: ", currentPage);
-    console.log("catId: ", catId);
+    setSelectedCategory(catId);
+    setCurrentPage(1);
+    fetchSubcategories(1, catId);
   };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory(null);
+    setEditCategory(null);
+    setSubcategories([]);
+    setCurrentPage(1);
+  };
+  const handleBackToSubCategories = () => {
+    setEditCategory(null);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchSubcategories(currentPage, selectedCategory);
+    } else {
+      fetchCategories(currentPage);
+    }
+  }, [currentPage, selectedCategory]);
 
   useEffect(() => {
     if (error || message) {
@@ -280,169 +296,170 @@ const AdminManageCatigories = () => {
       {error && <div className="error-message">Error: {error}</div>}
       {message && <div className="success-message">{message}</div>}
       {editCategory ? (
-        <></>
+        <>
+          <button onClick={handleBackToCategories}>Back</button>{" "}
+        </> /* <EditCategoryForm
+  editCategory={editCategory}
+  formData={formData}
+  imagePreview={imagePreview}
+  isUploading={isUploading}
+  handleChange={handleChange}
+  handleFileChange={handleFileChange}
+  handleUpdate={handleUpdate}
+  setEditCategory={setEditCategory}
+/>*/
       ) : (
-        /* <EditCategoryForm
-          editCategory={editCategory}
-          formData={formData}
-          imagePreview={imagePreview}
-          isUploading={isUploading}
-          handleChange={handleChange}
-          handleFileChange={handleFileChange}
-          handleUpdate={handleUpdate}
-          setEditCategory={setEditCategory}
-        />*/
-        <div className="SDB_product-list">
-          <div className="filters">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search By Category Name"
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
-            <button
-              className="clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
-          </div>
+        <>
+          {selectedCategory ? (
+            <div className="SDB_product-list">
+              <div className="filters">
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Search By Category Name"
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
+                <button
+                  className="clear-filters-button"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </button>
+                <button onClick={handleBackToCategories}>Back</button>{" "}
+              </div>
 
-          <div className="SDB_product-grid">
-            {loading ? (
-              <div className="loading-spinner">Loading...</div>
-            ) : (
-              filteredCategories.map((cat) => (
-                <div key={cat.id} className="SDB_product-card">
-                  <img
-                    src={
-                      cat.category_image || "https://via.placeholder.com/150"
-                    }
-                    alt={cat.name}
-                    className="SDB_product-image"
-                    onError={(e) =>
-                      (e.target.src = "https://via.placeholder.com/150")
-                    }
-                  />
-                  <div className="SDB_product-info">
-                    <h3 className="SDB_product-title">{cat.name}</h3>
-                    <p className="SDB_product-description">
-                      {cat.description || "No Description"}
-                    </p>
+              <div className="SDB_product-grid">
+                {loading ? (
+                  <div className="loading-spinner">Loading...</div>
+                ) : (
+                  filteredSubCategories.map((cat) => (
+                    <div key={cat.id} className="SDB_product-card">
+                      <img
+                        src={
+                          cat.category_image ||
+                          "https://via.placeholder.com/150"
+                        }
+                        alt={cat.name}
+                        className="SDB_product-image"
+                        onError={(e) =>
+                          (e.target.src = "https://via.placeholder.com/150")
+                        }
+                      />
+                      <div className="SDB_product-info">
+                        <h3 className="SDB_product-title">{cat.name}</h3>
+                        <p className="SDB_product-description">
+                          {cat.description || "No Description"}
+                        </p>
 
-                    <div className="product-actions">
-                      <button
-                        onClick={
-                          () => {
-                            console.log("Edit");
-                          } /*handleEdit(cat)*/
-                        }
-                        className="edit-button"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleShowSub(cat.id)}
-                        className="statistics-button"
-                      >
-                        SubCategories
-                      </button>
-                      <button
-                        onClick={
-                          () => {
-                            console.log("Delete");
-                          } /* handleDelete(cat.id)*/
-                        }
-                        className="delete-button"
-                      >
-                        Delete
-                      </button>
+                        <div className="product-actions">
+                          <button
+                            onClick={
+                              () => {
+                                setEditCategory(true);
+                              } /* handleEdit(cat)*/
+                            }
+                            className="edit-button"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={
+                              () => {
+                                console.log("Delete");
+                              }
+                              /*handleDelete(cat.id)*/
+                            }
+                            className="delete-button"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          {paginationControls}
-        </div>
-      )}
-      {selectedCategory && (
-        <div className="SDB_product-list">
-          <div className="filters">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search By Category Name"
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
-            <button
-              className="clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
-          </div>
+                  ))
+                )}
+              </div>
+              {paginationControls}
+            </div>
+          ) : (
+            <div className="SDB_product-list">
+              <div className="filters">
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Search By Category Name"
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
+                <button
+                  className="clear-filters-button"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </button>
+              </div>
 
-          <div className="SDB_product-grid">
-            {loading ? (
-              <div className="loading-spinner">Loading...</div>
-            ) : (
-              subcategories.map((cat) => (
-                <div key={cat.id} className="SDB_product-card">
-                  <img
-                    src={
-                      cat.category_image || "https://via.placeholder.com/150"
-                    }
-                    alt={cat.name}
-                    className="SDB_product-image"
-                    onError={(e) =>
-                      (e.target.src = "https://via.placeholder.com/150")
-                    }
-                  />
-                  <div className="SDB_product-info">
-                    <h3 className="SDB_product-title">{cat.name}</h3>
-                    <p className="SDB_product-description">
-                      {cat.description || "No Description"}
-                    </p>
+              <div className="SDB_product-grid">
+                {loading ? (
+                  <div className="loading-spinner">Loading...</div>
+                ) : (
+                  filteredCategories.map((cat) => (
+                    <div key={cat.id} className="SDB_product-card">
+                      <img
+                        src={
+                          cat.category_image ||
+                          "https://via.placeholder.com/150"
+                        }
+                        alt={cat.name}
+                        className="SDB_product-image"
+                        onError={(e) =>
+                          (e.target.src = "https://via.placeholder.com/150")
+                        }
+                      />
+                      <div className="SDB_product-info">
+                        <h3 className="SDB_product-title">{cat.name}</h3>
+                        <p className="SDB_product-description">
+                          {cat.description || "No Description"}
+                        </p>
 
-                    <div className="product-actions">
-                      <button
-                        onClick={
-                          () => {
-                            console.log("Delete");
-                          } /* handleEdit(cat)*/
-                        }
-                        className="edit-button"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setSelectedCategory(false)}
-                        className="statistics-button"
-                      >
-                        Back
-                      </button>
-                      <button
-                        onClick={
-                          () => {
-                            console.log("Delete");
-                          }
-                          /*handleDelete(cat.id)*/
-                        }
-                        className="delete-button"
-                      >
-                        Delete
-                      </button>
+                        <div className="product-actions">
+                          <button
+                            onClick={
+                              () => {
+                                setEditCategory(true);
+                              } /*handleEdit(cat)*/
+                            }
+                            className="edit-button"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleShowSub(cat.id)}
+                            className="statistics-button"
+                          >
+                            SubCategories
+                          </button>
+                          <button
+                            onClick={
+                              () => {
+                                console.log("Delete");
+                              } /* handleDelete(cat.id)*/
+                            }
+                            className="delete-button"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          {paginationControls}
-        </div>
+                  ))
+                )}
+              </div>
+              {paginationControls}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
