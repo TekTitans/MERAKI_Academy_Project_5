@@ -20,7 +20,7 @@ const Details = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [editComment, setEditComment] = useState("");
   const [editRating, setEditRating] = useState(0);
-  const [showModal, setShowModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
   const [avgrate, setAvgrate] = useState();
@@ -72,7 +72,7 @@ const Details = () => {
   const createReview = () => {
     if (!token) {
       setModalMessage("Need to login first ");
-      setShowModal(true);
+      setModalVisible(true);
     } else if (newComment.trim() && rating > 0) {
       axios
         .post(
@@ -92,8 +92,11 @@ const Details = () => {
         });
     } else {
       setModalMessage("Please provide a valid rating and comment!");
-      setShowModal(true);
+      setModalVisible(true);
     }
+  };
+  const closeModal = () => {
+    setModalVisible(false); // This function hides the modal
   };
 
   const handleEdit = (review) => {
@@ -287,9 +290,11 @@ const Details = () => {
           )}
         </div>
 
-        {showModal && (
-          <Modal message={modalMessage} onClose={() => setShowModal(false)} />
-        )}
+        <Modal
+          isOpen={modalVisible}
+          autoClose={closeModal} // Pass closeModal as the autoClose handler
+          message={modalMessage}
+        />
       </div>
     </div>
   );

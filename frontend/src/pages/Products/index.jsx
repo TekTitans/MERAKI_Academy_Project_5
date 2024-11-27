@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import Modal from "../modal/Modal";
 
 const Products = () => {
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -19,6 +20,11 @@ const Products = () => {
   const [loading, setLoading] = useState(false);
   const token = useSelector((state) => state.auth.token);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const closeModal = () => {
+    setModalVisible(false); // This function hides the modal
+  };
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -30,23 +36,28 @@ const Products = () => {
   });
 
   const handleWishlist = (productId) => {
-    // Placeholder functionality
-    console.log(`Product ${productId} added to wishlist`);
+    if (!token) {
+      setModalMessage("Login First");
+      setModalVisible(true);
+    } else {
+      axios
+        .post("http://localhost:5000/wishlist", { productId }, { headers })
+        .then((response) => {
+          if (response.data.success) {
+            console.log(response);
 
-    // Optionally, send a POST request to the server
-    axios
-      .post("http://localhost:5000/wishlist", { productId },{headers})
-      .then((response) => {
-        if (response.data.success) {
-          alert("Product added to wishlist!");
-        } else {
-          alert("Failed to add product to wishlist.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding to wishlist:", error);
-        alert("An error occurred.");
-      });
+            setModalMessage("Product added to wishlist!");
+          } else {
+            setModalMessage("Failed to add product to wishlist.");
+          }
+          setModalVisible(true);
+        })
+        .catch((error) => {
+          console.error("Error adding to wishlist:", error);
+          setModalMessage("Product already in your wishlist");
+          setModalVisible(true);
+        });
+    }
   };
   const dispatch = useDispatch();
   useEffect(() => {
@@ -216,6 +227,12 @@ const Products = () => {
           {filterProducts.length > 0 && paginationControls}
         </div>
       )}
+
+      <Modal
+        isOpen={modalVisible}
+        autoClose={closeModal} // Pass closeModal as the autoClose handler
+        message={modalMessage}
+      />
     </div>
   );
 };
