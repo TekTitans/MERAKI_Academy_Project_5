@@ -423,6 +423,70 @@
   align-items: center;
 }
 
+.sort-buttons-modern {
+  display: flex;
+  margin-bottom: 20px;
+  margin-left: 3rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.sort-buttons-modern button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #f9f9f9;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Arial", sans-serif;
+}
+
+.sort-buttons-modern button:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.sort-buttons-modern button.active {
+  background-color: #333;
+  color: white;
+  border-color: #333;
+}
+
+.sort-buttons-modern button svg {
+  font-size: 16px;
+}
+
+.sort-buttons-modern button span {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .sort-buttons-modern {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sort-buttons-modern button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .sort-buttons-modern button span {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .page-title {
     font-size: 1rem;

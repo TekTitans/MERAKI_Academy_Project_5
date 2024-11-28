@@ -35,6 +35,7 @@ const AddProduct = () => {
       try {
         const response = await axios.get("http://localhost:5000/category/");
         setCategories(response.data.category);
+        console.log(categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -42,8 +43,9 @@ const AddProduct = () => {
 
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/subcateogry");
+        const response = await axios.get("http://localhost:5000/subcategory");
         setSubcategories(response.data.subCategory);
+        console.log(subcategories);
       } catch (error) {
         console.error("Error fetching subcategories:", error);
       }
@@ -168,13 +170,12 @@ const AddProduct = () => {
   useEffect(() => {
     if (error || message) {
       const timer = setTimeout(() => {
-        dispatch(setError(null));   
-        dispatch(setMessage(null)); 
+        dispatch(setError(null));
+        dispatch(setMessage(null));
       }, 5000);
       return () => clearTimeout(timer);
     }
   }, [error, message, dispatch]);
-  
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
 
@@ -304,7 +305,7 @@ const AddProduct = () => {
             </select>
             <button
               type="submit"
-              className="submit-button"
+              className="prodAdd_submit-button"
               disabled={loading || isUploading}
             >
               {loading ? "Saving..." : "Add Product"}
