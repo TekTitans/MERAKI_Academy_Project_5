@@ -15,8 +15,10 @@ const AdminDashboard = () => {
     switch (activeSection) {
       case "summary":
         return <AdminSummary />;
-      case "addCategory":
+      case "manageCategories":
         return <AdminManageCatigories />;
+      case "addCategory":
+        return <AddCategories />;
       case "manageUsers":
         return <AdminManageUsers />;
       case "manageProducts":

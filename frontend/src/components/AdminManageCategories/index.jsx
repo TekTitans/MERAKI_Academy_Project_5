@@ -5,10 +5,12 @@ import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import EditCategoryForm from "../AdminEditCategory";
+import AddCategories from "../AddCategory";
 
 const AdminManageCatigories = () => {
   const [editCategory, setEditCategory] = useState(null);
   const [isCategory, setIsCategory] = useState(true);
+  const [addCat, setAddCat] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -142,10 +144,10 @@ const AdminManageCatigories = () => {
       ...categoryToEdit,
       isCategory: isCategory,
     });
-
-    console.log("Updated categoryToEdit:", categoryToEdit);
-    console.log("formData: ", formData);
-    console.log("editCategory:", editCategory);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleChange = (e) => {
@@ -377,61 +379,175 @@ const AdminManageCatigories = () => {
   if (loading) return <div className="loading-spinner">Loading...</div>;
 
   return (
-    <div className="seller-page">
-      <h2 className="page-title">Categories Management</h2>
+    <div className="cat-page">
       {error && <div className="error-message">Error: {error}</div>}
       {message && <div className="success-message">{message}</div>}
-      {editCategory ? (
-        <>
-          <EditCategoryForm
-            editCategory={editCategory}
-            formData={formData}
-            imagePreview={imagePreview}
-            isUploading={isUploading}
-            handleChange={handleChange}
-            handleFileChange={handleFileChange}
-            handleUpdate={handleUpdate}
-            setEditCategory={setEditCategory}
-            handleBackToCategories={handleBackToCategories}
-            categories={categories}
-            setFormData={setFormData}
-            handleBackToSubCategories={handleBackToSubCategories}
-            isCategory={isCategory}
-          />
-        </>
-      ) : (
-        <>
-          {selectedCategory ? (
-            filteredSubCategories.length ? (
+
+      <>
+        <h2 className="page-title">Categories Management</h2>
+
+        {editCategory ? (
+          <>
+            <EditCategoryForm
+              editCategory={editCategory}
+              formData={formData}
+              imagePreview={imagePreview}
+              isUploading={isUploading}
+              handleChange={handleChange}
+              handleFileChange={handleFileChange}
+              handleUpdate={handleUpdate}
+              setEditCategory={setEditCategory}
+              handleBackToCategories={handleBackToCategories}
+              categories={categories}
+              setFormData={setFormData}
+              handleBackToSubCategories={handleBackToSubCategories}
+              isCategory={isCategory}
+            />
+          </>
+        ) : (
+          <>
+            {selectedCategory ? (
+              filteredSubCategories.length ? (
+                <div className="SDB_product-list">
+                  <h3>{mainCat}</h3>
+                  <div className="Cat_Header">
+                    <div className="filters">
+                      <input
+                        type="text"
+                        name="search"
+                        placeholder="Search By Category Name"
+                        value={filters.search}
+                        onChange={handleFilterChange}
+                      />
+                      <button
+                        className="clear-filters-button"
+                        onClick={handleClearFilters}
+                      >
+                        Clear
+                      </button>
+                      <button
+                        className="edit_back-button"
+                        onClick={handleBackToCategories}
+                      >
+                        Back
+                      </button>{" "}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setAddCat(true);
+                      }}
+                      className="edit-button"
+                    >
+                      {addCat ? "Add New" : "Back"}
+                    </button>
+                  </div>
+                  <div className="SDB_product-grid">
+                    {loading ? (
+                      <div className="loading-spinner">Loading...</div>
+                    ) : (
+                      filteredSubCategories.map((cat) => (
+                        <div key={cat.id} className="SDB_product-card">
+                          <img
+                            src={
+                              cat.category_image ||
+                              "https://via.placeholder.com/150"
+                            }
+                            alt={cat.name}
+                            className="SDB_product-image"
+                            onError={(e) =>
+                              (e.target.src = "https://via.placeholder.com/150")
+                            }
+                          />
+                          <div className="SDB_product-info">
+                            <h3 className="SDB_product-title">{cat.name}</h3>
+                            <p className="SDB_product-description">
+                              {cat.description || "No Description"}
+                            </p>
+
+                            <div className="product-actions">
+                              <button
+                                onClick={() => {
+                                  handleEdit(cat);
+                                }}
+                                className="edit-button"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => {
+                                  handleDelete(cat.id);
+                                }}
+                                className="delete-button"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  {paginationControls}
+                </div>
+              ) : (
+                <>
+                  {" "}
+                  <div className="Cat_Header">
+                    <h3>{mainCat}</h3>
+
+                    <div className="filters">
+                      <input
+                        type="text"
+                        name="search"
+                        placeholder="Search By Category Name"
+                        value={filters.search}
+                        onChange={handleFilterChange}
+                      />
+                      <button
+                        className="clear-filters-button"
+                        onClick={handleClearFilters}
+                      >
+                        Clear
+                      </button>
+                      <button
+                        className="edit_back-button"
+                        onClick={handleBackToCategories}
+                      >
+                        Back
+                      </button>{" "}
+                    </div>
+
+
+                  </div>
+                  <p className="no-products-message">No SubCategories</p>{" "}
+                </>
+              )
+            ) : (
               <div className="SDB_product-list">
-                <h3>{mainCat}Hi</h3>
-                <div className="filters">
-                  <input
-                    type="text"
-                    name="search"
-                    placeholder="Search By Category Name"
-                    value={filters.search}
-                    onChange={handleFilterChange}
-                  />
-                  <button
-                    className="clear-filters-button"
-                    onClick={handleClearFilters}
-                  >
-                    Clear
-                  </button>
-                  <button
-                    className="edit_back-button"
-                    onClick={handleBackToCategories}
-                  >
-                    Back
-                  </button>{" "}
+                <div className="Cat_Header">
+                  <div className="filters">
+                    <input
+                      type="text"
+                      name="search"
+                      placeholder="Search By Category Name"
+                      value={filters.search}
+                      onChange={handleFilterChange}
+                    />
+                    <button
+                      className="clear-filters-button"
+                      onClick={handleClearFilters}
+                    >
+                      Clear
+                    </button>
+                  </div>
                 </div>
 
                 <div className="SDB_product-grid">
                   {loading ? (
                     <div className="loading-spinner">Loading...</div>
                   ) : (
-                    filteredSubCategories.map((cat) => (
+                    filteredCategories.map((cat) => (
                       <div key={cat.id} className="SDB_product-card">
                         <img
                           src={
@@ -460,6 +576,13 @@ const AdminManageCatigories = () => {
                               Edit
                             </button>
                             <button
+                              onClick={() => handleShowSub(cat.id, cat.name)}
+                              className="statistics-button"
+                            >
+                              SubCategories
+                            </button>
+
+                            <button
                               onClick={() => {
                                 handleDelete(cat.id);
                               }}
@@ -475,94 +598,10 @@ const AdminManageCatigories = () => {
                 </div>
                 {paginationControls}
               </div>
-            ) : (
-              <>
-                {" "}
-                <p className="no-products-message">No SubCategories</p>{" "}
-                <button
-                  className="edit_back-button"
-                  onClick={handleBackToCategories}
-                >
-                  Back
-                </button>{" "}
-              </>
-            )
-          ) : (
-            <div className="SDB_product-list">
-              <div className="filters">
-                <input
-                  type="text"
-                  name="search"
-                  placeholder="Search By Category Name"
-                  value={filters.search}
-                  onChange={handleFilterChange}
-                />
-                <button
-                  className="clear-filters-button"
-                  onClick={handleClearFilters}
-                >
-                  Clear
-                </button>
-              </div>
-
-              <div className="SDB_product-grid">
-                {loading ? (
-                  <div className="loading-spinner">Loading...</div>
-                ) : (
-                  filteredCategories.map((cat) => (
-                    <div key={cat.id} className="SDB_product-card">
-                      <img
-                        src={
-                          cat.category_image ||
-                          "https://via.placeholder.com/150"
-                        }
-                        alt={cat.name}
-                        className="SDB_product-image"
-                        onError={(e) =>
-                          (e.target.src = "https://via.placeholder.com/150")
-                        }
-                      />
-                      <div className="SDB_product-info">
-                        <h3 className="SDB_product-title">{cat.name}</h3>
-                        <p className="SDB_product-description">
-                          {cat.description || "No Description"}
-                        </p>
-
-                        <div className="product-actions">
-                          <button
-                            onClick={() => {
-                              handleEdit(cat);
-                            }}
-                            className="edit-button"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleShowSub(cat.id, cat.name)}
-                            className="statistics-button"
-                          >
-                            SubCategories
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              handleDelete(cat.id);
-                            }}
-                            className="delete-button"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              {paginationControls}
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </>
     </div>
   );
 };
