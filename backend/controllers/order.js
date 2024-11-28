@@ -2,17 +2,19 @@ const pool = require("../models/db");
 const express = require("express");
 const pdf = require("pdfkit");
 const fs = require("fs");
+const { error } = require("console");
 
 const createOrder = async (req, res) => {
   const userId = req.token.userId;
+  deliveryPrice=req.body.deliveryPrice
   const phone_number=req.body.phone_number
   const payment_method=req.body.isVisa
   const country=req.body.country
   const street=req.body.street
   const adress=country+","+street
 
-
   try {
+
     const cartQuery =
       "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
     const cartResult = await pool.query(cartQuery, [userId]);
@@ -32,13 +34,16 @@ const createOrder = async (req, res) => {
     const totalAmountResult = await pool.query(totalAmountQuery, [userId]);
     const totalAmount = totalAmountResult.rows[0].total_amount;
     const orderQuery =
-      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number,payment_method) VALUES ($1, $2, $3,$4,$5) RETURNING id";
+      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number,payment_method,delivery_price,total_amount_with_delivery) VALUES ($1, $2, $3,$4,$5,$6,$7) RETURNING id";
     const orderResult = await pool.query(orderQuery, [
       userId,
       totalAmount,
       adress,
       phone_number,
-      payment_method
+      payment_method,
+      deliveryPrice,
+      Number(deliveryPrice)+Number( totalAmount)
+
     ]);
     const orderId = orderResult.rows[0].id;
     const updateCartQuery =

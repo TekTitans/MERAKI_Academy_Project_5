@@ -5,7 +5,7 @@ import "./CheckoutForm.css";
 import { useSelector } from "react-redux";
 
 
-const CheckoutForm = ({ phone_number,street,country,isVisa }) => {
+const CheckoutForm = ({ phone_number,street,country,isVisa,deliveryPrice }) => {
   const token = useSelector((state) => state.auth.token);
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ const CheckoutForm = ({ phone_number,street,country,isVisa }) => {
   
   const createOrder = () => {
     axios
-      .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa }, { headers })
+      .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa,deliveryPrice }, { headers })
       .then((response) => {
         console.log(response.data);
       })

@@ -39,9 +39,9 @@ const Navbar = () => {
     <div className="navbar_container">
       <nav className="navbar">
         <div className="nav-lift">
-          <div class="logo">
-            <div class="icon">
-              <i class="fas fa-shopping-cart"></i>
+          <div className="logo">
+            <div className="icon">
+              <i className="fas fa-shopping-cart"></i>
             </div>
             <h2>SmartCart</h2>
           </div>
