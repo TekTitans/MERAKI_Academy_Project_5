@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { decrementCount } from "../../components/redux/reducers/product/product";
 import axios from "axios";
 import "./style.css";
-import { useSelector } from "react-redux";
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
-  const [error, setError] = useState(null);
-  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
+  const token = useSelector((state) => state.auth.token);
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -18,78 +19,62 @@ const Wishlist = () => {
         const response = await axios.get("http://localhost:5000/wishlist", {
           headers,
         });
-
         if (response.data.success) {
           setWishlist(response.data.wishlists);
-        } else {
-          setError(response.data.message);
         }
       } catch (err) {
-        setError("Unable to fetch wishlist. Please try again later.");
+        console.error("Error fetching wishlist:", err);
       }
     };
 
     fetchWishlist();
   }, []);
 
+  const removeFromWishlist = async (productId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/wishlist/${productId}`,
+        {
+          headers,
+        }
+      );
+      if (response.data.success) {
+        dispatch(decrementCount());
+        setWishlist(wishlist.filter((item) => item.product_id !== productId));
+      }
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+    }
+  };
+
   return (
     <div className="wishlist-container">
-      <h1>Your Wishlist</h1>
-      {error ? (
-        <p className="error-message">{error}</p>
-      ) : wishlist.length > 0 ? (
-        <table className="wishlist-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Product</th>
-
-              <th>Price</th>
-              <th>Actions</th>
+      <h2>Your Wishlist</h2>
+      <table className="wishlist-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {wishlist.map((item) => (
+            <tr key={item.product_id}>
+              <td>{item.title}</td>
+              <td>{item.description}</td>
+              <td>
+                <button
+                  onClick={() => removeFromWishlist(item.product_id)}
+                  className="remove-btn"
+                >
+                  Remove
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {wishlist.map((item, index) => (
-              <tr key={item.product_id}>
-                <td>{index + 1}</td>
-                <td>
-                  <div className="product-info">
-                    <span>{item.title}</span>
-                  </div>
-                </td>
-
-                <td>{item.price} JD</td>
-                <td>
-                  <button
-                    className="remove-btn"
-                    onClick={async () => {
-                      try {
-                        await axios.delete(
-                          `http://localhost:5000/wishlist/${item.product_id}`,
-                          {
-                            headers,
-                          }
-                        );
-                        setWishlist(
-                          wishlist.filter(
-                            (w) => w.product_id !== item.product_id
-                          )
-                        );
-                      } catch (err) {
-                        alert("Failed to remove item. Try again.");
-                      }
-                    }}
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="empty-message">Your wishlist is empty.</p>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

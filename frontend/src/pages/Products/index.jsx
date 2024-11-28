@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./style.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts } from "../../components/redux/reducers/product/product";
+import {
+  setProducts,
+  incrementCount,
+} from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Modal from "../modal/Modal";
@@ -22,6 +25,7 @@ const Products = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const dispatch = useDispatch();
   const closeModal = () => {
     setModalVisible(false); // This function hides the modal
   };
@@ -47,6 +51,7 @@ const Products = () => {
             console.log(response);
 
             setModalMessage("Product added to wishlist!");
+            dispatch(incrementCount());
           } else {
             setModalMessage("Failed to add product to wishlist.");
           }
@@ -59,7 +64,7 @@ const Products = () => {
         });
     }
   };
-  const dispatch = useDispatch();
+ 
   useEffect(() => {
     const filtered = products?.filter((product) =>
       product.title.toLowerCase().includes(search.toLowerCase())

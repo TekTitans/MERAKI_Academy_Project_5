@@ -12,37 +12,37 @@ import { FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
   const allMessages = useSelector((state) => state.auth.allMessages);
-
+  const wishlistCount = useSelector((state) => state.product.count);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const recived = useSelector((state) => state.auth.recived);
-  const [wishlistCount, setWishlistCount] = useState(0);
+
   const { token } = useSelector((state) => state.auth);
   const headers = {
     Authorization: `Bearer ${token}`,
   };
 
-  useEffect(() => {
-    const fetchWishlistCount = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/wishlist/count",
-          {
-            headers,
-          }
-        );
-        if (response.data.success) {
-          setWishlistCount(response.data.count);
-        }
-      } catch (err) {
-        console.error("Error fetching wishlist count", err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchWishlistCount = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:5000/wishlist/count",
+  //         {
+  //           headers,
+  //         }
+  //       );
+  //       if (response.data.success) {
+  //         setWishlistCount(response.data.count);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching wishlist count", err);
+  //     }
+  //   };
 
-    fetchWishlistCount();
-  }, []);
+  //   fetchWishlistCount();
+  // }, []);
 
   const { userName } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,10 +98,7 @@ const Navbar = () => {
             </button>
           </form>
           <Link to="/wishlist" className="navbar-wishlist">
-            <span>
-              <FaHeart />
-              Wishlist
-            </span>
+            Wishlist <FaHeart />
             {wishlistCount > 0 && (
               <span className="wishlist-count">{wishlistCount}</span>
             )}
