@@ -49,7 +49,7 @@ export const router = createBrowserRouter(
         { path: "*", element: <NotFound /> },
         { path: "/search/:query", element: <SearchPage /> },
         { path: "/category/:id", element: <Category /> },
-        { path: "/products", element: <Products /> },
+        { path: "/Shop", element: <Products /> },
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },
