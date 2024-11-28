@@ -597,3 +597,17 @@ h2:hover {
   }
  
 }
+.navbar-wishlist {
+  position: relative;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+.wishlist-count {
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}

@@ -73,7 +73,7 @@
 }
 
 .product-image {
-  width: 100%;
+  width: 100% !important;
   height: 220px !important;
   object-fit: cover;
   transition: transform 0.3s ease;

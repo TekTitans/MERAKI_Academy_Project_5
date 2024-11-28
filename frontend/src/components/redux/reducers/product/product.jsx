@@ -1,12 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const productSlice = createSlice({
-  name: 'product',
+  name: "product",
   initialState: {
     products: [],
     cart: [],
-    search: '',
+    search: "",
     catid: 0,
+    count: 0,
   },
   reducers: {
     setProducts: (state, action) => {
@@ -23,7 +24,9 @@ export const productSlice = createSlice({
     },
     removeProduct: (state, action) => {
       const productId = action.payload;
-      state.products = state.products.filter((product) => product.id !== productId);
+      state.products = state.products.filter(
+        (product) => product.id !== productId
+      );
     },
     setCart: (state, action) => {
       state.cart = action.payload;
@@ -33,6 +36,12 @@ export const productSlice = createSlice({
     },
     setcatid: (state, action) => {
       state.catid = action.payload;
+    },
+    incrementCount: (state) => {
+      state.count += 1;
+    },
+    decrementCount: (state) => {
+      if (state.count > 0) state.count -= 1;
     },
   },
 });
@@ -45,6 +54,8 @@ export const {
   setCart,
   setSearch,
   setcatid,
+  incrementCount,
+  decrementCount,
 } = productSlice.actions;
 
 export default productSlice.reducer;

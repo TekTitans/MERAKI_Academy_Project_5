@@ -6,16 +6,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
 import { clearRecived } from "../../components/redux/reducers/auth";
+import axios from "axios";
+import { FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
   const allMessages = useSelector((state) => state.auth.allMessages);
-
+  const wishlistCount = useSelector((state) => state.product.count);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const recived = useSelector((state) => state.auth.recived);
-  console.log(allMessages);
 
   const { userName } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,6 +80,14 @@ const Navbar = () => {
               🔍
             </button>
           </form>
+          <Link to="/wishlist" className="navbar-wishlist">
+            Wishlist <FaHeart />
+            {wishlistCount > 0 && (
+              <span className="wishlist-count">{wishlistCount}</span>
+            )}
+          </Link>
+         
+
 
           <a className="cart-icon">
             <FaShoppingCart onClick={() => history("/cart")} />
@@ -106,6 +115,7 @@ const Navbar = () => {
               <span className="visually-hidden">New alerts</span>
             </span>
           </button>
+
 
           {isLoggedIn && (
             <div className="navbar-user" onClick={() => history("/Profile")}>
