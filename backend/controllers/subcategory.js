@@ -51,6 +51,9 @@ const updateSubCategory = async (req, res) => {
         category: result.rows[0],
       });
     } else {
+      console.log("Request body:", req.body);
+      console.log("SubCategory ID:", req.params.id);
+
       throw new Error("Error happened while updating SubCategory");
     }
   } catch (error) {
@@ -64,40 +67,69 @@ const updateSubCategory = async (req, res) => {
   }
 };
 
-const removeSubCateegory = async (req, res) => {
-  const subCatIdatId = req.params.subId;
+const removeSubCategory = async (req, res) => {
+  const subCatId = parseInt(req.params.subId, 10);
 
-  const query = `DELETE FROM subcategories WHERE id = ${subCatIdatId};`;
+  if (isNaN(subCatId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid subcategory ID",
+    });
+  }
+
+  const query = `    UPDATE subcategories 
+    SET is_deleted = true 
+    WHERE id = $1;`;
 
   try {
-    const result = await pool.query(query);
-    if (result.rows.length !== 0) {
+    const result = await pool.query(query, [subCatId]);
+
+    if (result.rowCount > 0) {
       res.json({
         success: true,
-        message: "subCategory Deleted",
+        message: "Subcategory deleted successfully",
       });
     } else {
-      throw new Error("Error happened while deleting subCategory");
+      res.status(404).json({
+        success: false,
+        message: "Subcategory not found",
+      });
     }
   } catch (error) {
+    console.error("Error deleting subcategory:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
 
 const getAllSubCategory = async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
-  const size = parseInt(req.query.size) || 10; 
-  const offset = (page - 1) * size; 
+  const page = parseInt(req.query.page) || 1;
+  const size = parseInt(req.query.size) || 10;
+  const offset = (page - 1) * size;
 
   const query = `
-    SELECT s.id, s.name, s.description, s.category_id, c.name AS category_name
-    FROM subcategories s
-    JOIN categories c ON c.id = s.category_id
-    LIMIT $1 OFFSET $2;
+SELECT 
+    s.id, 
+    s.name, 
+    s.description, 
+    s.category_id, 
+    c.name AS category_name
+FROM 
+    subcategories s
+JOIN 
+    categories c 
+ON 
+    c.id = s.category_id
+WHERE 
+    s.is_deleted = false
+ORDER BY 
+    s.created_at DESC 
+LIMIT 
+    $1 OFFSET $2;
+
   `;
   const countQuery = `SELECT COUNT(*) FROM subcategories;`;
 
@@ -111,7 +143,7 @@ const getAllSubCategory = async (req, res) => {
       success: true,
       message: "All Subcategories",
       subCategory: result.rows,
-      totalSubcategories: totalSubcategories, 
+      totalSubcategories: totalSubcategories,
     });
   } catch (error) {
     console.error("Error fetching subcategories:", error);
@@ -124,32 +156,44 @@ const getAllSubCategory = async (req, res) => {
 };
 
 const getAllSubCategoryByCategoryId = async (req, res) => {
-  const { categoryId } = req.params; // Get category ID from route parameters
+  const { categoryId } = req.params;
   const page = parseInt(req.query.page) || 1;
   const size = parseInt(req.query.size) || 10;
   const offset = (page - 1) * size;
 
-  // Modified query to filter by category ID
   const query = `
-    SELECT s.id, s.name, s.description, s.category_id, c.name AS category_name
-    FROM subcategories s
-    JOIN categories c ON c.id = s.category_id
-    WHERE s.category_id = $1
-    LIMIT $2 OFFSET $3;
-  `;
+    SELECT 
+        s.id, 
+        s.name, 
+        s.description, 
+        s.category_id, 
+        c.name AS category_name
+    FROM 
+        subcategories s
+    JOIN 
+        categories c 
+    ON 
+        c.id = s.category_id
+    WHERE 
+        s.category_id = $1 
+        AND s.is_deleted = false
+    LIMIT 
+        $2 OFFSET $3;
+`;
 
-  // Count query to get total subcategories for the specified category
   const countQuery = `
-    SELECT COUNT(*) 
-    FROM subcategories 
-    WHERE category_id = $1;
-  `;
+    SELECT 
+        COUNT(*) 
+    FROM 
+        subcategories 
+    WHERE 
+        category_id = $1 
+        AND is_deleted = false;
+`;
 
   try {
-    // Fetch subcategories for the given category ID with pagination
     const result = await pool.query(query, [categoryId, size, offset]);
 
-    // Fetch total count of subcategories for the given category ID
     const countResult = await pool.query(countQuery, [categoryId]);
     const totalSubcategories = parseInt(countResult.rows[0].count);
 
@@ -168,8 +212,6 @@ const getAllSubCategoryByCategoryId = async (req, res) => {
     });
   }
 };
-
-
 
 const uploadSubCategoryImage = async (req, res) => {
   const admin_id = req.token.userId;
@@ -217,8 +259,8 @@ const uploadSubCategoryImage = async (req, res) => {
 module.exports = {
   createSubCategory,
   updateSubCategory,
-  removeSubCateegory,
+  removeSubCategory,
   getAllSubCategory,
   uploadSubCategoryImage,
-  getAllSubCategoryByCategoryId
+  getAllSubCategoryByCategoryId,
 };
