@@ -1,4 +1,13 @@
-/* Set body and html to take full height */
+:root {
+  --primary-color: #1abc9c;
+  --secondary-color: #2c3e50;
+  --accent-color: #16a085;
+  --light-text-color: #ecf0f1;
+  --dark-text-color: #2c3e50;
+  --hover-color: #16a085;
+  --transition-speed: 0.3s;
+}
+
 html,
 body {
   height: 100%;
@@ -6,21 +15,18 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Use flexbox to make the page take up all available space */
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Make sure the main content area grows and takes up available space */
 .main-content {
   flex: 1;
 }
 
-/* Footer Styles */
 .footer {
-  background-color: #222;
+  background-color: var(--secondary-color);
   color: #f9f9f9;
   padding: 20px 0;
   margin-top: 50px;
@@ -44,7 +50,7 @@ body {
 .footer-section h3 {
   font-size: 18px;
   margin-bottom: 10px;
-  color: #ff6f61;
+  color: var(--accent-color);
 }
 
 .footer-section p,
@@ -73,10 +79,10 @@ body {
 .footer-bottom {
   text-align: center;
   padding: 10px 20px;
-  background-color: #111;
+  background-color: var(--primary-color);
   border-top: 1px solid #333;
   font-size: 14px;
-  color: #aaa;
+  color: white !important;
 }
 
 @media (max-width: 768px) {
@@ -93,4 +99,7 @@ body {
   .social-icons a {
     margin-right: 15px;
   }
+}
+.colo {
+  color: white;
 }
