@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import "./style.css";
 import Modal from "../modal/Modal";
@@ -92,7 +94,7 @@ const SearchResults = () => {
                 className="wishlist-button"
                 onClick={() => handleWishlist(product.id)}
               >
-                ♥
+                <FontAwesomeIcon icon={faHeart} />
               </button>
               <div className="product-info">
                 <h3>{product.title}</h3>

@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import "./style.css";
 import Navbar from "../../components/Navbar";
 import Category from "../../components/category";
+import Footer from "../../components/Footer/Footer";
 
 export default function Main() {
   return (
@@ -12,6 +13,7 @@ export default function Main() {
       <main className="main-content">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }

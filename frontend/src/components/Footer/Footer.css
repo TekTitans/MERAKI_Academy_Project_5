@@ -1,0 +1,96 @@
+/* Set body and html to take full height */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Use flexbox to make the page take up all available space */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Make sure the main content area grows and takes up available space */
+.main-content {
+  flex: 1;
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #222;
+  color: #f9f9f9;
+  padding: 20px 0;
+  margin-top: 50px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-section {
+  flex: 1 1 200px;
+  margin: 10px;
+}
+
+.footer-section h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #ff6f61;
+}
+
+.footer-section p,
+.footer-section a {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #ddd;
+  text-decoration: none;
+}
+
+.footer-section a:hover {
+  color: #fff;
+}
+
+.social-icons a {
+  font-size: 20px;
+  margin-right: 10px;
+  color: #ddd;
+  transition: color 0.3s;
+}
+
+.social-icons a:hover {
+  color: #ff6f61;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: 10px 20px;
+  background-color: #111;
+  border-top: 1px solid #333;
+  font-size: 14px;
+  color: #aaa;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-section {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .social-icons a {
+    margin-right: 15px;
+  }
+}

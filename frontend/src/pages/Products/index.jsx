@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Modal from "../modal/Modal";
+import { FaHeart } from "react-icons/fa";
 
 const Products = () => {
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -64,7 +65,7 @@ const Products = () => {
         });
     }
   };
- 
+
   useEffect(() => {
     const filtered = products?.filter((product) =>
       product.title.toLowerCase().includes(search.toLowerCase())

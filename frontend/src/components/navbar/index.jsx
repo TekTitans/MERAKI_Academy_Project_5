@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
 import { clearRecived } from "../../components/redux/reducers/auth";
 import axios from "axios";
-
 import { FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
@@ -18,32 +17,6 @@ const Navbar = () => {
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const recived = useSelector((state) => state.auth.recived);
-
-  const { token } = useSelector((state) => state.auth);
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-
-  // useEffect(() => {
-  //   const fetchWishlistCount = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "http://localhost:5000/wishlist/count",
-  //         {
-  //           headers,
-  //         }
-  //       );
-  //       if (response.data.success) {
-  //         setWishlistCount(response.data.count);
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching wishlist count", err);
-  //     }
-  //   };
-
-  //   fetchWishlistCount();
-  // }, []);
-
   const { userName } = useSelector((state) => state.auth);
   const [searchQuery, setSearchQuery] = useState("");
 
