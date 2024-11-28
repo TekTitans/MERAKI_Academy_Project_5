@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-logo">
           <Link to="/" className="footer-logo-link">
-            <h2>BrandName</h2>
+            <h2>SmartCart</h2>
           </Link>
         </div>
 
@@ -47,7 +47,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-copy">
-          <p className="copy">&copy; 2024 BrandName. All Rights Reserved.</p>
+          <p className="copy">&copy; 2024 SmartCart. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

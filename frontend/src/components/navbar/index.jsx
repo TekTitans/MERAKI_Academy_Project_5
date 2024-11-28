@@ -127,7 +127,7 @@ const Navbar = () => {
             onClick={() => {
               history(isLoggedIn ? "/users/login" : "/users/login");
               {
-                isLoggedIn ? handleLogout : null;
+                isLoggedIn ? handleLogout() : null;
               }
             }}
           >

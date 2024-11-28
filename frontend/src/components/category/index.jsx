@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts } from "../redux/reducers/product/product";
-import { setLoading, setError, setMessage } from "../redux/reducers/orders";
+import { setProducts,incrementCount } from "../redux/reducers/product/product";
+import {
+  setLoading,
+  setError,
+  setMessage,
+  
+} from "../redux/reducers/orders";
 import "./style.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import Modal from "../../pages/modal/Modal";
 
 const Category = () => {
   const { cId } = useParams();
@@ -23,6 +29,8 @@ const Category = () => {
     subcategory_id: "",
   });
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const dispatch = useDispatch();
   const { loading, error, message } = useSelector((state) => state.order);
   const products = useSelector((state) => state.product.products);
@@ -43,7 +51,12 @@ const Category = () => {
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const history = useNavigate();
   const [filterRating, setFilterRating] = useState(0);
-
+  const closeModal = () => {
+    setModalVisible(false); // This function hides the modal
+  };
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
@@ -86,6 +99,31 @@ const Category = () => {
     } catch (error) {
       dispatch(setLoading(false));
       dispatch(setError("Error fetching seller products"));
+    }
+  };
+  const handleWishlist = (productId) => {
+    if (!token) {
+      setModalMessage("Login First");
+      setModalVisible(true);
+    } else {
+      axios
+        .post("http://localhost:5000/wishlist", { productId }, { headers })
+        .then((response) => {
+          if (response.data.success) {
+            console.log(response);
+
+            setModalMessage("Product added to wishlist!");
+            dispatch(incrementCount());
+          } else {
+            setModalMessage("Failed to add product to wishlist.");
+          }
+          setModalVisible(true);
+        })
+        .catch((error) => {
+          console.error("Error adding to wishlist:", error);
+          setModalMessage("Product already in your wishlist");
+          setModalVisible(true);
+        });
     }
   };
 
@@ -304,6 +342,13 @@ const Category = () => {
                       "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
                   }
                 />
+
+                <button
+                  className="wishlist-button"
+                  onClick={() => handleWishlist(prod.id)}
+                >
+                  ♥
+                </button>
                 <div className="SDB_product-info">
                   <h3 className="SDB_product-title">{prod.title}</h3>
                   <p className="SDB_product-description">
@@ -361,6 +406,11 @@ const Category = () => {
         </div>
         {paginationControls}
       </div>
+      <Modal
+        isOpen={modalVisible}
+        autoClose={closeModal} // Pass closeModal as the autoClose handler
+        message={modalMessage}
+      />
     </div>
   );
 };
