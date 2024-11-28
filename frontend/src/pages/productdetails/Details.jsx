@@ -166,7 +166,7 @@ const Details = () => {
           </div>
           <p>
             <strong>Added by:</strong>
-            <Link to={`/seller/${product.seller_id}`} className="user-link">
+            <Link to={`/users/${product.seller_id}`} className="user-link">
               {product.user_name}
             </Link>
           </p>

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "./placeorder.css";
+import CheckoutForm from "../../components/Checkoutform/CheckoutForm";
 
 
 
@@ -79,6 +80,7 @@ const PlaceOrder=()=>{
       <div className="placeorder">
       <button onClick={()=>{createOrder()}}>place order</button>
       </div>
+      <CheckoutForm/>
       
          </div>)
 

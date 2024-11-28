@@ -20,8 +20,12 @@ import Chat from "../pages/chat/Chat";
 
 import PlaceOrder from "../pages/place order/PlaceOrder";
 import AdminDashboard from "../pages/AdminDashboard copy";
+
 import Wishlist from "../pages/wishlist/Wishlist";
 import PrivacyPolicy from "../pages/Privacy/PrivacyPolicy";
+
+import UserProfile from "../pages/UserProfile";
+
 export const router = createBrowserRouter(
   [
     {
@@ -54,8 +58,13 @@ export const router = createBrowserRouter(
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },
+
         { path: "/wishlist", element: <Wishlist /> },
         { path: "/privacy", element: <PrivacyPolicy /> },
+
+
+        { path: "/users/:userId", element: <UserProfile/>}
+
       ],
     },
   ],

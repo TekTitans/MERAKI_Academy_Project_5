@@ -12,6 +12,8 @@ const cartRouter = require("./routes/cart");
 const wishRouter = require("./routes/wishlist");
 const productRouter = require("./routes/products");
 const messagesRouter=require("./routes/messages")
+const paymentRouter = require("./routes/Payment");
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,12 +26,14 @@ app.use("/messages",messagesRouter);
 app.use("/users", userRouter);
 app.use("/roles", rolesRouter);
 app.use("/category", cateogryRouter);
-app.use("/subcateogry", subcategoriesRouter);
+app.use("/subcategory", subcategoriesRouter);
 app.use("/products", productRouter);
 app.use("/review", reviewRouter);
 app.use("/order", orderRouter);
 app.use("/cart", cartRouter);
 app.use("/wishlist", wishRouter);
+app.use("/pay", paymentRouter);
+
 
 app.use("*", (req, res) => res.status(404).json("NO content at this path"));
 app.listen(PORT, () => {
