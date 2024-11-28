@@ -27,7 +27,7 @@ const PlaceOrder = () => {
   ]
   
 
-  const [deliveryPrice, setDeliveryPrice] = useState(0);
+  const [deliveryPrice, setDeliveryPrice] = useState(null);
   const [myCart, setMyCart] = useState([]);
   const [street, setStreet] = useState("");
   const [country, setCountry] = useState("");
@@ -45,10 +45,10 @@ const PlaceOrder = () => {
       (governorate) => governorate.name === country
     );
     
-    if (selectedGovernorate&&totalAmount!=0) {
+    if (selectedGovernorate) {
       setDeliveryPrice(selectedGovernorate.deliveryPrice);
-    } else {
-      setDeliveryPrice(0); 
+    } else{
+      setDeliveryPrice(0)
     }
   },[country])
 
@@ -141,7 +141,7 @@ const PlaceOrder = () => {
           </tfoot>
           <tfoot>
             <tr>
-              <th colSpan="4">Tax</th>
+              <th colSpan="4">Shipping</th>
               <th>{deliveryPrice}.00 JD</th>
             </tr>
           </tfoot>
@@ -221,8 +221,13 @@ const PlaceOrder = () => {
               <CheckoutForm  phone_number={phone_number} street={street} country={country} isVisa={isVisa} deliveryPrice={deliveryPrice}/>
             </div>
           ) : (
-            <button  onClick={()=>{createOrder()}}>Complete Payment</button>
-          )}
+<button 
+  onClick={() => { createOrder(); }} 
+  disabled={country === ""} 
+  className={country === "" ? "disabled-button" : ""}
+>
+  Complete Payment
+</button>          )}
         </div>
       </div>
     </div>

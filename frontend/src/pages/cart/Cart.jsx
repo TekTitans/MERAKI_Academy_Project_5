@@ -78,9 +78,9 @@ const Cart = () => {
 
   return (
     <div className="myCart">
-  <h1>Your Shopping Cart</h1>
+      
   <div className="cartTableWrapper">
-    <table className="cartTable">
+    {localCart.length>0?<table className="cartTable">
       <thead>
         <tr>
           <th>Remove</th>
@@ -128,11 +128,15 @@ const Cart = () => {
         <th colSpan="6">total : {totalAmount} JD</th>
         </tr>
       </thead>
-    </table>
+    </table>:<div class="empty-cart-message" id="emptyCartMessage">
+  <h2>Your Cart is Empty</h2>
+  <p>It looks like you haven't added anything to your cart yet. Start shopping now!</p>
+  <button onClick={()=>{navigate("/shop")}}>Go to Shop</button>
+</div>}
   </div>
-  <div className="checkout"> 
+ {localCart.length>0? <div className="checkout"> 
   <button onClick={()=>{navigate("/placeorder")}} className="checkoutB">checkout</button>
-  </div>
+  </div>:null}
 </div>
 
   
