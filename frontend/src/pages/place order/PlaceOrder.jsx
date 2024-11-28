@@ -6,9 +6,9 @@ import CheckoutForm from "../../components/Checkoutform/CheckoutForm";
 import "./deliveryForm.css";
 import { useNavigate } from "react-router-dom";
 
-
 const PlaceOrder = () => {
-  const navigate=useNavigate()
+  const [isVisa, setIsVisa] = useState("cash");
+  const navigate = useNavigate();
   const jordanGovernorates = [
     { name: "Amman", deliveryPrice: 5 },
     { name: "Zarqa", deliveryPrice: 4 },
@@ -25,8 +25,8 @@ const PlaceOrder = () => {
     { name: "Al-Karak", deliveryPrice: 8 },
     { name: "Al-Mafraq", deliveryPrice: 7 }
   ];
-  
-  
+
+  const [tax, setTax] = useState("");
   const [myCart, setMyCart] = useState([]);
   const [phone_number, setPhoneNumber] = useState("");
 
@@ -53,7 +53,6 @@ const PlaceOrder = () => {
     console.log(formData);
   };
 
-
   useEffect(() => {
     axios
       .get("http://localhost:5000/cart", { headers })
@@ -72,7 +71,7 @@ const PlaceOrder = () => {
 
   const createOrder = () => {
     axios
-      .post(`http://localhost:5000/order`, {phone_number}, { headers })
+      .post(`http://localhost:5000/order`, { phone_number }, { headers })
       .then((response) => {
         console.log(response.data);
       })
@@ -113,74 +112,93 @@ const PlaceOrder = () => {
           <tfoot>
             <tr>
               <th colSpan="3">Tax</th>
-              <th>{totalAmount}.00 JD</th>
+              <th>{tax}.00 JD</th>
             </tr>
           </tfoot>
         </table>
         <div className="placeOrderActions">
-          <button onClick={() => {navigate("/cart")}}>Edit Cart</button>
+          <button onClick={() => { navigate("/cart") }}>Edit Cart</button>
         </div>
-      </div>
-      <div className="deliveryForm" onSubmit={handleSubmit}>
-      <h2>Delivery Information</h2>
-      <input
-        type="text"
-        name="name"
-        placeholder="Full Name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="tel"
-        name="phone"
-        placeholder="Phone Number"
-        onChange={()=>{setPhoneNumber(e.target.value)}}
-        required
-      />
-     
-      <input
-        type="text"
-        name="city"
-        placeholder="City"
-        value={formData.city}
-        onChange={handleChange}
-        required
-      />
-      <div>
-      <select
-        id="governorate"
-        name="governorate"
-        onChange={handleChange}
-      >
-        <option value="">Select your City</option>
-        {jordanGovernorates.map((governorate, index) => (
-          <option key={index} value={governorate}>
-            {governorate.name}
-          </option>
-        ))}
-      </select>
-      <div>
-         <div className="payment">
-          <label>
-            <input type="radio" name="paymentMethod" value="creditCard" />
-            Visa (Credit Card)
-          </label>
-        </div>
-        <div className="payment">
-          <label>
-            <input type="radio" name="paymentMethod" value="cashOnDelivery" />
-            Cash on Delivery
-          </label>
-        </div>
-    </div>
-      <div>
-      < CheckoutForm/>
       </div>
 
-      
-    </div>
-    </div>
+      <div className="deliveryForm" onSubmit={handleSubmit}>
+        <h2>Delivery Information</h2>
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone Number"
+          onChange={(e) => { setPhoneNumber(e.target.value) }}
+          required
+        />
+
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          value={formData.city}
+          onChange={handleChange}
+          required
+        />
+
+        <div>
+          <select
+            id="governorate"
+            name="governorate"
+            onChange={handleChange}
+          >
+            <option value="">Select your City</option>
+            {jordanGovernorates.map((governorate, index) => (
+              <option key={index} value={governorate.name}>
+                {governorate.name}
+              </option>
+            ))}
+          </select>
+          <br/>
+          <br/>
+
+          <div className="payment">
+            <label>
+              <input
+                onChange={() => { setIsVisa("cash") }}
+                type="radio"
+                name="paymentMethod"
+                value="cashOnDelivery"
+                checked={isVisa === "cash"} 
+              />
+              <span>Cash on Delivery</span>
+            </label>
+          </div>
+          
+          <div className="payment">
+            <label>
+              <input
+                onChange={() => { setIsVisa("visa") }}
+                type="radio"
+                name="paymentMethod"
+                value="creditCard"
+                checked={isVisa === "visa"}
+              />
+              <span>Visa (Credit Card)</span>
+            </label>
+          </div>
+
+          {isVisa === "visa" ? (
+            <div>
+              <CheckoutForm />
+            </div>
+          ) : (
+            <button>Complete Payment</button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
