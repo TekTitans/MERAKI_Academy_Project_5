@@ -3,86 +3,204 @@ import { useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "./placeorder.css";
 import CheckoutForm from "../../components/Checkoutform/CheckoutForm";
+import "./deliveryForm.css";
+import { useNavigate } from "react-router-dom";
 
+const PlaceOrder = () => {
+  const [isVisa, setIsVisa] = useState("cash");
+  const navigate = useNavigate();
+  const jordanGovernorates = [
+    { name: "Amman", deliveryPrice: 5 },
+    { name: "Zarqa", deliveryPrice: 4 },
+    { name: "Irbid", deliveryPrice: 6 },
+    { name: "Mafraq", deliveryPrice: 7 },
+    { name: "Karak", deliveryPrice: 8 },
+    { name: "Tafilah", deliveryPrice: 9 },
+    { name: "Ma'an", deliveryPrice: 10 },
+    { name: "Aqaba", deliveryPrice: 12 },
+    { name: "Balqa", deliveryPrice: 5 },
+    { name: "Jarash", deliveryPrice: 6 },
+    { name: "Ajloun", deliveryPrice: 7 },
+    { name: "Madaba", deliveryPrice: 6 },
+    { name: "Al-Karak", deliveryPrice: 8 },
+    { name: "Al-Mafraq", deliveryPrice: 7 }
+  ];
 
+  const [tax, setTax] = useState("");
+  const [myCart, setMyCart] = useState([]);
+  const [phone_number, setPhoneNumber] = useState("");
 
-
-const PlaceOrder=()=>{
-    const [myCart, setMyCart] = useState([]);
-    const token = useSelector((state) => state.auth.token);
+  const token = useSelector((state) => state.auth.token);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-    useEffect(() => {
-        axios
-          .get("http://localhost:5000/cart", { headers })
-          .then((response) => {
-            setMyCart(response.data.result);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }, []);
-      
-      const totalAmount = myCart?.reduce(
-        (acc, elem) => acc + elem.price * elem.quantity,
-        0
-      );
-      const createOrder=()=>{
-        axios
-        .post(`http://localhost:5000/order`,{},{headers})
-        .then((response)=>{
-          console.log(response.data)
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+  });
 
-        })
-        .catch((error)=>{
-          console.log(error)
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-        })
-      }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+  };
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/cart", { headers })
+      .then((response) => {
+        setMyCart(response.data.result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
-    return (<div>
-        
-  <table className="cartTable">
-        <thead>
-        <tr>
-          <th colSpan="4">Your Order</th>
-        </tr>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          {myCart?.map((elem, index) => (
-            <tr key={index}>
-              <td>{elem.title}</td>
-              <td>{elem.price} </td>
-              <td>
-                {elem.quantity}
-              </td>
-              <td>{elem.price * elem.quantity}.00</td>
-              
+  const totalAmount = myCart?.reduce(
+    (acc, elem) => acc + elem.price * elem.quantity,
+    0
+  );
+
+  const createOrder = () => {
+    axios
+      .post(`http://localhost:5000/order`, { phone_number }, { headers })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  return (
+    <div className="placeOrderPage">
+      <div className="orderDetailsCard">
+        <h2>Your Order</h2>
+        <table className="cartTable">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
             </tr>
-          ))}
-        </tbody>
-        <tfoot>
-
-        <tr>
-          <th colSpan="4">{totalAmount}.00</th>
-        </tr>
-        </tfoot>
-      </table> 
-      <div className="placeorder">
-      <button onClick={()=>{createOrder()}}>place order</button>
+          </thead>
+          <tbody>
+            {myCart?.map((elem, index) => (
+              <tr key={index}>
+                <td>{elem.title}</td>
+                <td>{elem.price} JD</td>
+                <td>{elem.quantity}</td>
+                <td>{elem.price * elem.quantity}.00 JD</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colSpan="3">Total</th>
+              <th>{totalAmount}.00 JD</th>
+            </tr>
+          </tfoot>
+          <tfoot>
+            <tr>
+              <th colSpan="3">Tax</th>
+              <th>{tax}.00 JD</th>
+            </tr>
+          </tfoot>
+        </table>
+        <div className="placeOrderActions">
+          <button onClick={() => { navigate("/cart") }}>Edit Cart</button>
+        </div>
       </div>
-      <CheckoutForm/>
-      
-         </div>)
 
-}
+      <div className="deliveryForm" onSubmit={handleSubmit}>
+        <h2>Delivery Information</h2>
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone Number"
+          onChange={(e) => { setPhoneNumber(e.target.value) }}
+          required
+        />
+
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          value={formData.city}
+          onChange={handleChange}
+          required
+        />
+
+        <div>
+          <select
+            id="governorate"
+            name="governorate"
+            onChange={handleChange}
+          >
+            <option value="">Select your City</option>
+            {jordanGovernorates.map((governorate, index) => (
+              <option key={index} value={governorate.name}>
+                {governorate.name}
+              </option>
+            ))}
+          </select>
+          <br/>
+          <br/>
+
+          <div className="payment">
+            <label>
+              <input
+                onChange={() => { setIsVisa("cash") }}
+                type="radio"
+                name="paymentMethod"
+                value="cashOnDelivery"
+                checked={isVisa === "cash"} 
+              />
+              <span>Cash on Delivery</span>
+            </label>
+          </div>
+          
+          <div className="payment">
+            <label>
+              <input
+                onChange={() => { setIsVisa("visa") }}
+                type="radio"
+                name="paymentMethod"
+                value="creditCard"
+                checked={isVisa === "visa"}
+              />
+              <span>Visa (Credit Card)</span>
+            </label>
+          </div>
+
+          {isVisa === "visa" ? (
+            <div>
+              <CheckoutForm />
+            </div>
+          ) : (
+            <button>Complete Payment</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default PlaceOrder;

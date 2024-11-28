@@ -35,7 +35,7 @@ const CategoriesPage = () => {
   const [modalMessage, setModalMessage] = useState("");
   const dispatch = useDispatch();
   const closeModal = () => {
-    setModalVisible(false); // This function hides the modal
+    setModalVisible(false); 
   };
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -89,6 +89,35 @@ const CategoriesPage = () => {
       console.error("Error fetching categories:", error);
     }
   };
+
+  const allCategories = categories.map((elem, index) => (
+    <div className="category-card" key={index}>
+      <button
+        className="category-button"
+        onClick={() => fetchProducts(elem.id, 1)}
+      >
+        {elem.name}
+      </button>
+    </div>
+  ));
+
+  const showAllProducts = (filterProducts || []).map((product, index) => (
+    <div key={index} className="product-card">
+      <img
+        src={product.product_image || "https://via.placeholder.com/150"}
+        alt={product.title}
+        className="product-image"
+      />
+      <div className="product-info">
+        <h3 className="product-title">{product.title}</h3>
+        <p className="product-description">{product.description}</p>
+        <div className="product-price">{product.price} JD</div>
+        <Link to={`/details/${product.id}`} className="details-link">
+          View Details
+        </Link>
+      </div>
+    </div>
+  ));
 
   useEffect(() => {
     fetchCategories(currentPage);

@@ -1,38 +1,59 @@
-
 .myCart {
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-  }
-  
-  .cartTable {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .cartTable th, .cartTable td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-  }
-  
-  .cartTable th {
-    background-color: #f4f4f4;
-    color: #333;
-  }
-  
-  .cartTable tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .cartTable tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-top: 20px;
-    color: #333;
-  }
-  
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  color: #333;
+}
+
+.cartTableWrapper {
+  position: relative;
+}
+
+
+
+.cartTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cartTable th, .cartTable td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.cartTable th {
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.cartTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.cartTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.product-images {
+  width: 7vw;
+}
+
+.remove-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.remove-btn:hover {
+  background-color: #d32f2f;
+}
