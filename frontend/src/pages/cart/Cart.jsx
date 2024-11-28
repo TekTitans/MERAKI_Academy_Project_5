@@ -130,6 +130,9 @@ const Cart = () => {
       </thead>
     </table>
   </div>
+  <div className="checkout"> 
+  <button onClick={()=>{navigate("/placeorder")}} className="checkoutB">checkout</button>
+  </div>
 </div>
 
   

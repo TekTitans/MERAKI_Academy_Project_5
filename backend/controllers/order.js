@@ -5,6 +5,7 @@ const fs = require("fs");
 
 const createOrder = async (req, res) => {
   const userId = req.token.userId;
+  const phone_number=req.body.phone_number
   const shippingAddress = "amman";
   try {
     const cartQuery =
@@ -26,11 +27,12 @@ const createOrder = async (req, res) => {
     const totalAmountResult = await pool.query(totalAmountQuery, [userId]);
     const totalAmount = totalAmountResult.rows[0].total_amount;
     const orderQuery =
-      "INSERT INTO orders (user_id, total_price, shipping_address) VALUES ($1, $2, $3) RETURNING id";
+      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number) VALUES ($1, $2, $3,$4) RETURNING id";
     const orderResult = await pool.query(orderQuery, [
       userId,
       totalAmount,
       shippingAddress,
+      phone_number
     ]);
     const orderId = orderResult.rows[0].id;
     const updateCartQuery =

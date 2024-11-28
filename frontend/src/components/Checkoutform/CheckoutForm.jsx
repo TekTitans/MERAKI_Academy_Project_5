@@ -48,7 +48,6 @@ const CheckoutForm = () => {
 
   return (
     <div className="checkout-container">
-      <h2>Enter Card Details</h2>
       <form onSubmit={handleSubmit} className="checkout-form">
         <div className="card-element-container">
           <CardElement className="card-element" />
