@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-logo">
           <Link to="/" className="footer-logo-link">
-            <h2>SmartCart</h2>
+            <span className="brand">SmartCart</span>
           </Link>
         </div>
 

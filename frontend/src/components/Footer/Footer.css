@@ -73,7 +73,6 @@ body {
 
 .footer-links li {
   font-size: 14px;
-
 }
 
 .footer-links a {
@@ -149,4 +148,8 @@ body {
 
 .copy {
   color: white;
+}
+
+.footer-logo-link:hover {
+  text-decoration: none;
 }
