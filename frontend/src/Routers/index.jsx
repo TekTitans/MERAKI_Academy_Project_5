@@ -21,6 +21,7 @@ import Chat from "../pages/chat/Chat";
 import PlaceOrder from "../pages/place order/PlaceOrder";
 import AdminDashboard from "../pages/AdminDashboard copy";
 import UserProfile from "../pages/UserProfile";
+import CategoriesPage from "../pages/Products";
 export const router = createBrowserRouter(
   [
     {
@@ -49,12 +50,12 @@ export const router = createBrowserRouter(
         { path: "*", element: <NotFound /> },
         { path: "/search/:query", element: <SearchPage /> },
         { path: "/category/:id", element: <Category /> },
-        { path: "/Shop", element: <Products /> },
+        { path: "/Shop", element: <CategoriesPage /> },
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },
 
-        { path: "/users/:userId", element: <UserProfile/>}
+        { path: "/users/:userId", element: <UserProfile /> },
       ],
     },
   ],

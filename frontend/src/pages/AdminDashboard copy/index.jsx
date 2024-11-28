@@ -37,6 +37,7 @@ const AdminDashboard = () => {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
+
       <div className="admin-dashboard-content">{renderSection()}</div>
     </div>
   );
