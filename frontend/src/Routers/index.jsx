@@ -26,7 +26,8 @@ import PrivacyPolicy from "../pages/Privacy/PrivacyPolicy";
 
 import UserProfile from "../pages/UserProfile";
 
-export const router = createBrowserRouter(
+import CategoriesPage from "../pages/Products";
+\export const router = createBrowserRouter(
   [
     {
       path: "/",
@@ -53,8 +54,8 @@ export const router = createBrowserRouter(
 
         { path: "*", element: <NotFound /> },
         { path: "/search/:query", element: <SearchPage /> },
-        { path: "/category/:id", element: <Category /> },
-        { path: "/products", element: <Products /> },
+        { path: "/category/:cId", element: <Category /> },
+        { path: "/Shop", element: <CategoriesPage /> },
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },
@@ -62,9 +63,10 @@ export const router = createBrowserRouter(
         { path: "/wishlist", element: <Wishlist /> },
         { path: "/privacy", element: <PrivacyPolicy /> },
 
-
+         
         { path: "/users/:userId", element: <UserProfile/>}
 
+        { path: "/users/:userId", element: <UserProfile /> },
       ],
     },
   ],

@@ -165,22 +165,14 @@ const AddCategories = () => {
 
   return (
     <div className="product-management-page">
-      <h2 className="page-title">
+      
+      <h2 className="addCat_page-title">
         {formData.isCategory ? "Add New Category" : "Add New SubCategory"}
       </h2>
       <div className="add-product-container">
         {error && <div className="error-message">Error: {error}</div>}
         {message && <div className="success-message">{message}</div>}
-
-        <button
-          onClick={() =>
-            setFormData({ ...formData, isCategory: !formData.isCategory })
-          }
-        >
-          {formData.isCategory ? "Switch to SubCategory" : "Switch to Category"}
-        </button>
-
-        <form onSubmit={handleSubmit} className="product-form">
+        <form onSubmit={handleSubmit} className="category-form">
           <div className="product__image-container">
             <div className="image-upload">
               {imagePreview ? (
@@ -242,18 +234,29 @@ const AddCategories = () => {
                 ))}
               </select>
             )}
-
-            <button
-              type="submit"
-              className="submit-button"
-              disabled={loading || isUploading}
-            >
-              {loading
-                ? "Saving..."
-                : formData.isCategory
-                ? "Add Category"
-                : "Add SubCategory"}
-            </button>
+            <div className="addCat_Btn">
+              <button
+                type="submit"
+                className="addCat_submit-button"
+                disabled={loading || isUploading}
+              >
+                {loading
+                  ? "Saving..."
+                  : formData.isCategory
+                  ? "Add Category"
+                  : "Add SubCategory"}
+              </button>
+              <button
+                className="switchCat_submit-button"
+                onClick={() =>
+                  setFormData({ ...formData, isCategory: !formData.isCategory })
+                }
+              >
+                {formData.isCategory
+                  ? "Switch to SubCategory"
+                  : "Switch to Category"}
+              </button>
+            </div>
           </div>
         </form>
       </div>

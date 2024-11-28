@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import "./style.css";
+import { useEffect, useState } from "react";
 import axios from "axios";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   setProducts,
@@ -11,16 +11,29 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Modal from "../modal/Modal";
 import { FaHeart } from "react-icons/fa";
 
-const Products = () => {
-  const [isInWishlist, setIsInWishlist] = useState(false);
+
+ import { setLoading,
+  setError,
+  setMessage,
+} from "../../components/redux/reducers/orders";
+import "./style.css";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
+const CategoriesPage = () => {
+  const history = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, message } = useSelector((state) => state.order);
+  const { token } = useSelector((state) => state.auth);
+    const [isInWishlist, setIsInWishlist] = useState(false);
   const userId = useSelector((state) => state.auth.userId);
   const [categories, setCategories] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(12);
+  const [pageSize] = useState(9);
   const [totalPages, setTotalPages] = useState(0);
-  const [message, setMessage] = useState("");
+    const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const token = useSelector((state) => state.auth.token);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -40,6 +53,12 @@ const Products = () => {
     return state.product.products;
   });
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const [filters, setFilters] = useState({
+    search: "",
+  });
+  const [categories, setCategories] = useState([]);
   const handleWishlist = (productId) => {
     if (!token) {
       setModalMessage("Login First");
@@ -65,114 +84,67 @@ const Products = () => {
         });
     }
   };
-
-  useEffect(() => {
-    const filtered = products?.filter((product) =>
-      product.title.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilterProducts(filtered);
-  }, [search, products]);
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/category`)
-      .then((result) => {
-        setCategories([
-          { id: "all", name: "All Products" },
-          ...result.data.category,
-        ]);
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
-  }, []);
-
-  const fetchProducts = async (categoryId, page = 1) => {
-    setLoading(true);
+  const fetchCategories = async (page = 1) => {
     try {
-      let response;
-      if (categoryId === "all") {
-        response = await axios.get(
-          `http://localhost:5000/products?page=${page}&size=${pageSize}`
-        );
-      } else {
-        response = await axios.get(
-          `http://localhost:5000/products/category/${categoryId}?page=${page}&size=${pageSize}`
-        );
+      dispatch(setLoading(true));
+
+      if (!token) {
+        dispatch(setLoading(false));
+        dispatch(setError("No token found."));
+        return;
       }
-
-      console.log("API Response:", response.data);
-      if (response.data.success) {
-        const products = response.data.products || [];
-
-        if (products.length === 0) {
-          setMessage("No products available in this category yet.");
-        } else {
-          setMessage("");
+      const response = await axios.get(
+        `http://localhost:5000/category?page=${page}&size=${pageSize}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-
-        setFilterProducts(products);
-        dispatch(setProducts(products));
-        setSelectedCategory(categoryId);
-        setCurrentPage(page);
-        setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
-      } else {
-        console.log("Error message from server:", response.data.message);
-        setMessage(response.data.message || "No products found.");
-        setFilterProducts([]);
-      }
+      );
+      setTotalPages(Math.ceil(response.data.totalCategories / pageSize));
+      dispatch(setLoading(false));
+      setCategories(response.data.category);
     } catch (error) {
-      console.error("API error:", error.message);
-      setMessage("Failed to fetch products. Please try again.");
-      setFilterProducts([]);
-    } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
+      dispatch(setError("Error fetching Categories"));
+      console.error("Error fetching categories:", error);
     }
   };
 
-  const allCategories = categories.map((elem, index) => (
-    <div className="category-card" key={index}>
-      <button
-        className="category-button"
-        onClick={() => fetchProducts(elem.id, 1)}
-      >
-        {elem.name}
-      </button>
-    </div>
-  ));
 
-  const showAllProducts = (filterProducts || []).map((product, index) => (
-    <div key={index} className="product-card">
-      <img
-        src={product.product_image || "https://via.placeholder.com/150"}
-        alt={product.title}
-        className="product-image"
-      />
-      <button
-        className="wishlist-button"
-        onClick={() => handleWishlist(product.id)}
-      >
-        ♥
-      </button>
-      <div className="product-info">
-        <h3 className="product-title">{product.title}</h3>
-        <p className="product-description">{product.description}</p>
-        <div className="product-price">{product.price} JD</div>
-        <Link to={`/details/${product.id}`} className="details-link">
-          View Details
-        </Link>
-      </div>
-    </div>
-  ));
+  useEffect(() => {
+    fetchCategories(currentPage);
+  }, [dispatch, token, currentPage]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+    setCurrentPage(1);
+  };
+  const handleClearFilters = () => {
+    setFilters({ search: "" });
+    setCurrentPage(1);
+  };
+
+  const filteredCategories = categories.filter((category) => {
+    const matchesSearch =
+      !filters.search ||
+      category.name
+        .toString()
+        .toLowerCase()
+        .includes(filters.search.toLowerCase());
+
+    return matchesSearch;
+  });
 
   const paginationControls = (
     <div className="pagination-controls">
       <div
         className={`pagination-arrow ${
-          currentPage === 1 || filterProducts.length === 0 ? "disabled" : ""
+          currentPage === 1 || totalPages === 0 ? "disabled" : ""
         }`}
-        onClick={() =>
-          currentPage > 1 && fetchProducts(selectedCategory, currentPage - 1)
-        }
+        onClick={() => currentPage > 1 && setCurrentPage((prev) => prev - 1)}
         aria-disabled={currentPage === 1}
       >
         <FaArrowLeft size={20} />
@@ -182,13 +154,10 @@ const Products = () => {
       </span>
       <div
         className={`pagination-arrow ${
-          currentPage === totalPages || filterProducts.length === 0
-            ? "disabled"
-            : ""
+          currentPage === totalPages || totalPages === 0 ? "disabled" : ""
         }`}
         onClick={() =>
-          currentPage < totalPages &&
-          fetchProducts(selectedCategory, currentPage + 1)
+          currentPage < totalPages && setCurrentPage((prev) => prev + 1)
         }
         aria-disabled={currentPage === totalPages}
       >
@@ -197,40 +166,109 @@ const Products = () => {
     </div>
   );
 
-  return (
-    <div className="products-page">
-      {selectedCategory === null ? (
-        <>
-          <div className="categories-container">{allCategories}</div>
-          {loading && <div className="loading-spinner">Loading...</div>}
-        </>
-      ) : (
-        <div className="products-container">
-          <button
-            className="back-button"
-            onClick={() => {
-              setSelectedCategory(null);
-              setFilterProducts([]);
-              setMessage("");
-              setCurrentPage(1);
-              setTotalPages(0);
-            }}
-          >
-            &larr; Back to Categories
-          </button>
-          <div className="products-grid">
-            {loading ? (
-              <div className="loading-spinner">Loading...</div>
-            ) : filterProducts.length > 0 ? (
-              showAllProducts
-            ) : (
-              <p className="no-products-message">
-                {message || "No products found."}
-              </p>
-            )}
-          </div>
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchSubcategories(currentPage, selectedCategory);
+    } else {
+      fetchCategories(currentPage);
+    }
+  }, [currentPage, selectedCategory]);
 
-          {filterProducts.length > 0 && paginationControls}
+  useEffect(() => {
+    if (error || message) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
+
+  if (loading)
+    return (
+      <div class="loading-container_Main">
+        <div class="loading-circle"></div>
+      </div>
+    );
+
+  return (
+    <div className="All_Cat_Page_Container">
+      <div className="All_Cat_Page_content">
+        <div className="cat-page">
+          {error && <div className="error-message">Error: {error}</div>}
+          {message && <div className="success-message">{message}</div>}
+
+          <div className="SDB_product-list">
+            <div className="Cat_Header">
+              <div className="filters">
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Search By Category Name"
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
+                <button
+                  className="clear-filters-button"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <div className="SDB_product-grid">
+              {loading ? (
+                <div class="loading-container">
+                  <div class="loading-circle"></div>
+                </div>
+              ) : (
+                filteredCategories.map((cat) => (
+                  <div
+                    key={cat.id}
+                    className="Category-card"
+                    onClick={() => {
+                      history(`/category/${cat.id}`);
+                    }}
+                  >
+                    <img
+                      src={
+                        cat.category_image ||
+                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                      }
+                      alt={cat.name}
+                      className="SDB_product-image"
+                      onError={(e) =>
+                        (e.target.src =
+                          "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                      }
+                    />
+                      <button
+        className="wishlist-button"
+        onClick={() => handleWishlist(product.id)}
+      >
+        ♥
+      </button>
+                    <div className="SDB_product-info">
+                      <h3 className="SDB_product-title">{cat.name}</h3>
+                      <p className="SDB_product-description">
+                        {cat.description || "No Description"}
+                      </p>
+
+                      <div className="product-actions"></div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            {paginationControls}
+          </div>
         </div>
       )}
 
@@ -239,8 +277,10 @@ const Products = () => {
         autoClose={closeModal} // Pass closeModal as the autoClose handler
         message={modalMessage}
       />
+
+      </div>
     </div>
   );
 };
 
-export default Products;
+export default CategoriesPage;

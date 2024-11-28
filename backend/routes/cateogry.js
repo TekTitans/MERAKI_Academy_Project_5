@@ -6,7 +6,7 @@ const upload = require("../middleware/upload");
 const {
   createCategory,
   updateCategory,
-  removeCateegory,
+  removeCategory,
   getAllCategory,
   uploadCategoryImage,
 } = require("../controllers/category");
@@ -21,8 +21,8 @@ cateogryRouter.post(
   uploadCategoryImage
 );
 
-cateogryRouter.put("/:catId", updateCategory);
-cateogryRouter.delete("/:catId", removeCateegory);
+cateogryRouter.put("/:catId", auth, updateCategory);
+cateogryRouter.delete("/:catId", auth, removeCategory);
 cateogryRouter.get("/", getAllCategory);
 
 module.exports = cateogryRouter;

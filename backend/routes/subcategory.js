@@ -5,7 +5,7 @@ const upload = require("../middleware/upload");
 const {
   createSubCategory,
   updateSubCategory,
-  removeSubCateegory,
+  removeSubCategory,
   getAllSubCategory,
   uploadSubCategoryImage,
   getAllSubCategoryByCategoryId,
@@ -21,8 +21,8 @@ subcategoriesRouter.post(
 );
 subcategoriesRouter.post("/:catId", auth, createSubCategory);
 subcategoriesRouter.put("/:subId", updateSubCategory);
-subcategoriesRouter.delete("/:subId", removeSubCateegory);
+subcategoriesRouter.delete("/:subId", auth, removeSubCategory);
 subcategoriesRouter.get("/", getAllSubCategory);
-subcategoriesRouter.get("/:categoryId", auth, getAllSubCategoryByCategoryId);
+subcategoriesRouter.get("/:categoryId",  getAllSubCategoryByCategoryId);
 
 module.exports = subcategoriesRouter;
