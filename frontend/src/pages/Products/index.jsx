@@ -3,16 +3,7 @@ import axios from "axios";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setProducts,
-  incrementCount,
-} from "../../components/redux/reducers/product/product";
-import { Link } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import Modal from "../modal/Modal";
-import { FaHeart } from "react-icons/fa";
-
-
- import { setLoading,
+  setLoading,
   setError,
   setMessage,
 } from "../../components/redux/reducers/orders";
@@ -25,65 +16,16 @@ const CategoriesPage = () => {
   const dispatch = useDispatch();
   const { loading, error, message } = useSelector((state) => state.order);
   const { token } = useSelector((state) => state.auth);
-    const [isInWishlist, setIsInWishlist] = useState(false);
-  const userId = useSelector((state) => state.auth.userId);
-  const [categories, setCategories] = useState([]);
-  const [filterProducts, setFilterProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(9);
   const [totalPages, setTotalPages] = useState(0);
-    const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const token = useSelector((state) => state.auth.token);
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const dispatch = useDispatch();
-  const closeModal = () => {
-    setModalVisible(false); // This function hides the modal
-  };
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-  const search = useSelector((state) => {
-    return state.product.search;
-  });
-  const products = useSelector((state) => {
-    return state.product.products;
-  });
-
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [filters, setFilters] = useState({
     search: "",
   });
   const [categories, setCategories] = useState([]);
-  const handleWishlist = (productId) => {
-    if (!token) {
-      setModalMessage("Login First");
-      setModalVisible(true);
-    } else {
-      axios
-        .post("http://localhost:5000/wishlist", { productId }, { headers })
-        .then((response) => {
-          if (response.data.success) {
-            console.log(response);
 
-            setModalMessage("Product added to wishlist!");
-            dispatch(incrementCount());
-          } else {
-            setModalMessage("Failed to add product to wishlist.");
-          }
-          setModalVisible(true);
-        })
-        .catch((error) => {
-          console.error("Error adding to wishlist:", error);
-          setModalMessage("Product already in your wishlist");
-          setModalVisible(true);
-        });
-    }
-  };
   const fetchCategories = async (page = 1) => {
     try {
       dispatch(setLoading(true));
@@ -108,7 +50,6 @@ const CategoriesPage = () => {
       console.error("Error fetching categories:", error);
     }
   };
-
 
   useEffect(() => {
     fetchCategories(currentPage);
@@ -249,12 +190,6 @@ const CategoriesPage = () => {
                           "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
                       }
                     />
-                      <button
-        className="wishlist-button"
-        onClick={() => handleWishlist(product.id)}
-      >
-        ♥
-      </button>
                     <div className="SDB_product-info">
                       <h3 className="SDB_product-title">{cat.name}</h3>
                       <p className="SDB_product-description">
@@ -270,14 +205,6 @@ const CategoriesPage = () => {
             {paginationControls}
           </div>
         </div>
-      )}
-
-      <Modal
-        isOpen={modalVisible}
-        autoClose={closeModal} // Pass closeModal as the autoClose handler
-        message={modalMessage}
-      />
-
       </div>
     </div>
   );
