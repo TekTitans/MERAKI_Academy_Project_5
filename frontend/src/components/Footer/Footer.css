@@ -29,36 +29,69 @@ body {
 }
 
 .footer {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
-  padding: 20px 0;
-  margin-top: 50px;
-  font-family: Arial, sans-serif;
+  background-color: #2d3748;
+  color: #fff;
+  padding: 15px 0;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
 }
 
 .footer-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.footer-section {
-  flex: 1 1 200px;
-  margin: 10px;
+.footer-logo-link {
+  text-decoration: none;
+  color: #fff;
 }
 
-.footer-section h3 {
-  font-size: 18px;
+.footer-logo h2 {
+  font-size: 32px;
+  font-weight: bold;
   margin-bottom: 10px;
-  color: var(--accent-color);
 }
 
-.footer-section p,
-.footer-section a {
+.footer-links {
+  margin-top: 10px;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.footer-links li {
   font-size: 14px;
+
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: #3182ce;
+}
+
+.footer-socials {
+  margin-top: 10px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 25px;
+
   line-height: 1.6;
   background-color: var(--secondary-color);
   color: var(--primary-color);
@@ -82,30 +115,38 @@ body {
   color: var(--hover-color);
 }
 
-.footer-bottom {
-  text-align: center;
-  padding: 10px 20px;
-  background-color: var(--primary-color);
-  border-top: 1px solid #333;
-  font-size: 14px;
-  color: white !important;
+.footer-social-icon {
+  color: #fff;
+  font-size: 24px;
+  transition: color 0.3s ease;
 }
 
+.footer-social-icon:hover {
+  color: #3182ce; /* Light blue on hover */
+}
+
+.footer-copy {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+/* Responsive Design for Small Screens */
 @media (max-width: 768px) {
   .footer-container {
     flex-direction: column;
-    align-items: center;
   }
 
-  .footer-section {
-    text-align: center;
-    margin: 20px 0;
+  .footer-links ul {
+    flex-direction: column;
+    gap: 15px;
   }
 
-  .social-icons a {
-    margin-right: 15px;
+  .footer-socials {
+    gap: 15px;
   }
 }
-.colo {
+
+.copy {
   color: white;
 }
