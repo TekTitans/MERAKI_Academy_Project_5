@@ -22,7 +22,7 @@ const CategoriesPage = () => {
   const history = useNavigate();
   const { loading, error, message } = useSelector((state) => state.order);
   const { token } = useSelector((state) => state.auth);
-  const [isInWishlist, setIsInWishlist] = useState(false);
+
   const userId = useSelector((state) => state.auth.userId);
   const [categories, setCategories] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
@@ -230,13 +230,7 @@ const CategoriesPage = () => {
                       }
                     />
 
-                    <button
-                      className="wishlist-button"
-                      onClick={() => handleWishlist(product.id)}
-                    >
-                      ♥
-                    </button>
-
+                   
                     <div className="SDB_product-info">
                       <h3 className="SDB_product-title">{cat.name}</h3>
                       <p className="SDB_product-description">
