@@ -27,7 +27,7 @@ import PrivacyPolicy from "../pages/Privacy/PrivacyPolicy";
 import UserProfile from "../pages/UserProfile";
 
 import CategoriesPage from "../pages/Products";
-\export const router = createBrowserRouter(
+export const router = createBrowserRouter(
   [
     {
       path: "/",
@@ -63,8 +63,7 @@ import CategoriesPage from "../pages/Products";
         { path: "/wishlist", element: <Wishlist /> },
         { path: "/privacy", element: <PrivacyPolicy /> },
 
-         
-        { path: "/users/:userId", element: <UserProfile/>}
+        { path: "/users/:userId", element: <UserProfile /> },
 
         { path: "/users/:userId", element: <UserProfile /> },
       ],

@@ -7,25 +7,21 @@ import {
   incrementCount,
 } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Modal from "../modal/Modal";
-import { FaHeart } from "react-icons/fa";
-
-
- import { setLoading,
+import {
+  setLoading,
   setError,
   setMessage,
 } from "../../components/redux/reducers/orders";
 import "./style.css";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const CategoriesPage = () => {
   const history = useNavigate();
-  const dispatch = useDispatch();
   const { loading, error, message } = useSelector((state) => state.order);
   const { token } = useSelector((state) => state.auth);
-    const [isInWishlist, setIsInWishlist] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const userId = useSelector((state) => state.auth.userId);
   const [categories, setCategories] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
@@ -33,9 +29,6 @@ const CategoriesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(9);
   const [totalPages, setTotalPages] = useState(0);
-    const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const token = useSelector((state) => state.auth.token);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -53,12 +46,9 @@ const CategoriesPage = () => {
     return state.product.products;
   });
 
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
   const [filters, setFilters] = useState({
     search: "",
   });
-  const [categories, setCategories] = useState([]);
   const handleWishlist = (productId) => {
     if (!token) {
       setModalMessage("Login First");
@@ -108,7 +98,6 @@ const CategoriesPage = () => {
       console.error("Error fetching categories:", error);
     }
   };
-
 
   useEffect(() => {
     fetchCategories(currentPage);
@@ -249,12 +238,12 @@ const CategoriesPage = () => {
                           "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
                       }
                     />
-                      <button
-        className="wishlist-button"
-        onClick={() => handleWishlist(product.id)}
-      >
-        ♥
-      </button>
+                    <button
+                      className="wishlist-button"
+                      onClick={() => handleWishlist(product.id)}
+                    >
+                      ♥
+                    </button>
                     <div className="SDB_product-info">
                       <h3 className="SDB_product-title">{cat.name}</h3>
                       <p className="SDB_product-description">
@@ -270,14 +259,12 @@ const CategoriesPage = () => {
             {paginationControls}
           </div>
         </div>
-      )}
 
-      <Modal
-        isOpen={modalVisible}
-        autoClose={closeModal} // Pass closeModal as the autoClose handler
-        message={modalMessage}
-      />
-
+        <Modal
+          isOpen={modalVisible}
+          autoClose={closeModal} // Pass closeModal as the autoClose handler
+          message={modalMessage}
+        />
       </div>
     </div>
   );

@@ -3,7 +3,6 @@
   --secondary-color: #d3d3d3;
   --accent-color: #d4af37;
   --light-text-color: #ffffff;
-  --dark-text-color: #2c3e50;
   --hover-color: #7f6f6f;
   --danger-color: #e74c3c;
   --transition-speed: 0.3s;
@@ -187,7 +186,6 @@ h2:hover {
   margin-bottom: 0.5rem;
 }
 
-
 .navbar-icons a:hover {
   color: var(--hover-color);
 }
@@ -330,7 +328,20 @@ h2:hover {
   transform: scale(1);
   animation: pulse 1.5s infinite ease-in-out;
 }
+.navbar-wishlist {
+  position: relative;
+  text-decoration: none;
+  color: var(--primary-color);
+}
 
+.wishlist-count {
+  color: white;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
 @keyframes pulse {
   0%,
   100% {
@@ -527,7 +538,6 @@ h2:hover {
 }
 
 @media (max-width: 480px) {
-
   .navbar-toggle {
     display: block;
     font-size: 0.8rem;
@@ -595,19 +605,4 @@ h2:hover {
     height: 1rem;
     font-size: 0.2rem;
   }
- 
-}
-.navbar-wishlist {
-  position: relative;
-  text-decoration: none;
-  color: var(--primary-color);
-}
-
-.wishlist-count {
-  color: white;
-  background-color: var(--primary-color);
-  border-radius: 50%;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.8rem;
-  margin-left: 0.5rem;
 }
