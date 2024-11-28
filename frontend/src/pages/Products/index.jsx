@@ -3,14 +3,13 @@ import axios from "axios";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
-
   setProducts,
   incrementCount,
 } from "../../components/redux/reducers/product/product";
 import { Link } from "react-router-dom";
+
 import Modal from "../modal/Modal";
 import {
-
   setLoading,
   setError,
   setMessage,
@@ -23,12 +22,6 @@ const CategoriesPage = () => {
   const history = useNavigate();
   const { loading, error, message } = useSelector((state) => state.order);
   const { token } = useSelector((state) => state.auth);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(9);
-  const [totalPages, setTotalPages] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
   const [isInWishlist, setIsInWishlist] = useState(false);
   const userId = useSelector((state) => state.auth.userId);
   const [categories, setCategories] = useState([]);
@@ -54,12 +47,9 @@ const CategoriesPage = () => {
     return state.product.products;
   });
 
-
   const [filters, setFilters] = useState({
     search: "",
   });
-
-  const [categories, setCategories] = useState([]);
 
   const handleWishlist = (productId) => {
     if (!token) {
@@ -71,8 +61,10 @@ const CategoriesPage = () => {
         .then((response) => {
           if (response.data.success) {
             console.log(response);
-
-
+          }
+        });
+    }
+  };
   const fetchCategories = async (page = 1) => {
     try {
       dispatch(setLoading(true));
@@ -238,7 +230,6 @@ const CategoriesPage = () => {
                       }
                     />
 
-
                     <button
                       className="wishlist-button"
                       onClick={() => handleWishlist(product.id)}
@@ -262,14 +253,11 @@ const CategoriesPage = () => {
           </div>
         </div>
 
-
-
         <Modal
           isOpen={modalVisible}
           autoClose={closeModal} // Pass closeModal as the autoClose handler
           message={modalMessage}
         />
-
       </div>
     </div>
   );
