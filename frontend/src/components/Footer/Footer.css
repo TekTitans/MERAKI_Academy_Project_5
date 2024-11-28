@@ -1,11 +1,14 @@
 :root {
-  --primary-color: #1abc9c;
-  --secondary-color: #2c3e50;
-  --accent-color: #16a085;
-  --light-text-color: #ecf0f1;
-  --dark-text-color: #2c3e50;
-  --hover-color: #16a085;
+  --primary-color: #1f1f1f;
+  --secondary-color: #d3d3d3;
+  --accent-color: #d4af37;
+  --light-text-color: #ffffff;
+  --hover-color: #7f6f6f;
+  --danger-color: #e74c3c;
   --transition-speed: 0.3s;
+  --border-radius: 10px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --font-family: "Poppins", sans-serif;
 }
 
 html,
@@ -27,7 +30,7 @@ body {
 
 .footer {
   background-color: var(--secondary-color);
-  color: #f9f9f9;
+  color: var(--primary-color);
   padding: 20px 0;
   margin-top: 50px;
   font-family: Arial, sans-serif;
@@ -57,23 +60,26 @@ body {
 .footer-section a {
   font-size: 14px;
   line-height: 1.6;
-  color: #ddd;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
   text-decoration: none;
 }
 
 .footer-section a:hover {
-  color: #fff;
+  color: var(--hover-color);
 }
 
 .social-icons a {
   font-size: 20px;
   margin-right: 10px;
-  color: #ddd;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
   transition: color 0.3s;
+  text-decoration: none;
 }
 
 .social-icons a:hover {
-  color: #ff6f61;
+  color: var(--hover-color);
 }
 
 .footer-bottom {
