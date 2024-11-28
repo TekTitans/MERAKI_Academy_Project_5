@@ -8,6 +8,7 @@ import {
   FaPlus,
   FaShoppingCart,
   FaUserCog,
+  FaClipboardList,
 } from "react-icons/fa";
 
 const AdminNavbar = ({ activeSection, setActiveSection }) => {
@@ -37,6 +38,16 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
           Summary
         </li>
         <li
+          className={activeSection === "manageCategories" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("manageCategories");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaClipboardList className="navbar-icon" />
+          Categories
+        </li>
+        <li
           className={activeSection === "addCategory" ? "active" : ""}
           onClick={() => {
             setActiveSection("addCategory");
@@ -44,7 +55,6 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
           }}
         >
           <FaPlus className="navbar-icon" />
-          Add Category/SubCategory
         </li>
         <li
           className={activeSection === "manageUsers" ? "active" : ""}

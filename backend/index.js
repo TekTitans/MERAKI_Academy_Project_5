@@ -26,7 +26,7 @@ app.use("/messages",messagesRouter);
 app.use("/users", userRouter);
 app.use("/roles", rolesRouter);
 app.use("/category", cateogryRouter);
-app.use("/subcateogry", subcategoriesRouter);
+app.use("/subcategory", subcategoriesRouter);
 app.use("/products", productRouter);
 app.use("/review", reviewRouter);
 app.use("/order", orderRouter);

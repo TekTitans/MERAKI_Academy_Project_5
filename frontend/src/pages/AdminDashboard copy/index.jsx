@@ -6,6 +6,7 @@ import AdminManageOrders from "../../components/AdminManageOrders";
 import AdminSummary from "../../components/AdminSummary";
 import "./style.css";
 import AdminManageUsers from "../../components/AdminManageUsers";
+import AdminManageCatigories from "../../components/AdminManageCategories";
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -14,6 +15,8 @@ const AdminDashboard = () => {
     switch (activeSection) {
       case "summary":
         return <AdminSummary />;
+      case "manageCategories":
+        return <AdminManageCatigories />;
       case "addCategory":
         return <AddCategories />;
       case "manageUsers":
@@ -34,6 +37,7 @@ const AdminDashboard = () => {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
       />
+
       <div className="admin-dashboard-content">{renderSection()}</div>
     </div>
   );

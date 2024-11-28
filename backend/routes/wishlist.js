@@ -12,7 +12,7 @@ const {
   getWishlistCount,
 } = require("../controllers/wishlist");
 
-wishRouter.post("/", auth, authorization("can_add_to_wishlist"), addTowishlist);
+wishRouter.post("/", auth, addTowishlist);
 
 wishRouter.delete(
   "/clear",
@@ -21,19 +21,17 @@ wishRouter.delete(
   clearWishlist
 );
 
-wishRouter.get("/", auth, authorization("can_view_wishlist"), getwishlist);
+wishRouter.get("/", auth, getwishlist);
 
 wishRouter.delete(
   "/:productId",
   auth,
-  authorization("can_remove_from_wishlist"),
   removeFromwishlist
 );
 
 wishRouter.get(
   "/count",
   auth,
-  authorization("can_view_wishlist"),
   getWishlistCount
 );
 
