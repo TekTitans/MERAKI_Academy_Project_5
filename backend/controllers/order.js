@@ -6,7 +6,12 @@ const fs = require("fs");
 const createOrder = async (req, res) => {
   const userId = req.token.userId;
   const phone_number=req.body.phone_number
-  const shippingAddress = "amman";
+  const payment_method=req.body.isVisa
+  const country=req.body.country
+  const street=req.body.street
+  const adress=country+","+street
+
+
   try {
     const cartQuery =
       "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
@@ -27,12 +32,13 @@ const createOrder = async (req, res) => {
     const totalAmountResult = await pool.query(totalAmountQuery, [userId]);
     const totalAmount = totalAmountResult.rows[0].total_amount;
     const orderQuery =
-      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number) VALUES ($1, $2, $3,$4) RETURNING id";
+      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number,payment_method) VALUES ($1, $2, $3,$4,$5) RETURNING id";
     const orderResult = await pool.query(orderQuery, [
       userId,
       totalAmount,
-      shippingAddress,
-      phone_number
+      adress,
+      phone_number,
+      payment_method
     ]);
     const orderId = orderResult.rows[0].id;
     const updateCartQuery =

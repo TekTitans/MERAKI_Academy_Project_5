@@ -28,6 +28,10 @@ const PlaceOrder = () => {
 
   const [tax, setTax] = useState("");
   const [myCart, setMyCart] = useState([]);
+  const [street, setStreet] = useState("");
+  const [country, setCountry] = useState("");
+
+
   const [phone_number, setPhoneNumber] = useState("");
 
   const token = useSelector((state) => state.auth.token);
@@ -71,7 +75,7 @@ const PlaceOrder = () => {
 
   const createOrder = () => {
     axios
-      .post(`http://localhost:5000/order`, { phone_number }, { headers })
+      .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa }, { headers })
       .then((response) => {
         console.log(response.data);
       })
@@ -87,6 +91,7 @@ const PlaceOrder = () => {
         <table className="cartTable">
           <thead>
             <tr>
+              <th>image</th>
               <th>Product</th>
               <th>Price</th>
               <th>Quantity</th>
@@ -96,6 +101,11 @@ const PlaceOrder = () => {
           <tbody>
             {myCart?.map((elem, index) => (
               <tr key={index}>
+                <td>  <img
+                src={elem.product_image || "https://via.placeholder.com/150"}
+                alt={elem.title}
+                className="product-images"
+              /></td>
                 <td>{elem.title}</td>
                 <td>{elem.price} JD</td>
                 <td>{elem.quantity}</td>
@@ -105,13 +115,13 @@ const PlaceOrder = () => {
           </tbody>
           <tfoot>
             <tr>
-              <th colSpan="3">Total</th>
+              <th colSpan="4">Total</th>
               <th>{totalAmount}.00 JD</th>
             </tr>
           </tfoot>
           <tfoot>
             <tr>
-              <th colSpan="3">Tax</th>
+              <th colSpan="4">Tax</th>
               <th>{tax}.00 JD</th>
             </tr>
           </tfoot>
@@ -139,20 +149,12 @@ const PlaceOrder = () => {
           required
         />
 
-        <input
-          type="text"
-          name="city"
-          placeholder="City"
-          value={formData.city}
-          onChange={handleChange}
-          required
-        />
-
+       
         <div>
           <select
             id="governorate"
             name="governorate"
-            onChange={handleChange}
+            onChange={(e)=>{setCountry(e.target.value)}}
           >
             <option value="">Select your City</option>
             {jordanGovernorates.map((governorate, index) => (
@@ -161,6 +163,16 @@ const PlaceOrder = () => {
               </option>
             ))}
           </select>
+          <br/>
+          <br/>
+          <input
+          type="text"
+          name="street"
+          placeholder="street"
+          onChange={(e)=>{setStreet(e.target.value)}}
+          required
+        />
+
           <br/>
           <br/>
 
@@ -192,10 +204,10 @@ const PlaceOrder = () => {
 
           {isVisa === "visa" ? (
             <div>
-              <CheckoutForm />
+              <CheckoutForm  phone_number={phone_number} street={street} country={country} isVisa={isVisa}/>
             </div>
           ) : (
-            <button>Complete Payment</button>
+            <button onClick={()=>{createOrder()}}>Complete Payment</button>
           )}
         </div>
       </div>

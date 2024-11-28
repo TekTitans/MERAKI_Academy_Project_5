@@ -2,8 +2,15 @@ import React, { useState } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import axios from "axios";
 import "./CheckoutForm.css";
+import { useSelector } from "react-redux";
 
-const CheckoutForm = () => {
+
+const CheckoutForm = ({ phone_number,street,country,isVisa }) => {
+  const token = useSelector((state) => state.auth.token);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
   const [isProcessing, setIsProcessing] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
@@ -38,12 +45,24 @@ const CheckoutForm = () => {
         console.log("Payment Error", response.data.error);
       } else {
         console.log("Payment Success", response.data);
+        createOrder()
       }
     } catch (error) {
       console.log("Request Error", error);
     }
 
     setIsProcessing(false);
+  };
+  
+  const createOrder = () => {
+    axios
+      .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa }, { headers })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
