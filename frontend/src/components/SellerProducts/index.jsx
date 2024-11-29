@@ -438,23 +438,19 @@ const SellerProducts = () => {
         />
       ) : (
         <div className="SDB_product-list">
-          <div className="filter-sort-section">
-            <div className="filters">
+          <div id="filter-sort-section" className="filter-sort-section">
+            <div id="filters-container" className="filters">
               <input
+                id="filter-date"
                 type="date"
                 name="selectedDate"
                 placeholder="Before Date"
                 value={filters.selectedDate}
                 onChange={handleFilterChange}
               />
+
               <input
-                type="text"
-                name="search"
-                placeholder="Search By Product Name"
-                value={filters.search}
-                onChange={handleFilterChange}
-              />
-              <input
+                id="filter-min-price"
                 type="number"
                 name="minPrice"
                 placeholder="Min Price"
@@ -462,6 +458,7 @@ const SellerProducts = () => {
                 onChange={handleFilterChange}
               />
               <input
+                id="filter-max-price"
                 type="number"
                 name="maxPrice"
                 placeholder="Max Price"
@@ -469,6 +466,7 @@ const SellerProducts = () => {
                 onChange={handleFilterChange}
               />
               <select
+                id="filter-category"
                 name="selectedCategory"
                 value={filters.selectedCategory}
                 onChange={handleFilterChange}
@@ -481,6 +479,7 @@ const SellerProducts = () => {
                 ))}
               </select>
               <select
+                id="filter-subcategory"
                 name="selectedSubcategory"
                 value={product.subcategory_id}
                 onChange={handleFilterChange}
@@ -496,8 +495,8 @@ const SellerProducts = () => {
                   </option>
                 ))}
               </select>
-
               <select
+                id="filter-status"
                 name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
@@ -507,9 +506,18 @@ const SellerProducts = () => {
                 <option value="out_of_stock">Out Of Stock</option>
                 <option value="on_demand">On Demand</option>
               </select>
-              <div className="star-filter">
+              <input
+                id="filter-search"
+                type="text"
+                name="search"
+                placeholder="Search"
+                value={filters.search}
+                onChange={handleFilterChange}
+              />
+              <div id="star-filter-container" className="star-filter">
                 {Array.from({ length: 5 }, (_, index) => (
                   <span
+                    id={`star`}
                     key={index}
                     className={`star ${
                       filterRating >= index + 1 ? "selected" : ""
@@ -521,46 +529,46 @@ const SellerProducts = () => {
                 ))}
               </div>
               <button
+                id="clear-filters-button"
                 className="clear-filters-button"
                 onClick={handleClearFilters}
               >
                 Clear
               </button>
-           
-              <div className="sort-buttons-modern">
+              <div id="sort-buttons-container" className="sort-buttons-modern">
                 <h3>Sort By:</h3>
-              {["price", "time", "rating"].map((type) => {
-                const isActive = sortOption.startsWith(type);
-                const order = sortOption.endsWith("highest")
-                  ? "highest"
-                  : "lowest";
+                {["price", "time", "rating"].map((type) => {
+                  const isActive = sortOption.startsWith(type);
+                  const order = sortOption.endsWith("highest")
+                    ? "highest"
+                    : "lowest";
 
-                return (
-                  <button
-                    key={type}
-                    className={`sort-button ${isActive ? "active" : ""}`}
-                    onClick={() => {
-                      handleSortChange(type);
-                    }}
-                  >
-                    {type === activeSortType && (
-                      <>
-                        {sortOption.endsWith("highest") ? (
-                          <FaSortAmountDown />
-                        ) : (
-                          <FaSortAmountUp />
-                        )}
-                      </>
-                    )}
-                    {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
-                  </button>
-                );
-              })}
-            </div>{" "}
-
+                  return (
+                    <button
+                      id={`sort-button-${type}`}
+                      key={type}
+                      className={`sort-button ${isActive ? "active" : ""}`}
+                      onClick={() => {
+                        handleSortChange(type);
+                      }}
+                    >
+                      {type === activeSortType && (
+                        <>
+                          {sortOption.endsWith("highest") ? (
+                            <FaSortAmountDown />
+                          ) : (
+                            <FaSortAmountUp />
+                          )}
+                        </>
+                      )}
+                      {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-
           </div>
+
           <div className="SDB_product-grid">
             {loading ? (
               <div className="loading-spinner">Loading...</div>
