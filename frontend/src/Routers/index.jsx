@@ -34,6 +34,10 @@ export const router = createBrowserRouter(
       element: <Main />,
       children: [
         { path: "/", element: <Home /> },
+        { path: "/shop", element: <CategoriesPage /> },
+        { path: "/shop/:cId", element: <Category /> },
+        { path: "/shop/:cId/:pId", element: <Details /> },
+
         { path: "/cart", element: <Cart /> },
         { path: "/placeOrder", element: <PlaceOrder /> },
 
@@ -43,7 +47,6 @@ export const router = createBrowserRouter(
           path: "/users/reset-password/:resetToken",
           element: <ResetPassword />,
         },
-        { path: "/details/:pId", element: <Details /> },
         { path: "/users/verifyEmail/:token", element: <VerifyEmail /> },
         {
           path: "/google-complete-register/:userId",
@@ -54,8 +57,6 @@ export const router = createBrowserRouter(
 
         { path: "*", element: <NotFound /> },
         { path: "/search/:query", element: <SearchPage /> },
-        { path: "/category/:cId", element: <Category /> },
-        { path: "/Shop", element: <CategoriesPage /> },
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },

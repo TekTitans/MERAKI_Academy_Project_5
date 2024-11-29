@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts,incrementCount } from "../redux/reducers/product/product";
-import {
-  setLoading,
-  setError,
-  setMessage,
-  
-} from "../redux/reducers/orders";
+import { setProducts, incrementCount } from "../redux/reducers/product/product";
+import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "../../pages/modal/Modal";
+import Breadcrumb from "../Breadcrumb";
 
 const Category = () => {
   const { cId } = useParams();
@@ -52,7 +48,7 @@ const Category = () => {
   const history = useNavigate();
   const [filterRating, setFilterRating] = useState(0);
   const closeModal = () => {
-    setModalVisible(false); // This function hides the modal
+    setModalVisible(false);
   };
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -197,7 +193,9 @@ const Category = () => {
       matchesStock
     );
   });
-
+  const handleBackToCategories = () => {
+    history("/shop");
+  };
   const paginationControls = (
     <div className="pagination-controls">
       <div
@@ -244,174 +242,185 @@ const Category = () => {
     );
 
   return (
-    <div className="seller-page">
-      {error && <div className="error-message">Error: {error}</div>}
-      {message && <div className="success-message">{message}</div>}
-
-      <div className="SDB_product-list">
-        <div className="filters">
-          <input
-            type="date"
-            name="selectedDate"
-            placeholder="Before Date"
-            value={filters.selectedDate}
-            onChange={handleFilterChange}
-          />
-          <input
-            type="text"
-            name="search"
-            placeholder="Search By Product Name"
-            value={filters.search}
-            onChange={handleFilterChange}
-          />
-          <input
-            type="number"
-            name="minPrice"
-            placeholder="Min Price"
-            value={filters.minPrice}
-            onChange={handleFilterChange}
-          />
-          <input
-            type="number"
-            name="maxPrice"
-            placeholder="Max Price"
-            value={filters.maxPrice}
-            onChange={handleFilterChange}
-          />
-          <select
-            name="selectedSubcategory"
-            value={product.subcategory_id}
-            onChange={handleFilterChange}
-            required
-          >
-            <option value="" disabled>
-              All SubCategories
-            </option>
-            {filteredSubcategories.map((subcategory) => (
-              <option key={subcategory.id} value={subcategory.id}>
-                {subcategory.name}
+    <>
+      {" "}
+      <Breadcrumb />
+      <div className="seller-page">
+        {error && <div className="error-message">Error: {error}</div>}
+        {message && <div className="success-message">{message}</div>}
+        <button className="back-button" onClick={handleBackToCategories}>
+          Back To Main Categories
+        </button>
+        <div className="SDB_product-list">
+          <div className="filters">
+            <input
+              type="date"
+              name="selectedDate"
+              placeholder="Before Date"
+              value={filters.selectedDate}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="text"
+              name="search"
+              placeholder="Search By Product Name"
+              value={filters.search}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="number"
+              name="minPrice"
+              placeholder="Min Price"
+              value={filters.minPrice}
+              onChange={handleFilterChange}
+            />
+            <input
+              type="number"
+              name="maxPrice"
+              placeholder="Max Price"
+              value={filters.maxPrice}
+              onChange={handleFilterChange}
+            />
+            <select
+              name="selectedSubcategory"
+              value={product.subcategory_id}
+              onChange={handleFilterChange}
+              required
+            >
+              <option value="" disabled>
+                All SubCategories
               </option>
-            ))}
-          </select>
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
+                </option>
+              ))}
+            </select>
 
-          <select
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-          >
-            <option value="">Status</option>
-            <option value="in_stock">In Stock</option>
-            <option value="out_of_stock">Out Of Stock</option>
-            <option value="on_demand">On Demand</option>
-          </select>
-          <div className="star-filter">
-            {Array.from({ length: 5 }, (_, index) => (
-              <span
-                key={index}
-                className={`star ${
-                  filterRating >= index + 1 ? "selected" : ""
-                }`}
-                onClick={() => handleStarClick(index + 1)}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-          <button className="clear-filters-button" onClick={handleClearFilters}>
-            Clear
-          </button>
-        </div>
-
-        <div className="SDB_product-grid">
-          {loading ? (
-            <div class="loading-container_Main">
-              <div class="loading-circle"></div>
-            </div>
-          ) : products.length > 0 ? (
-            filteredProducts.map((prod) => (
-              <div key={prod.id} className="SDB_product-card">
-                <img
-                  src={
-                    prod.product_image ||
-                    "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                  }
-                  alt={prod.title}
-                  className="SDB_product-image"
-                  onError={(e) =>
-                    (e.target.src =
-                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                  }
-                />
-
-                <button
-                  className="wishlist-button"
-                  onClick={() => handleWishlist(prod.id)}
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+            >
+              <option value="">Status</option>
+              <option value="in_stock">In Stock</option>
+              <option value="out_of_stock">Out Of Stock</option>
+              <option value="on_demand">On Demand</option>
+            </select>
+            <div className="star-filter">
+              {Array.from({ length: 5 }, (_, index) => (
+                <span
+                  key={index}
+                  className={`star ${
+                    filterRating >= index + 1 ? "selected" : ""
+                  }`}
+                  onClick={() => handleStarClick(index + 1)}
                 >
-                  ♥
-                </button>
-                <div className="SDB_product-info">
-                  <h3 className="SDB_product-title">{prod.title}</h3>
-                  <p className="SDB_product-description">
-                    {prod.description || "No Description"}
-                  </p>
-                  <div className="SDB_product-price">
-                    <span className="status">
-                      {prod.price ? `${prod.price}` : "Price Not Available"}
-                    </span>
-                  </div>
+                  ★
+                </span>
+              ))}
+            </div>
+            <button
+              className="clear-filters-button"
+              onClick={handleClearFilters}
+            >
+              Clear
+            </button>
+          </div>
 
-                  <div className="SDB_product-stock">
-                    <span className="status">
-                      {prod.stock_status
-                        ? prod.stock_status.replace("_", " ")
-                        : "Status Unknown"}
-                    </span>
-                    &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
-                    <span className="quantity">
-                      {prod.stock_quantity || "0"}
-                    </span>
-                  </div>
+          <div className="SDB_product-grid">
+            {loading ? (
+              <div class="loading-container_Main">
+                <div class="loading-circle"></div>
+              </div>
+            ) : products.length > 0 ? (
+              filteredProducts.map((prod) => (
+                <div key={prod.id} className="SDB_product-card">
+                  <img
+                    src={
+                      prod.product_image ||
+                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                    }
+                    alt={prod.title}
+                    className="SDB_product-image"
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                    }
+                  />
 
-                  <div className="SDB_product-rating">
-                    <span>
-                      <div className="internal_rating">
-                        {renderStars(prod.average_rating)}
-                        {prod.average_rating > 0 ? (
-                          <>
-                            {(parseFloat(prod.average_rating) || 0).toFixed(2)}
-                          </>
-                        ) : (
-                          "No Rating Yet"
-                        )}
-                      </div>
-                    </span>{" "}
-                    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                    <span>({prod.number_of_reviews})</span>
-                  </div>
+                  <button
+                    className="wishlist-button"
+                    onClick={() => handleWishlist(prod.id)}
+                  >
+                    ♥
+                  </button>
+                  <div className="SDB_product-info">
+                    <h3 className="SDB_product-title">{prod.title}</h3>
+                    <p className="SDB_product-description">
+                      {prod.description || "No Description"}
+                    </p>
+                    <div className="SDB_product-price">
+                      <span className="status">
+                        {prod.price ? `${prod.price}` : "Price Not Available"}
+                      </span>
+                    </div>
 
-                  <div className="product-actions">
-                    <button
-                      onClick={() => history(`/details/${prod.id}`)}
-                      className="statistics-button"
-                    >
-                      Details
-                    </button>
+                    <div className="SDB_product-stock">
+                      <span className="status">
+                        {prod.stock_status
+                          ? prod.stock_status.replace("_", " ")
+                          : "Status Unknown"}
+                      </span>
+                      &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+                      <span className="quantity">
+                        {prod.stock_quantity || "0"}
+                      </span>
+                    </div>
+
+                    <div className="SDB_product-rating">
+                      <span>
+                        <div className="internal_rating">
+                          {renderStars(prod.average_rating)}
+                          {prod.average_rating > 0 ? (
+                            <>
+                              {(parseFloat(prod.average_rating) || 0).toFixed(
+                                2
+                              )}
+                            </>
+                          ) : (
+                            "No Rating Yet"
+                          )}
+                        </div>
+                      </span>{" "}
+                      &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                      <span>({prod.number_of_reviews})</span>
+                    </div>
+
+                    <div className="product-actions">
+                      <button
+                        onClick={() => history(`/shop/${cId}/${prod.id}`)}
+                        className="statistics-button"
+                      >
+                        Details
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="no-products-message">No products found.</p>
-          )}
+              ))
+            ) : (
+              <p className="no-products-message">No products found.</p>
+            )}
+          </div>
+          {paginationControls}
         </div>
-        {paginationControls}
+        <Modal
+          isOpen={modalVisible}
+          autoClose={closeModal}
+          message={modalMessage}
+        />
       </div>
-      <Modal
-        isOpen={modalVisible}
-        autoClose={closeModal} // Pass closeModal as the autoClose handler
-        message={modalMessage}
-      />
-    </div>
+    </>
   );
 };
 

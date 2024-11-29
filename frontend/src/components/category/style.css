@@ -17,17 +17,65 @@
   right: 12px; /* Adjust to align properly */
   background: none; /* Transparent background */
   border: none; /* No border */
-  font-size: 1.8rem; /* Bigger heart icon */
+  font-size: 2rem; /* Bigger heart icon */
   color: gray; /* Default color */
   cursor: pointer; /* Pointer cursor on hover */
   transition: color 0.3s ease, transform 0.2s ease; /* Smooth transition */
 }
 
-.wishlist-button.active {
-  color: red; /* Active wishlist color */
+.wishlist-button {
+  position: absolute;
+  background: #ff4081;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 0.5rem 1rem;
+  opacity: 80%;
 }
 
 .wishlist-button:hover {
-  transform: scale(1.2); /* Slightly enlarges the heart on hover */
-  color: darkred; /* Hover color */
+  background: #e91e63;
+  opacity: 100%;
+
+}
+
+
+.wishlist-button.active {
+  color: red; 
+}
+
+.wishlist-button:hover {
+  transform: scale(1.2); 
+  color: darkred; 
+}
+
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.back-button:active {
+  background-color: #004085;
+  transform: translateY(1px);
+}
+
+.back-button span {
+  margin-right: 8px;
+  font-size: 20px;
 }

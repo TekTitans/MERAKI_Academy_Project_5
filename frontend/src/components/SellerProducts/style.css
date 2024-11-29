@@ -471,12 +471,6 @@
   font-size: 14px;
 }
 
-#filter-sort-section {
-}
-
-#filters-container {
-}
-
 #filter-date {
   width: 7rem;
   font-size: 0.8rem;
@@ -517,9 +511,6 @@
   font-size: 0.8rem;
   width: 5rem;
   height: 2.4rem;
-}
-
-#star-filter-container {
 }
 
 #clear-filters-button {
@@ -640,12 +631,6 @@
     font-size: 0.8rem;
   }
 
-  #filter-sort-section {
-  }
-
-  #filters-container {
-  }
-
   #filter-date {
     width: 5rem;
     font-size: 0.6rem;
@@ -694,9 +679,6 @@
     font-size: 0.6rem;
     width: 2.5rem;
     height: 2rem;
-  }
-
-  #star-filter-container {
   }
 
   #clear-filters-button {
@@ -767,12 +749,6 @@
 
   .product-image {
     height: 120px;
-  }
-
-  #filter-sort-section {
-  }
-
-  #filters-container {
   }
 
   #filter-date {

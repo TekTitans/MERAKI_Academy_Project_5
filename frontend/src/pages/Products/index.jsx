@@ -17,6 +17,7 @@ import {
 import "./style.css";
 import { FaArrowLeft, FaArrowRight, FaHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
 
 const CategoriesPage = () => {
   const history = useNavigate();
@@ -35,7 +36,7 @@ const CategoriesPage = () => {
   const [modalMessage, setModalMessage] = useState("");
   const dispatch = useDispatch();
   const closeModal = () => {
-    setModalVisible(false); 
+    setModalVisible(false);
   };
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -208,12 +209,14 @@ const CategoriesPage = () => {
 
   return (
     <div className="All_Cat_Page_Container">
+      <Breadcrumb />
+
       <div className="All_Cat_Page_content">
         <div className="cat-page">
           {error && <div className="error-message">Error: {error}</div>}
           {message && <div className="success-message">{message}</div>}
 
-          <div className="SDB_product-list">
+          <div className="SDB_product-list" id="categories_page">
             <div className="Cat_Header">
               <div className="filters">
                 <input
@@ -242,8 +245,9 @@ const CategoriesPage = () => {
                   <div
                     key={cat.id}
                     className="Category-card"
+                    id="Category_Card"
                     onClick={() => {
-                      history(`/category/${cat.id}`);
+                      history(`/shop/${cat.id}`);
                     }}
                   >
                     <img
@@ -259,7 +263,6 @@ const CategoriesPage = () => {
                       }
                     />
 
-                   
                     <div className="SDB_product-info">
                       <h3 className="SDB_product-title">{cat.name}</h3>
                       <p className="SDB_product-description">

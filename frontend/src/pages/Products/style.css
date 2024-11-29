@@ -12,6 +12,15 @@
   --transition: all 0.3s ease-in-out;
 }
 
+#Category_Card {
+  max-height: 350px;
+  max-width: 350px;
+  min-width: 300px;
+}
+
+#categories_page {
+  padding: 1.5rem;
+}
 .All_Cat_Page_Container {
   display: flex;
   flex-direction: column;
@@ -227,7 +236,6 @@
 
 .pagination-arrow:hover:not(.disabled) {
   background-color: #0056b3;
-  transform: scale(1.05);
 }
 
 .pagination-arrow:active:not(.disabled) {
@@ -289,26 +297,4 @@
     transform: scale(0.8);
     opacity: 0.7;
   }
-}
-
-.wishlist-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #ff4081;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.wishlist-button:hover {
-  background: #e91e63;
 }
