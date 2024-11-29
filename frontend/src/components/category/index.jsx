@@ -278,219 +278,204 @@ const Category = () => {
     );
 
   return (
-    <>
-      {" "}
+    <div className="category-page-container">
       <Breadcrumb />
-      <div className="seller-page" id="main_product-grid">
-        {error && <div className="error-message">Error: {error}</div>}
-        {message && <div className="success-message">{message}</div>}
+      <div className="category-page-content">
+        {error && <div className="alert-error">Error: {error}</div>}
+        {message && <div className="alert-success">{message}</div>}
+        <div id="filter-sort-section" className="filter-sort-section">
+          <div id="filters-container" className="filters">
+            <input
+              id="filter-date"
+              type="date"
+              name="selectedDate"
+              placeholder="Before Date"
+              value={filters.selectedDate}
+              onChange={handleFilterChange}
+            />
 
-        <div className="SDB_product-list">
-          <div id="filter-sort-section" className="filter-sort-section">
-            <div id="filters-container" className="filters">
-              <input
-                id="filter-date"
-                type="date"
-                name="selectedDate"
-                placeholder="Before Date"
-                value={filters.selectedDate}
-                onChange={handleFilterChange}
-              />
-
-              <input
-                id="filter-min-price"
-                type="number"
-                name="minPrice"
-                placeholder="Min Price"
-                value={filters.minPrice}
-                onChange={handleFilterChange}
-              />
-              <input
-                id="filter-max-price"
-                type="number"
-                name="maxPrice"
-                placeholder="Max Price"
-                value={filters.maxPrice}
-                onChange={handleFilterChange}
-              />
-              <select
-                id="filter-subcategory"
-                name="selectedSubcategory"
-                value={product.subcategory_id}
-                onChange={handleFilterChange}
-                required
-                disabled={!filters.selectedCategory}
-              >
-                <option value="" disabled>
-                  All SubCategories
+            <input
+              id="filter-min-price"
+              type="number"
+              name="minPrice"
+              placeholder="Min Price"
+              value={filters.minPrice}
+              onChange={handleFilterChange}
+            />
+            <input
+              id="filter-max-price"
+              type="number"
+              name="maxPrice"
+              placeholder="Max Price"
+              value={filters.maxPrice}
+              onChange={handleFilterChange}
+            />
+            <select
+              id="filter-subcategory"
+              name="selectedSubcategory"
+              value={product.subcategory_id}
+              onChange={handleFilterChange}
+              required
+              disabled={!filters.selectedCategory}
+            >
+              <option value="" disabled>
+                All SubCategories
+              </option>
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
                 </option>
-                {filteredSubcategories.map((subcategory) => (
-                  <option key={subcategory.id} value={subcategory.id}>
-                    {subcategory.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                id="filter-status"
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-              >
-                <option value="">Status</option>
-                <option value="in_stock">In Stock</option>
-                <option value="out_of_stock">Out Of Stock</option>
-                <option value="on_demand">On Demand</option>
-              </select>
-              <input
-                id="filter-search"
-                type="text"
-                name="search"
-                placeholder="Search"
-                value={filters.search}
-                onChange={handleFilterChange}
-              />
-              <div id="star-filter-container" className="star-filter">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <span
-                    id={`star`}
-                    key={index}
-                    className={`star ${
-                      filterRating >= index + 1 ? "selected" : ""
-                    }`}
-                    onClick={() => handleStarClick(index + 1)}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <button
-                id="clear-filters-button"
-                className="clear-filters-button"
-                onClick={handleClearFilters}
-              >
-                Clear
-              </button>
-              <div id="sort-buttons-container" className="sort-buttons-modern">
-                <h3>Sort By:</h3>
-                {["price", "time", "rating"].map((type) => {
-                  const isActive = sortOption.startsWith(type);
-                  const order = sortOption.endsWith("highest")
-                    ? "highest"
-                    : "lowest";
+              ))}
+            </select>
+            <select
+              id="filter-status"
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+            >
+              <option value="">Status</option>
+              <option value="in_stock">In Stock</option>
+              <option value="out_of_stock">Out Of Stock</option>
+              <option value="on_demand">On Demand</option>
+            </select>
+            <input
+              id="filter-search"
+              type="text"
+              name="search"
+              placeholder="Search"
+              value={filters.search}
+              onChange={handleFilterChange}
+            />
+            <div id="star-filter-container" className="star-filter">
+              {Array.from({ length: 5 }, (_, index) => (
+                <span
+                  id={`star`}
+                  key={index}
+                  className={`star ${
+                    filterRating >= index + 1 ? "selected" : ""
+                  }`}
+                  onClick={() => handleStarClick(index + 1)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <button
+              id="clear-filters-button"
+              className="clear-filters-button"
+              onClick={handleClearFilters}
+            >
+              Clear
+            </button>
+            <div id="sort-buttons-container" className="sort-buttons-modern">
+              <h3>Sort By:</h3>
+              {["price", "time", "rating"].map((type) => {
+                const isActive = sortOption.startsWith(type);
+                const order = sortOption.endsWith("highest")
+                  ? "highest"
+                  : "lowest";
 
-                  return (
-                    <button
-                      id={`sort-button-${type}`}
-                      key={type}
-                      className={`sort-button ${isActive ? "active" : ""}`}
-                      onClick={() => {
-                        handleSortChange(type);
-                      }}
-                    >
-                      {type === activeSortType && (
-                        <>
-                          {sortOption.endsWith("highest") ? (
-                            <FaSortAmountDown />
-                          ) : (
-                            <FaSortAmountUp />
-                          )}
-                        </>
-                      )}
-                      {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
-                    </button>
-                  );
-                })}
-              </div>
+                return (
+                  <button
+                    id={`sort-button-${type}`}
+                    key={type}
+                    className={`sort-button ${isActive ? "active" : ""}`}
+                    onClick={() => {
+                      handleSortChange(type);
+                    }}
+                  >
+                    {type === activeSortType && (
+                      <>
+                        {sortOption.endsWith("highest") ? (
+                          <FaSortAmountDown />
+                        ) : (
+                          <FaSortAmountUp />
+                        )}
+                      </>
+                    )}
+                    {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
+                  </button>
+                );
+              })}
             </div>
           </div>
+        </div>
+        <div className="product-grid">
+          {loading ? (
+            <div className="loader-container">
+              <div className="loader-circle"></div>
+            </div>
+          ) : products.length > 0 ? (
+            filteredProducts.map((prod) => (
+              <div
+                key={prod.id}
+                className="product-card"
+                onClick={() => history(`/shop/${cId}/${prod.id}`)}
+              >
+                <img
+                  src={
+                    prod.product_image ||
+                    "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                  }
+                  alt={prod.title}
+                  className="product-image"
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                  }
+                />
 
-          <div className="SDB_product-grid">
-            {loading ? (
-              <div class="loading-container_Main">
-                <div class="loading-circle"></div>
-              </div>
-            ) : products.length > 0 ? (
-              filteredProducts.map((prod) => (
-                <div
-                  key={prod.id}
-                  className="main_product-card"
-                  onClick={() => history(`/shop/${cId}/${prod.id}`)}
+                <button
+                  className="wishlist-icon"
+                  onClick={() => handleWishlist(prod.id)}
                 >
-                  <img
-                    src={
-                      prod.product_image ||
-                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                    }
-                    alt={prod.title}
-                    className="SDB_product-image"
-                    onError={(e) =>
-                      (e.target.src =
-                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                    }
-                  />
+                  ♥
+                </button>
+                <div className="product-info">
+                  <h3 className="product-title">{prod.title}</h3>
 
-                  <button
-                    className="wishlist-button"
-                    onClick={() => handleWishlist(prod.id)}
-                  >
-                    ♥
-                  </button>
-                  <div className="SDB_product-info">
-                    <h3 className="SDB_product-title">{prod.title}</h3>
-
-                    <div id="product-price">
-                      <span className="status">
-                        {prod.price ? `${prod.price}` : "Price Not Available"}
-                        &nbsp;&nbsp;JD
+                  <div className="product-price-stock">
+                    <div className="product-price">
+                      <span className="price">
+                        {prod.price ? `${prod.price}` : "Price Not Available"}{" "}
+                        JD
                       </span>
                     </div>
-
-                    <div id="product-price">
-                      <span className="status">
+                    <div className="product-stock">
+                      <span className="stock-status">
                         {prod.stock_status
                           ? prod.stock_status.replace("_", " ")
                           : "Status Unknown"}
                       </span>
-                      &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
-                      <span className="quantity">
-                        {prod.stock_quantity || "0"}
+                      <span className="stock-quantity">
+                        ({prod.stock_quantity || "0"} available)
                       </span>
                     </div>
+                  </div>
 
-                    <div id="product-price">
-                      <span>
-                        <div className="internal_rating">
-                          {renderStars(prod.average_rating)}
-                          {prod.average_rating > 0 ? (
-                            <>
-                              {(parseFloat(prod.average_rating) || 0).toFixed(
-                                2
-                              )}
-                            </>
-                          ) : (
-                            "No Rating Yet"
-                          )}
-                        </div>
-                      </span>{" "}
-                      &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                      <span>({prod.number_of_reviews})</span>
+                  <div className="product-rating">
+                    <div className="rating-stars">
+                      {renderStars(prod.average_rating)}
                     </div>
+                    <span className="rating-count">
+                      (&nbsp;{prod.number_of_reviews}&nbsp;)
+                    </span>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="no-products-message">No products found.</p>
-            )}
-          </div>
-          {paginationControls}
+              </div>
+            ))
+          ) : (
+            <p className="no-products">No products found.</p>
+          )}
         </div>
-        <Modal
-          isOpen={modalVisible}
-          autoClose={closeModal}
-          message={modalMessage}
-        />
+        {paginationControls}
       </div>
-    </>
+      <Modal
+        isOpen={modalVisible}
+        autoClose={closeModal}
+        message={modalMessage}
+      />
+    </div>
   );
 };
 
