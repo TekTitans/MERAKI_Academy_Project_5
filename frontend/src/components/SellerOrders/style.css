@@ -201,6 +201,11 @@ body {
   font-style: italic;
   font-size: 0.9rem;
 }
+
+.filters select {
+  width: auto !important;
+}
+
 .clear-filters-button {
   background-color: #e57373;
   color: white;

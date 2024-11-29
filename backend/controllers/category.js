@@ -172,10 +172,45 @@ const uploadCategoryImage = async (req, res) => {
   }
 };
 
+const getCategoryById = async (req, res) => {
+  const catId = req.params.catId; 
+
+  const query = `
+    SELECT * FROM categories 
+    WHERE id = $1;
+  `;
+
+  try {
+    const result = await pool.query(query, [catId]); 
+
+    if (result.rows.length > 0) {
+      res.json({
+        success: true,
+        message: "Category fetched successfully",
+        category: result.rows[0], 
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching category:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching category",
+      err: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   createCategory,
   updateCategory,
   removeCategory,
   getAllCategory,
   uploadCategoryImage,
+  getCategoryById
 };
