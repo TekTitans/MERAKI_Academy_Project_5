@@ -2,6 +2,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import './MyOrders.css';
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; 
 
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
@@ -9,19 +10,30 @@ const MyOrders = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get("http://localhost:5000/order/user/orders", { headers })
       .then((response) => {
         setMyOrders(response.data.result);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   const renderOrders = () => {
+    if (myOrders.length === 0) {
+      return (
+        <div className="no-orders-message">
+          <h2>You have no orders. Shop now!</h2>
+        </div>
+      );
+    }
+
     let currentOrderId = null;
     let currentOrderTable = [];
     let totalAmountWithDelivery = 0;
@@ -128,7 +140,14 @@ const MyOrders = () => {
   return (
     <div className="orders-container">
       <h1>My Orders</h1>
-      {renderOrders()}
+
+      {loading ? (
+        <div className="loading-container">
+          <div className="loading-circle"></div>
+        </div>
+      ) : (
+        renderOrders()
+      )}
     </div>
   );
 };

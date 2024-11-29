@@ -2,11 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
-import "./cart.css";
+import './cart.css';
+
+const Loading = () => {
+  return (
+    <div className="loading-container">
+      <div className="loading-circle"></div>
+    </div>
+  );
+};
 
 const Cart = () => {
   const [localCart, setLocalCart] = useState([]);
   const [debounceTimer, setDebounceTimer] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const token = useSelector((state) => state.auth.token);
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -24,11 +33,13 @@ const Cart = () => {
       .get("http://localhost:5000/cart", { headers })
       .then((response) => {
         setLocalCart(response.data.result);
+        setLoading(false);
       })
       .catch((err) => {
         console.log("Error fetching cart data:", err);
+        setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   const sendQuantityUpdate = (id, quantity) => {
     axios
@@ -78,68 +89,78 @@ const Cart = () => {
 
   return (
     <div className="myCart">
-      
-  <div className="cartTableWrapper">
-    {localCart.length>0?<table className="cartTable">
-      <thead>
-        <tr>
-          <th>Remove</th>
-          <th>Image</th>
-          <th>Product</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        {localCart?.map((elem, index) => (
-          <tr key={index}>
-            <td>
-              <button
-                className="remove-btn"
-                onClick={() => removeFromCart(elem.id)}
-              >
-                Remove
-              </button>
-            </td>
-            <td>
-              <img
-                src={elem.product_image || "https://via.placeholder.com/150"}
-                alt={elem.title}
-                className="product-images"
-              />
-            </td>
-            <td>{elem.title}</td>
-            <td>{elem.price} JD</td>
-            <td>
-              <input
-                type="number"
-                value={elem.quantity}
-                min={1}
-                onChange={(e) => handleQuantityChange(e, elem)}
-              />
-            </td>
-            <td>{elem.price * elem.quantity}.00 JD</td>
-          </tr>
-        ))}
-      </tbody>
-      <thead>
-        <tr>
-        <th colSpan="6">total : {totalAmount} JD</th>
-        </tr>
-      </thead>
-    </table>:<div className="empty-cart-message" id="emptyCartMessage">
-  <h2>Your Cart is Empty</h2>
-  <p>It looks like you haven't added anything to your cart yet. Start shopping now!</p>
-  <button onClick={()=>{navigate("/shop")}}>Go to Shop</button>
-</div>}
-  </div>
- {localCart.length>0? <div className="checkout"> 
-  <button onClick={()=>{navigate("/placeorder")}} className="checkoutB">checkout</button>
-  </div>:null}
-</div>
+      <h1>My Cart</h1>
 
-  
+      {loading ? (
+        <Loading />
+      ) : localCart.length > 0 ? (
+        <div className="cartTableWrapper">
+          <table className="cartTable">
+            <thead>
+              <tr>
+                <th>Remove</th>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {localCart.map((elem, index) => (
+                <tr key={index}>
+                  <td>
+                    <button
+                      className="remove-btn"
+                      onClick={() => removeFromCart(elem.id)}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                  <td>
+                    <img
+                      src={elem.product_image || "https://via.placeholder.com/150"}
+                      alt={elem.title}
+                      className="product-images"
+                    />
+                  </td>
+                  <td>{elem.title}</td>
+                  <td>{elem.price} JD</td>
+                  <td>
+                    <input
+                      type="number"
+                      value={elem.quantity}
+                      min={1}
+                      onChange={(e) => handleQuantityChange(e, elem)}
+                    />
+                  </td>
+                  <td>{elem.price * elem.quantity}.00 JD</td>
+                </tr>
+              ))}
+            </tbody>
+            <thead>
+              <tr>
+                <th colSpan="6">Total: {totalAmount} JD</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      ) : (
+        <div className="empty-cart-message" id="emptyCartMessage">
+          <h2>Your Cart is Empty</h2>
+          <p>It looks like you haven't added anything to your cart yet. Start shopping now!</p>
+          <button onClick={() => navigate("/shop")}>Go to Shop</button>
+        </div>
+      )}
+
+      {localCart.length > 0 && (
+        <div className="checkout">
+          <button onClick={() => navigate("/placeorder")} className="checkoutB">
+            Checkout
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 
