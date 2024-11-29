@@ -67,10 +67,12 @@ const SearchResults = () => {
         });
     }
   };
+  console.log(products.image_url);
+
   return (
     <div className="search-results-container">
       <div className="hero-section">
-        <h1>Results for "{query}"</h1>
+        <h1>Results for {query}</h1>
       </div>
 
       <div className="error-message-container">
@@ -85,7 +87,9 @@ const SearchResults = () => {
             <div className="product-card" key={product.id}>
               <div className="product-image-container">
                 <img
-                  src={product.image_url || "https://via.placeholder.com/150"}
+                  src={
+                    product.product_image || "https://via.placeholder.com/150"
+                  }
                   alt={product.title}
                   className="product-image"
                 />
