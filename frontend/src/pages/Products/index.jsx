@@ -208,78 +208,89 @@ const CategoriesPage = () => {
     );
 
   return (
-    <div className="All_Cat_Page_Container">
-      <Breadcrumb />
+<div className="All_Cat_Page_Container">
+  <Breadcrumb />
 
-      <div className="all-cat-page-content">
-        <div className="category-page">
-          {error && <div className="error-message">Error: {error}</div>}
-          {message && <div className="success-message">{message}</div>}
+  <div className="all-cat-page-content">
+    <div className="category-page">
+      {error && <div className="categories_error-message">Error: {error}</div>}
+      {message && <div className="categories_success-message">{message}</div>}
 
-          <div className="category-header">
-            <div className="filters-container">
-              <input
-                type="text"
-                name="search"
-                placeholder="Search by Category Name"
-                value={filters.search}
-                onChange={handleFilterChange}
-                className="filter-search"
-              />
-              <button
-                className="clear-filters-button"
-                onClick={handleClearFilters}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-
-          <div className="category-grid">
-            {loading ? (
-              <div className="loading-container">
-                <div className="loading-circle"></div>
-              </div>
-            ) : (
-              filteredCategories.map((cat) => (
-                <div
-                  key={cat.id}
-                  className="category-card"
-                  onClick={() => history(`/shop/${cat.id}`)}
-                >
-                  <img
-                    src={
-                      cat.category_image ||
-                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                    }
-                    alt={cat.name}
-                    className="category-image"
-                    onError={(e) =>
-                      (e.target.src =
-                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                    }
-                  />
-                  <div className="category-info">
-                    <h3 className="category-title">{cat.name}</h3>
-                    <p className="category-description">
-                      {cat.description || "No Description"}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {paginationControls}
+      <div className="category-header">
+        <div className="filters-container">
+          <input
+            type="text"
+            name="search"
+            placeholder="Search by Category Name"
+            value={filters.search}
+            onChange={handleFilterChange}
+            className="categories_filter-search"
+          />
+          <button
+            className="categories_clear-filters-button"
+            onClick={handleClearFilters}
+          >
+            Clear
+          </button>
         </div>
-
-        <Modal
-          isOpen={modalVisible}
-          autoClose={closeModal}
-          message={modalMessage}
-        />
       </div>
+
+      {loading ? (
+        <div className="loading-container">
+          <div className="loading-circle"></div>
+        </div>
+      ) : (
+        <div className="categories-container">
+          {categories.map((cat) => (
+            <div
+              key={cat.id}
+              className="category-card"
+              onClick={() => history(`/shop/${cat.id}`)}
+            >
+              {/* Badge for item count */}
+              <div className="category-badge">
+                {cat.item_count || 0} items
+              </div>
+
+              {/* Image with hover overlay */}
+              <div className="image-container">
+                <img
+                  src={
+                    cat.category_image ||
+                    "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                  }
+                  alt={cat.name}
+                  className="category-image"
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                  }
+                />
+                <div className="hover-overlay">View Category</div>
+              </div>
+
+              {/* Category info */}
+              <div className="category-info">
+                <h3 className="category-title">{cat.name}</h3>
+                <p className="category-description">
+                  {cat.description || "Explore this category!"}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
+
+    <Modal
+      isOpen={modalVisible}
+      autoClose={closeModal}
+      message={modalMessage}
+    />
+  </div>
+</div>
+
+
   );
 };
 
