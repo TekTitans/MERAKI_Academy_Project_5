@@ -19,14 +19,14 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
 
   return (
     <nav className="seller-navbar">
-      <div className="navbar-logo">
+      <div className="seller_navbar-logo">
         <h1>Seller Dashboard</h1>
        
       </div>
-      <button className="menu-toggle" onClick={toggleMenu}>
+      <button className="seller_navbar-toggle" onClick={toggleMenu}>
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
-      <ul className={`navbar-links ${isMenuOpen ? "open" : ""}`}>
+      <ul className={`seller_navbar-links ${isMenuOpen ? "open" : ""}`}>
         <li
           className={activeSection === "summary" ? "active" : ""}
           onClick={() => {
@@ -34,7 +34,7 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
             setIsMenuOpen(false);
           }}
         >
-          <FaHome className="navbar-icon" />
+          <FaHome className="seller_navbar-icon" />
           Summary
         </li>
         <li
@@ -44,7 +44,7 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
             setIsMenuOpen(false);
           }}
         >
-          <FaBoxOpen className="navbar-icon" />
+          <FaBoxOpen className="seller_navbar-icon" />
           Products Management
         </li>
         <li
@@ -54,7 +54,7 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
             setIsMenuOpen(false);
           }}
         >
-          <FaPlus className="navbar-icon" />
+          <FaPlus className="seller_navbar-icon" />
           Add Product
         </li>
         <li
@@ -64,7 +64,7 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
             setIsMenuOpen(false);
           }}
         >
-          <FaShoppingCart className="navbar-icon" />
+          <FaShoppingCart className="seller_navbar-icon" />
           Orders
         </li>
         <li
@@ -74,7 +74,7 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
             setIsMenuOpen(false);
           }}
         >
-          <FaStar className="navbar-icon" />
+          <FaStar className="seller_navbar-icon" />
           Reviews
         </li>
       </ul>

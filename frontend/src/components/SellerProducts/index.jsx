@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   setProducts,
   updateProduct,
@@ -9,8 +10,13 @@ import {
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import EditProductForm from "../ProductEdit";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { FaUserAlt } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaSortAmountUp,
+  FaSortAmountDown,
+  FaUserAlt,
+} from "react-icons/fa";
 
 const SellerProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
@@ -39,6 +45,9 @@ const SellerProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedReviews, setSelectedReviews] = useState(false);
   const [updated, setUpdated] = useState(false);
+  const [sortOption, setSortOption] = useState("price-highest");
+  const [activeSortType, setActiveSortType] = useState(null);
+
   const [filters, setFilters] = useState({
     selectedDate: "",
     search: "",
@@ -48,11 +57,10 @@ const SellerProducts = () => {
     selectedCategory: 0,
     selectedSubcategory: 0,
   });
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
+  const [filterRating, setFilterRating] = useState(0);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
-
-  const [filterRating, setFilterRating] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -66,7 +74,7 @@ const SellerProducts = () => {
 
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/subcateogry");
+        const response = await axios.get("http://localhost:5000/subCategory");
         setSubcategories(response.data.subCategory);
       } catch (error) {
         console.error("Error fetching subcategories:", error);
@@ -296,43 +304,83 @@ const SellerProducts = () => {
       selectedSubcategory: 0,
     });
     setFilterRating(0);
+    setSortOption("");
+    setActiveSortType("");
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesDate =
-      !filters.selectedDate ||
-      new Date(product.created_at) <= new Date(filters.selectedDate);
-    const matchesSearch =
-      !filters.search || product.title.toString().includes(filters.search);
-    const matchesPrice =
-      (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
-      (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
+  const handleSortChange = (type) => {
+    setSortOption((prev) => {
+      const [prevType, prevOrder] = prev.split("-");
+      if (prevType === type) {
+        return prevOrder === "highest" ? `${type}-lowest` : `${type}-highest`;
+      }
+      return `${type}-highest`;
+    });
+    setActiveSortType(type);
+  };
 
-    const matchesCategory =
-      !filters.selectedCategory ||
-      product.category_id == filters.selectedCategory;
-    const matchesSubcategory =
-      !filters.selectedSubcategory ||
-      product.subcategory_id == filters.selectedSubcategory;
-    const matchesRating =
-      !filterRating || product.average_rating >= parseFloat(filterRating);
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesDate =
+        !filters.selectedDate ||
+        new Date(product.created_at) <= new Date(filters.selectedDate);
 
-    const matchesStock =
-      !filters.status || product.stock_status === filters.status;
-    return (
-      matchesDate &&
-      matchesSearch &&
-      matchesPrice &&
-      matchesCategory &&
-      matchesSubcategory &&
-      matchesRating &&
-      matchesStock
-    );
-  });
+      const matchesSearch =
+        !filters.search ||
+        product.title.toLowerCase().includes(filters.search.toLowerCase());
+
+      const matchesPrice =
+        (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
+        (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
+
+      const matchesCategory =
+        !filters.selectedCategory ||
+        product.category_id === filters.selectedCategory;
+
+      const matchesSubcategory =
+        !filters.selectedSubcategory ||
+        product.subcategory_id === filters.selectedSubcategory;
+
+      const matchesRating =
+        !filterRating || product.average_rating >= parseFloat(filterRating);
+
+      const matchesStock =
+        !filters.status || product.stock_status === filters.status;
+
+      return (
+        matchesDate &&
+        matchesSearch &&
+        matchesPrice &&
+        matchesCategory &&
+        matchesSubcategory &&
+        matchesRating &&
+        matchesStock
+      );
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "price-highest":
+          return b.price - a.price;
+        case "price-lowest":
+          return a.price - b.price;
+        case "rating-highest":
+          return b.average_rating - a.average_rating;
+        case "rating-lowest":
+          return a.average_rating - b.average_rating;
+        case "time-highest":
+          return new Date(b.created_at) - new Date(a.created_at);
+        case "time-lowest":
+          return new Date(a.created_at) - new Date(b.created_at);
+        default:
+          return 0;
+      }
+    });
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
+
   const paginationControls = (
     <div className="pagination-controls">
       <div
@@ -390,93 +438,135 @@ const SellerProducts = () => {
         />
       ) : (
         <div className="SDB_product-list">
-          <div className="filters">
-            <input
-              type="date"
-              name="selectedDate"
-              placeholder="Before Date"
-              value={filters.selectedDate}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="text"
-              name="search"
-              placeholder="Search By Product Name"
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="number"
-              name="minPrice"
-              placeholder="Min Price"
-              value={filters.minPrice}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="number"
-              name="maxPrice"
-              placeholder="Max Price"
-              value={filters.maxPrice}
-              onChange={handleFilterChange}
-            />
-            <select
-              name="selectedCategory"
-              value={filters.selectedCategory}
-              onChange={handleFilterChange}
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="selectedSubcategory"
-              value={product.subcategory_id}
-              onChange={handleFilterChange}
-              required
-              disabled={!filters.selectedCategory}
-            >
-              <option value="" disabled>
-                All SubCategories
-              </option>
-              {filteredSubcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </select>
+          <div id="filter-sort-section" className="filter-sort-section">
+            <div id="filters-container" className="filters">
+              <input
+                id="filter-date"
+                type="date"
+                name="selectedDate"
+                placeholder="Before Date"
+                value={filters.selectedDate}
+                onChange={handleFilterChange}
+              />
 
-            <select
-              name="status"
-              value={filters.status}
-              onChange={handleFilterChange}
-            >
-              <option value="">Status</option>
-              <option value="in_stock">In Stock</option>
-              <option value="out_of_stock">Out Of Stock</option>
-              <option value="on_demand">On Demand</option>
-            </select>
-            <div className="star-filter">
-              {Array.from({ length: 5 }, (_, index) => (
-                <span
-                  key={index}
-                  className={`star ${
-                    filterRating >= index + 1 ? "selected" : ""
-                  }`}
-                  onClick={() => handleStarClick(index + 1)}
-                >
-                  ★
-                </span>
-              ))}
+              <input
+                id="filter-min-price"
+                type="number"
+                name="minPrice"
+                placeholder="Min Price"
+                value={filters.minPrice}
+                onChange={handleFilterChange}
+              />
+              <input
+                id="filter-max-price"
+                type="number"
+                name="maxPrice"
+                placeholder="Max Price"
+                value={filters.maxPrice}
+                onChange={handleFilterChange}
+              />
+              <select
+                id="filter-category"
+                name="selectedCategory"
+                value={filters.selectedCategory}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                id="filter-subcategory"
+                name="selectedSubcategory"
+                value={product.subcategory_id}
+                onChange={handleFilterChange}
+                required
+                disabled={!filters.selectedCategory}
+              >
+                <option value="" disabled>
+                  All SubCategories
+                </option>
+                {filteredSubcategories.map((subcategory) => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                id="filter-status"
+                name="status"
+                value={filters.status}
+                onChange={handleFilterChange}
+              >
+                <option value="">Status</option>
+                <option value="in_stock">In Stock</option>
+                <option value="out_of_stock">Out Of Stock</option>
+                <option value="on_demand">On Demand</option>
+              </select>
+              <input
+                id="filter-search"
+                type="text"
+                name="search"
+                placeholder="Search"
+                value={filters.search}
+                onChange={handleFilterChange}
+              />
+              <div id="star-filter-container" className="star-filter">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <span
+                    id={`star`}
+                    key={index}
+                    className={`star ${
+                      filterRating >= index + 1 ? "selected" : ""
+                    }`}
+                    onClick={() => handleStarClick(index + 1)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <button
+                id="clear-filters-button"
+                className="clear-filters-button"
+                onClick={handleClearFilters}
+              >
+                Clear
+              </button>
+              <div id="sort-buttons-container" className="sort-buttons-modern">
+                <h3>Sort By:</h3>
+                {["price", "time", "rating"].map((type) => {
+                  const isActive = sortOption.startsWith(type);
+                  const order = sortOption.endsWith("highest")
+                    ? "highest"
+                    : "lowest";
+
+                  return (
+                    <button
+                      id={`sort-button-${type}`}
+                      key={type}
+                      className={`sort-button ${isActive ? "active" : ""}`}
+                      onClick={() => {
+                        handleSortChange(type);
+                      }}
+                    >
+                      {type === activeSortType && (
+                        <>
+                          {sortOption.endsWith("highest") ? (
+                            <FaSortAmountDown />
+                          ) : (
+                            <FaSortAmountUp />
+                          )}
+                        </>
+                      )}
+                      {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <button
-              className="clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
           </div>
 
           <div className="SDB_product-grid">
