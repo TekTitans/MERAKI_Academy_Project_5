@@ -92,27 +92,43 @@ const removeCategory = async (req, res) => {
 };
 
 const getAllCategory = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const size = parseInt(req.query.size) || 10;
-  const offset = (page - 1) * size;
+  console.log("getAllCategory");
 
   const query = `
-    SELECT * FROM categories 
-    ORDER BY created_at DESC 
-    LIMIT $1 OFFSET $2;
+    SELECT 
+      c.id AS category_id,
+      c.name AS category_name,
+      c.description AS category_description,
+      c.category_image,
+      c.created_at,
+      COUNT(p.id) AS product_count,
+      COUNT(*) OVER() AS total_categories
+    FROM 
+      categories c
+    LEFT JOIN 
+      products p 
+    ON 
+      c.id = p.category_id AND p.is_deleted = FALSE
+    WHERE 
+      c.is_deleted = FALSE
+    GROUP BY 
+      c.id, c.name, c.description, c.category_image, c.created_at
+    ORDER BY 
+      c.created_at DESC;
   `;
-  const countQuery = `SELECT COUNT(*) FROM categories;`;
 
   try {
-    const result = await pool.query(query, [size, offset]);
+    const result = await pool.query(query);
+    const categories = result.rows;
+    const totalCategories =
+      categories.length > 0 ? categories[0].total_categories : 0;
 
-    const countResult = await pool.query(countQuery);
-    const totalCategories = parseInt(countResult.rows[0].count);
+    console.log(categories);
 
     res.json({
       success: true,
       message: "All Categories",
-      category: result.rows,
+      category: categories,
       totalCategories: totalCategories,
     });
   } catch (error) {
@@ -173,7 +189,7 @@ const uploadCategoryImage = async (req, res) => {
 };
 
 const getCategoryById = async (req, res) => {
-  const catId = req.params.catId; 
+  const catId = req.params.catId;
 
   const query = `
     SELECT * FROM categories 
@@ -181,13 +197,13 @@ const getCategoryById = async (req, res) => {
   `;
 
   try {
-    const result = await pool.query(query, [catId]); 
+    const result = await pool.query(query, [catId]);
 
     if (result.rows.length > 0) {
       res.json({
         success: true,
         message: "Category fetched successfully",
-        category: result.rows[0], 
+        category: result.rows[0],
       });
     } else {
       res.status(404).json({
@@ -205,12 +221,11 @@ const getCategoryById = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createCategory,
   updateCategory,
   removeCategory,
   getAllCategory,
   uploadCategoryImage,
-  getCategoryById
+  getCategoryById,
 };
