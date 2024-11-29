@@ -6,52 +6,68 @@ const { error } = require("console");
 
 const createOrder = async (req, res) => {
   const userId = req.token.userId;
-  deliveryPrice=req.body.deliveryPrice
-  const phone_number=req.body.phone_number
-  const payment_method=req.body.isVisa
-  const country=req.body.country
-  const street=req.body.street
-  const adress=country+","+street
-  const orderStatus="Pending"
-
+  const deliveryPrice = req.body.deliveryPrice;
+  const phone_number = req.body.phone_number;
+  const payment_method = req.body.isVisa;
+  const country = req.body.country;
+  const street = req.body.street;
+  const address = country + "," + street;
+  const orderStatus = "Pending";
 
   try {
-
     const cartQuery =
       "SELECT * FROM cart WHERE user_id = $1 AND is_deleted = false";
     const cartResult = await pool.query(cartQuery, [userId]);
+
     if (cartResult.rows.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Your cart is empty.",
       });
     }
-    const totalAmountQuery = `
 
-              SELECT SUM(p.price * c.quantity) AS total_amount
-              FROM cart c
-              JOIN products p ON c.product_id = p.id
-              WHERE c.user_id = $1 AND c.is_deleted = false
-            `;
+    const totalAmountQuery = `
+      SELECT SUM(p.price * c.quantity) AS total_amount
+      FROM cart c
+      JOIN products p ON c.product_id = p.id
+      WHERE c.user_id = $1 AND c.is_deleted = false
+    `;
     const totalAmountResult = await pool.query(totalAmountQuery, [userId]);
     const totalAmount = totalAmountResult.rows[0].total_amount;
+
     const orderQuery =
-      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number,payment_method,delivery_price,total_amount_with_delivery,order_status) VALUES ($1, $2, $3,$4,$5,$6,$7,$8) RETURNING id";
+      "INSERT INTO orders (user_id, total_price, shipping_address, phone_number, payment_method, delivery_price, total_amount_with_delivery, order_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
     const orderResult = await pool.query(orderQuery, [
       userId,
       totalAmount,
-      adress,
+      address,
       phone_number,
       payment_method,
       deliveryPrice,
-      Number(deliveryPrice)+Number( totalAmount),
-      orderStatus
-
+      Number(deliveryPrice) + Number(totalAmount),
+      orderStatus,
     ]);
     const orderId = orderResult.rows[0].id;
+
     const updateCartQuery =
       "UPDATE cart SET order_id = $1, is_deleted = true WHERE user_id = $2 AND is_deleted = false";
     await pool.query(updateCartQuery, [orderId, userId]);
+
+    const productsInCart = cartResult.rows;
+    for (const item of productsInCart) {
+      const productId = item.product_id;
+      const orderedQuantity = item.quantity;
+
+      const updateStockQuery = `
+        UPDATE products
+        SET stock_quantity = stock_quantity - $1,
+            stock_status = CASE WHEN stock_quantity - $1 <= 0 THEN 'out_of_stock' ELSE stock_status END
+        WHERE id = $2 AND stock_quantity >= $1
+      `;
+      
+      await pool.query(updateStockQuery, [orderedQuantity, productId]);
+    }
+
     res.status(200).json({
       success: true,
       message: "Order placed successfully.",
@@ -65,6 +81,8 @@ const createOrder = async (req, res) => {
     });
   }
 };
+
+
 const getAllOrders = (req, res) => {
   const query = `SELECT * FROM orders;`;
 
