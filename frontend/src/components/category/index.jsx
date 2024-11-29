@@ -238,8 +238,8 @@ const Category = () => {
 
   if (loading)
     return (
-      <div class="loading-container_Main">
-        <div class="loading-circle"></div>
+      <div className="loading-container_Main">
+        <div className="loading-circle"></div>
       </div>
     );
 
@@ -324,8 +324,8 @@ const Category = () => {
 
         <div className="SDB_product-grid">
           {loading ? (
-            <div class="loading-container_Main">
-              <div class="loading-circle"></div>
+            <div className="loading-container_Main">
+              <div className="loading-circle"></div>
             </div>
           ) : products.length > 0 ? (
             filteredProducts.map((prod) => (

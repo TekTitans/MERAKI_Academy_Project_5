@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import axios from "axios";
 import "./CheckoutForm.css";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch} from "react-redux";
+import { setCartNum } from "../redux/reducers/orders";
 
 
 const CheckoutForm = ({ phone_number,street,country,isVisa,deliveryPrice }) => {
+  const dispatch=useDispatch()
   const token = useSelector((state) => state.auth.token);
+  const cartNum = useSelector((state) => state.order.cartnum);
+
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -59,6 +63,7 @@ const CheckoutForm = ({ phone_number,street,country,isVisa,deliveryPrice }) => {
       .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa,deliveryPrice }, { headers })
       .then((response) => {
         console.log(response.data);
+        dispatch(setCartNum(0))
         navigate("/myorders")
 
       })

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { setCart } from "../product/product";
 
 export const orderSlice = createSlice({
   name: "order",
@@ -7,8 +8,12 @@ export const orderSlice = createSlice({
     loading: false,
     error: null,
     message: null,
+    cartnum:0
   },
   reducers: {
+    setCartNum: (state, action) => {
+      state.cartnum = action.payload;
+    },
     setOrders: (state, action) => {
       state.orders = action.payload;
     },
@@ -27,7 +32,7 @@ export const orderSlice = createSlice({
   },
 });
 
-export const { setOrders, addOrder, setLoading, setError, setMessage } =
+export const { setOrders, addOrder, setLoading, setError, setMessage,setCartNum } =
   orderSlice.actions;
 
 export default orderSlice.reducer;

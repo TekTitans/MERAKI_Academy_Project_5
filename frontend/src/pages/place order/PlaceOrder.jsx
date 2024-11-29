@@ -1,12 +1,17 @@
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "./placeorder.css";
 import CheckoutForm from "../../components/Checkoutform/CheckoutForm";
 import "./deliveryForm.css";
 import { useNavigate } from "react-router-dom";
+import { setCartNum } from "../../components/redux/reducers/orders";
 
 const PlaceOrder = () => {
+  const dispatch=useDispatch()
+  const cartNum = useSelector((state) => state.order.cartnum);
+
+
   const [isVisa, setIsVisa] = useState("cash");
   const navigate = useNavigate();
   const jordanGovernorates =[
@@ -75,7 +80,9 @@ const PlaceOrder = () => {
     axios
       .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa,deliveryPrice }, { headers })
       .then((response) => {
-        console.log(response.data);
+        console.log(response.data)
+       dispatch( setCartNum(0))
+
         navigate("/myorders")
       })
       .catch((error) => {

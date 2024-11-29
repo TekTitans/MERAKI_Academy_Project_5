@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import './cart.css';
+import { setCartNum } from "../../components/redux/reducers/orders";
 
 const Loading = () => {
   return (
@@ -13,11 +14,14 @@ const Loading = () => {
 };
 
 const Cart = () => {
+  const dispatch=useDispatch()
   const [localCart, setLocalCart] = useState([]);
   const [debounceTimer, setDebounceTimer] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const token = useSelector((state) => state.auth.token);
+  const cartnum = useSelector((state) => state.order.cartnum);
+
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -53,6 +57,7 @@ const Cart = () => {
   };
 
   const handleQuantityChange = (e, elem) => {
+    
     const newQuantity = Math.max(1, parseInt(e.target.value) || 1);
     const updatedCart = localCart.map((item) =>
       item.id === elem.id ? { ...item, quantity: newQuantity } : item
@@ -86,6 +91,9 @@ const Cart = () => {
     (acc, elem) => acc + elem.price * elem.quantity,
     0
   );
+console.log(localCart.length)
+dispatch(setCartNum(localCart.length))
+
 
   return (
     <div className="myCart">
