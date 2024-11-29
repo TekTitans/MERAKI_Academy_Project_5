@@ -13,8 +13,8 @@
 }
 .wishlist-button {
   position: absolute; /* Positions button within the card */
-  top: 12px; /* Adjust to align properly */
-  right: 12px; /* Adjust to align properly */
+  top: 15px; /* Adjust to align properly */
+  right: 15px; /* Adjust to align properly */
   background: none; /* Transparent background */
   border: none; /* No border */
   font-size: 2rem; /* Bigger heart icon */
@@ -32,24 +32,22 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 0.5rem 1rem;
   opacity: 80%;
+  z-index: 500;
 }
 
 .wishlist-button:hover {
   background: #e91e63;
   opacity: 100%;
-
 }
 
-
 .wishlist-button.active {
-  color: red; 
+  color: red;
 }
 
 .wishlist-button:hover {
-  transform: scale(1.2); 
-  color: darkred; 
+  transform: scale(1.2);
+  color: darkred;
 }
-
 
 .back-button {
   display: inline-flex;
@@ -78,4 +76,88 @@
 .back-button span {
   margin-right: 8px;
   font-size: 20px;
+}
+#main_product-grid {
+  background-color: #e91e63;
+}
+.main_product-card {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 1rem;
+  position: relative;
+  max-height: 350px;
+  max-width: 350px;
+  min-width: 300px;
+  background-color: #e0e0e0;
+}
+
+.main_product-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+#product-price {
+  font-size: 1rem;
+  color: #555;
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s, transform 0.3s ease;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 1rem;
+}
+
+#product-price:hover {
+  background-color: #e2f7e6;
+  transform: scale(1.02);
+}
+
+#categories_page {
+  padding: 1.5rem;
+}
+.All_Cat_Page_Container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #e0e0e0;
+  font-family: "Arial", sans-serif;
+}
+
+.All_Cat_Page_content {
+  flex: 1;
+  padding: 20px;
+  margin-top: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  width: 95%;
+  max-width: 1200px;
+}
+
+.All_Cat_Page_content h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .All_Cat_Page_content {
+    margin: 10px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  #product-price {
+    font-size: 0.9rem;
+  }
 }

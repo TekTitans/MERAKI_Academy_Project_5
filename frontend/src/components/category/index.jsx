@@ -4,11 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProducts, incrementCount } from "../redux/reducers/product/product";
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "../../pages/modal/Modal";
 import Breadcrumb from "../Breadcrumb";
-
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaSortAmountUp,
+  FaSortAmountDown,
+} from "react-icons/fa";
 const Category = () => {
   const { cId } = useParams();
 
@@ -24,6 +28,8 @@ const Category = () => {
     category_id: "",
     subcategory_id: "",
   });
+  const [sortOption, setSortOption] = useState("price-highest");
+  const [activeSortType, setActiveSortType] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -143,7 +149,6 @@ const Category = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
@@ -157,45 +162,76 @@ const Category = () => {
       minPrice: "",
       maxPrice: "",
       status: "",
+      selectedCategory: 0,
       selectedSubcategory: 0,
     });
     setFilterRating(0);
+    setSortOption("");
+    setActiveSortType("");
+  };
+  const handleSortChange = (type) => {
+    setSortOption((prev) => {
+      const [prevType, prevOrder] = prev.split("-");
+      if (prevType === type) {
+        return prevOrder === "highest" ? `${type}-lowest` : `${type}-highest`;
+      }
+      return `${type}-highest`;
+    });
+    setActiveSortType(type);
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesDate =
-      !filters.selectedDate ||
-      new Date(product.created_at) <= new Date(filters.selectedDate);
-    const matchesSearch =
-      !filters.search || product.title.toString().includes(filters.search);
-    const matchesPrice =
-      (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
-      (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesDate =
+        !filters.selectedDate ||
+        new Date(product.created_at) <= new Date(filters.selectedDate);
 
-    const matchesCategory =
-      !filters.selectedCategory ||
-      product.category_id == filters.selectedCategory;
-    const matchesSubcategory =
-      !filters.selectedSubcategory ||
-      product.subcategory_id == filters.selectedSubcategory;
-    const matchesRating =
-      !filterRating || product.average_rating >= parseFloat(filterRating);
+      const matchesSearch =
+        !filters.search ||
+        product.title.toLowerCase().includes(filters.search.toLowerCase());
 
-    const matchesStock =
-      !filters.status || product.stock_status === filters.status;
-    return (
-      matchesDate &&
-      matchesSearch &&
-      matchesPrice &&
-      matchesCategory &&
-      matchesSubcategory &&
-      matchesRating &&
-      matchesStock
-    );
-  });
-  const handleBackToCategories = () => {
-    history("/shop");
-  };
+      const matchesPrice =
+        (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
+        (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
+
+      const matchesSubcategory =
+        !filters.selectedSubcategory ||
+        product.subcategory_id === filters.selectedSubcategory;
+
+      const matchesRating =
+        !filterRating || product.average_rating >= parseFloat(filterRating);
+
+      const matchesStock =
+        !filters.status || product.stock_status === filters.status;
+
+      return (
+        matchesDate &&
+        matchesSearch &&
+        matchesPrice &&
+        matchesSubcategory &&
+        matchesRating &&
+        matchesStock
+      );
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "price-highest":
+          return b.price - a.price;
+        case "price-lowest":
+          return a.price - b.price;
+        case "rating-highest":
+          return b.average_rating - a.average_rating;
+        case "rating-lowest":
+          return a.average_rating - b.average_rating;
+        case "time-highest":
+          return new Date(b.created_at) - new Date(a.created_at);
+        case "time-lowest":
+          return new Date(a.created_at) - new Date(b.created_at);
+        default:
+          return 0;
+      }
+    });
+
   const paginationControls = (
     <div className="pagination-controls">
       <div
@@ -245,87 +281,127 @@ const Category = () => {
     <>
       {" "}
       <Breadcrumb />
-      <div className="seller-page">
+      <div className="seller-page" id="main_product-grid">
         {error && <div className="error-message">Error: {error}</div>}
         {message && <div className="success-message">{message}</div>}
-        <button className="back-button" onClick={handleBackToCategories}>
-          Back To Main Categories
-        </button>
-        <div className="SDB_product-list">
-          <div className="filters">
-            <input
-              type="date"
-              name="selectedDate"
-              placeholder="Before Date"
-              value={filters.selectedDate}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="text"
-              name="search"
-              placeholder="Search By Product Name"
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="number"
-              name="minPrice"
-              placeholder="Min Price"
-              value={filters.minPrice}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="number"
-              name="maxPrice"
-              placeholder="Max Price"
-              value={filters.maxPrice}
-              onChange={handleFilterChange}
-            />
-            <select
-              name="selectedSubcategory"
-              value={product.subcategory_id}
-              onChange={handleFilterChange}
-              required
-            >
-              <option value="" disabled>
-                All SubCategories
-              </option>
-              {filteredSubcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </select>
 
-            <select
-              name="status"
-              value={filters.status}
-              onChange={handleFilterChange}
-            >
-              <option value="">Status</option>
-              <option value="in_stock">In Stock</option>
-              <option value="out_of_stock">Out Of Stock</option>
-              <option value="on_demand">On Demand</option>
-            </select>
-            <div className="star-filter">
-              {Array.from({ length: 5 }, (_, index) => (
-                <span
-                  key={index}
-                  className={`star ${
-                    filterRating >= index + 1 ? "selected" : ""
-                  }`}
-                  onClick={() => handleStarClick(index + 1)}
-                >
-                  ★
-                </span>
-              ))}
+        <div className="SDB_product-list">
+          <div id="filter-sort-section" className="filter-sort-section">
+            <div id="filters-container" className="filters">
+              <input
+                id="filter-date"
+                type="date"
+                name="selectedDate"
+                placeholder="Before Date"
+                value={filters.selectedDate}
+                onChange={handleFilterChange}
+              />
+
+              <input
+                id="filter-min-price"
+                type="number"
+                name="minPrice"
+                placeholder="Min Price"
+                value={filters.minPrice}
+                onChange={handleFilterChange}
+              />
+              <input
+                id="filter-max-price"
+                type="number"
+                name="maxPrice"
+                placeholder="Max Price"
+                value={filters.maxPrice}
+                onChange={handleFilterChange}
+              />
+              <select
+                id="filter-subcategory"
+                name="selectedSubcategory"
+                value={product.subcategory_id}
+                onChange={handleFilterChange}
+                required
+                disabled={!filters.selectedCategory}
+              >
+                <option value="" disabled>
+                  All SubCategories
+                </option>
+                {filteredSubcategories.map((subcategory) => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                id="filter-status"
+                name="status"
+                value={filters.status}
+                onChange={handleFilterChange}
+              >
+                <option value="">Status</option>
+                <option value="in_stock">In Stock</option>
+                <option value="out_of_stock">Out Of Stock</option>
+                <option value="on_demand">On Demand</option>
+              </select>
+              <input
+                id="filter-search"
+                type="text"
+                name="search"
+                placeholder="Search"
+                value={filters.search}
+                onChange={handleFilterChange}
+              />
+              <div id="star-filter-container" className="star-filter">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <span
+                    id={`star`}
+                    key={index}
+                    className={`star ${
+                      filterRating >= index + 1 ? "selected" : ""
+                    }`}
+                    onClick={() => handleStarClick(index + 1)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <button
+                id="clear-filters-button"
+                className="clear-filters-button"
+                onClick={handleClearFilters}
+              >
+                Clear
+              </button>
+              <div id="sort-buttons-container" className="sort-buttons-modern">
+                <h3>Sort By:</h3>
+                {["price", "time", "rating"].map((type) => {
+                  const isActive = sortOption.startsWith(type);
+                  const order = sortOption.endsWith("highest")
+                    ? "highest"
+                    : "lowest";
+
+                  return (
+                    <button
+                      id={`sort-button-${type}`}
+                      key={type}
+                      className={`sort-button ${isActive ? "active" : ""}`}
+                      onClick={() => {
+                        handleSortChange(type);
+                      }}
+                    >
+                      {type === activeSortType && (
+                        <>
+                          {sortOption.endsWith("highest") ? (
+                            <FaSortAmountDown />
+                          ) : (
+                            <FaSortAmountUp />
+                          )}
+                        </>
+                      )}
+                      {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <button
-              className="clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
           </div>
 
           <div className="SDB_product-grid">
@@ -335,7 +411,11 @@ const Category = () => {
               </div>
             ) : products.length > 0 ? (
               filteredProducts.map((prod) => (
-                <div key={prod.id} className="SDB_product-card">
+                <div
+                  key={prod.id}
+                  className="main_product-card"
+                  onClick={() => history(`/shop/${cId}/${prod.id}`)}
+                >
                   <img
                     src={
                       prod.product_image ||
@@ -357,16 +437,15 @@ const Category = () => {
                   </button>
                   <div className="SDB_product-info">
                     <h3 className="SDB_product-title">{prod.title}</h3>
-                    <p className="SDB_product-description">
-                      {prod.description || "No Description"}
-                    </p>
-                    <div className="SDB_product-price">
+
+                    <div id="product-price">
                       <span className="status">
                         {prod.price ? `${prod.price}` : "Price Not Available"}
+                        &nbsp;&nbsp;JD
                       </span>
                     </div>
 
-                    <div className="SDB_product-stock">
+                    <div id="product-price">
                       <span className="status">
                         {prod.stock_status
                           ? prod.stock_status.replace("_", " ")
@@ -378,7 +457,7 @@ const Category = () => {
                       </span>
                     </div>
 
-                    <div className="SDB_product-rating">
+                    <div id="product-price">
                       <span>
                         <div className="internal_rating">
                           {renderStars(prod.average_rating)}
@@ -395,15 +474,6 @@ const Category = () => {
                       </span>{" "}
                       &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
                       <span>({prod.number_of_reviews})</span>
-                    </div>
-
-                    <div className="product-actions">
-                      <button
-                        onClick={() => history(`/shop/${cId}/${prod.id}`)}
-                        className="statistics-button"
-                      >
-                        Details
-                      </button>
                     </div>
                   </div>
                 </div>
