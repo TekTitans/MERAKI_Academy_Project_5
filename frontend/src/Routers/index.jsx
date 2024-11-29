@@ -64,6 +64,8 @@ export const router = createBrowserRouter(
 
         { path: "/wishlist", element: <Wishlist /> },
         { path: "/privacy", element: <PrivacyPolicy /> },
+        { path: "/myorders", element: <MyOrders /> },
+
 
         { path: "/users/:userId", element: <UserProfile /> },
 

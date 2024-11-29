@@ -76,6 +76,7 @@ const PlaceOrder = () => {
       .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa,deliveryPrice }, { headers })
       .then((response) => {
         console.log(response.data);
+        navigate("/myorders")
       })
       .catch((error) => {
         console.log(error);

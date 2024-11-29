@@ -12,6 +12,8 @@ const createOrder = async (req, res) => {
   const country=req.body.country
   const street=req.body.street
   const adress=country+","+street
+  const orderStatus="Pending"
+
 
   try {
 
@@ -34,7 +36,7 @@ const createOrder = async (req, res) => {
     const totalAmountResult = await pool.query(totalAmountQuery, [userId]);
     const totalAmount = totalAmountResult.rows[0].total_amount;
     const orderQuery =
-      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number,payment_method,delivery_price,total_amount_with_delivery) VALUES ($1, $2, $3,$4,$5,$6,$7) RETURNING id";
+      "INSERT INTO orders (user_id, total_price, shipping_address,phone_number,payment_method,delivery_price,total_amount_with_delivery,order_status) VALUES ($1, $2, $3,$4,$5,$6,$7,$8) RETURNING id";
     const orderResult = await pool.query(orderQuery, [
       userId,
       totalAmount,
@@ -42,7 +44,8 @@ const createOrder = async (req, res) => {
       phone_number,
       payment_method,
       deliveryPrice,
-      Number(deliveryPrice)+Number( totalAmount)
+      Number(deliveryPrice)+Number( totalAmount),
+      orderStatus
 
     ]);
     const orderId = orderResult.rows[0].id;
@@ -711,22 +714,29 @@ const getUserOrders = async (req, res) => {
 SELECT 
     o.id AS order_id,
     o.total_price,
+        o.order_status,
+
+    o.total_amount_with_delivery,
     p.id AS product_id,
-    p.title AS product_title,
-    p.price AS product_price,
-    p.description AS product_description,
+    p.title,
+    p.price,
     c.quantity,
-    p.product_image
+    p.product_image,
+    u.id AS user_id,
+    u.first_name,
+        u.last_name
+
 FROM 
     orders o
 LEFT JOIN 
     cart c ON o.id = c.order_id
 LEFT JOIN 
     products p ON c.product_id = p.id
-    
+LEFT JOIN 
+    users u ON o.user_id = u.id
 WHERE 
     o.user_id = $1
-    AND c.is_deleted = true;
+    AND c.is_deleted = true
 
     `;
 
