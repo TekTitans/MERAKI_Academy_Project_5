@@ -128,7 +128,7 @@ const Cart = () => {
         <th colSpan="6">total : {totalAmount} JD</th>
         </tr>
       </thead>
-    </table>:<div class="empty-cart-message" id="emptyCartMessage">
+    </table>:<div className="empty-cart-message" id="emptyCartMessage">
   <h2>Your Cart is Empty</h2>
   <p>It looks like you haven't added anything to your cart yet. Start shopping now!</p>
   <button onClick={()=>{navigate("/shop")}}>Go to Shop</button>

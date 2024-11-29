@@ -702,6 +702,51 @@ const getAdminSummary = async (req, res) => {
     });
   }
 };
+const getUserOrders = async (req, res) => {
+  const userId = req.token.userId;
+
+  try {
+    const query = `
+
+SELECT 
+    o.id AS order_id,
+    o.total_price,
+    p.id AS product_id,
+    p.title AS product_title,
+    p.price AS product_price,
+    p.description AS product_description,
+    c.quantity,
+    p.product_image
+FROM 
+    orders o
+LEFT JOIN 
+    cart c ON o.id = c.order_id
+LEFT JOIN 
+    products p ON c.product_id = p.id
+    
+WHERE 
+    o.user_id = $1
+    AND c.is_deleted = true;
+
+    `;
+
+    const result = await pool.query(query, [userId]);
+
+    res.status(200).json({
+      success: true,
+      message: "Orders retrieved successfully",
+      result: result.rows,
+    });
+    console.log(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      err: err.message || err,
+    });
+  }
+};
 
 module.exports = {
   cancelOrder,
@@ -713,4 +758,5 @@ module.exports = {
   generateInvoice,
   getSellerSummary,
   getAdminSummary,
+  getUserOrders
 };
