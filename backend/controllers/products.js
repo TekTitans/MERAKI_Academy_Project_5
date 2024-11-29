@@ -421,16 +421,27 @@ const getProductsByCategory = async (req, res) => {
   const size = parseInt(req.query.size) || 5;
   const offset = (page - 1) * size;
 
-  const query = `SELECT * FROM products WHERE category_id = $1 LIMIT $2 OFFSET $3`;
-  const data = [category_id, size, offset];
+  const query = `
+    SELECT 
+      p.*, 
+      COALESCE(COUNT(r.id), 0) AS number_of_reviews, 
+      COALESCE(ROUND(AVG(r.rating), 1), 0) AS average_rating
+    FROM products p
+    LEFT JOIN reviews r ON p.id = r.product_id
+    WHERE p.category_id = $1
+    GROUP BY p.id
+    LIMIT $2 OFFSET $3
+  `;
+
   const countQuery = `SELECT COUNT(*) FROM products WHERE category_id = $1`;
   const countData = [category_id];
 
   try {
-    const result = await pool.query(query, data);
+    const result = await pool.query(query, [category_id, size, offset]);
+
     const countResult = await pool.query(countQuery, countData);
 
-    const totalProducts = parseInt(countResult.rows[0].count);
+    const totalProducts = parseInt(countResult.rows[0].count, 10);
     const totalPages = Math.ceil(totalProducts / size);
 
     res.json({
@@ -438,16 +449,18 @@ const getProductsByCategory = async (req, res) => {
       message: "Products retrieved successfully",
       totalPages: totalPages,
       totalProducts: totalProducts,
-      products: result.rows,
+      products: result.rows, 
     });
   } catch (error) {
+    console.error("Error fetching products by category:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
+
 
 const searchByName = async (req, res) => {
   const query1 = req.params.query;

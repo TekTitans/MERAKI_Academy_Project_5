@@ -83,46 +83,66 @@ const removeReview = async (req, res) => {
   }
 };
 
-const getProductReviews = (req, res) => {
+const getProductReviews = async (req, res) => {
   const product_id = parseInt(req.params.id);
 
-  const query = `SELECT 
-    reviews.id, 
-    reviews.rating, 
-    reviews.comment, 
-    reviews.created_at, 
-    reviews.user_id,
-    CONCAT(users.first_name, ' ', users.last_name) AS user_name, 
-    users.userName
-  FROM reviews
-  JOIN users ON reviews.user_id = users.id
-  WHERE reviews.product_id = $1 `;
+  const query = `
+    SELECT 
+      reviews.id, 
+      reviews.rating, 
+      reviews.comment, 
+      reviews.created_at, 
+      reviews.user_id,
+      CONCAT(users.first_name, ' ', users.last_name) AS user_name, 
+      users.userName
+    FROM reviews
+    JOIN users ON reviews.user_id = users.id
+    WHERE reviews.product_id = $1
+  `;
+
+  const aggregateQuery = `
+    SELECT 
+      COUNT(*) AS number_of_reviews,
+      COALESCE(AVG(rating), 0) AS average_rating
+    FROM reviews
+    WHERE product_id = $1
+  `;
 
   const data = [product_id];
-  pool
-    .query(query, data)
-    .then((result) => {
-      if (result.rows.length == 0) {
-        res.status(404).json({
-          success: false,
-          message: "no data",
-        });
-      } else {
-        res.status(200).json({
-          success: true,
-          message: "review selected successfully",
-          result: result.rows,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({
+
+  try {
+    const reviewsResult = await pool.query(query, data);
+
+    if (reviewsResult.rows.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "Server error",
-        err: err,
+        message: "No reviews found",
+        reviews: [],
+        number_of_reviews: 0,
+        average_rating: 0,
       });
+    }
+
+    const aggregateResult = await pool.query(aggregateQuery, data);
+
+    res.status(200).json({
+      success: true,
+      message: "Reviews fetched successfully",
+      reviews: reviewsResult.rows,
+      number_of_reviews: parseInt(aggregateResult.rows[0].number_of_reviews, 10),
+      average_rating: parseFloat(aggregateResult.rows[0].average_rating),
     });
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      err: err.message,
+    });
+  }
 };
+
+
 const createSellerReviews = (req, res) => {
   const { user_id, rating, comment } = req.body;
   const id = req.token.userId;

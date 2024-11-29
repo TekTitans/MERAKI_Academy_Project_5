@@ -5,6 +5,7 @@
   gap: 20px;
   padding: 20px;
   background-color: #f9f9f9;
+  justify-content: center; 
 }
 
 /* Loader */
@@ -33,7 +34,6 @@
   }
 }
 
-/* Product Card */
 .modern-product-card {
   position: relative;
   background: #ffffff;
@@ -42,6 +42,8 @@
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  max-width: 300px;
+  margin: auto; 
 }
 
 .modern-product-card:hover {
@@ -49,7 +51,6 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Product Image */
 .modern-product-image {
   width: 100%;
   height: 200px;
@@ -62,7 +63,6 @@
   transform: scale(1.05);
 }
 
-/* Wishlist Button */
 .modern-wishlist-icon {
   position: absolute;
   top: 10px;
@@ -163,6 +163,33 @@
   margin-left: 5px;
   color: #888888;
 }
+/* Rating Container */
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Space between stars and count */
+  font-size: 16px; /* Base font size */
+  color: #f4c150; /* Gold color for stars */
+}
+
+/* Individual Stars */
+.rating-star {
+  font-size: 18px; /* Adjust the size of the stars */
+  color: #f4c150; /* Gold for filled stars */
+}
+
+.rating-star.empty {
+  color: #e0e0e0; /* Gray for empty stars */
+}
+
+/* Rating Count */
+.rating-count {
+  font-size: 14px;
+  color: #555; /* Neutral color for text */
+}
+
+
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {

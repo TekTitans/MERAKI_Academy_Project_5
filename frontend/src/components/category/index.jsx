@@ -95,6 +95,7 @@ const Category = () => {
 
       if (response.data.products) {
         dispatch(setProducts(response.data.products));
+        console.log(products);
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
       dispatch(setLoading(false));
@@ -202,16 +203,6 @@ const Category = () => {
     fetchProducts(currentPage);
   }, [dispatch, token, currentPage]);
 
-  const renderStars = (rating) => {
-    const maxStars = 5;
-    return (
-      <span className="rating-stars">
-        {Array.from({ length: maxStars }, (_, i) =>
-          i < rating ? "★" : "☆"
-        ).join("")}
-      </span>
-    );
-  };
   const handleStarClick = (star) => {
     setFilterRating(star);
   };
@@ -474,8 +465,8 @@ const Category = () => {
             <div className="loader-container">
               <div className="loader-circle"></div>
             </div>
-          ) : products.length > 0 ? (
-            products.map((prod) => {
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map((prod) => {
               const isWishlisted =
                 Array.isArray(wishlist) && wishlist.includes(prod.id);
 
@@ -541,12 +532,22 @@ const Category = () => {
                     </div>
 
                     <div className="modern-product-rating">
-                      <div className="modern-rating-stars">
-                        {renderStars(prod.average_rating)}
+                      <div className="rating-container">
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <i
+                            key={index}
+                            className={`rating-star ${
+                              index < prod.average_rating
+                                ? "fas fa-star"
+                                : "far fa-star"
+                            }`}
+                          ></i>
+                        ))}
+                        <span className="rating-count">
+                          ({prod.number_of_reviews}{" "}
+                          {prod.number_of_reviews === 1 ? "rating" : "ratings"})
+                        </span>
                       </div>
-                      <span className="modern-rating-count">
-                        (&nbsp;{prod.number_of_reviews}&nbsp;)
-                      </span>
                     </div>
                   </div>
                 </div>
