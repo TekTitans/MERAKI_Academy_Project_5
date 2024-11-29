@@ -12,6 +12,8 @@
   gap: 10px;
   flex-wrap: wrap;
   text-decoration: none;
+  margin-bottom: 10px;
+  height: 60px;
 }
 
 /* Breadcrumb items (links and span) will all look like boxes */

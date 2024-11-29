@@ -16,7 +16,7 @@ const VerifyEmail = () => {
           if (response.data.success) {
             setStatus({ message: response.data.message, success: true });
             setTimeout(() => {
-              history("/Home");
+              history("/users/login");
             }, 2000);
           }
         })
