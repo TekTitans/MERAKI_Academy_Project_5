@@ -1,39 +1,42 @@
 const pool = require("../models/db");
 
-const createReview = (req, res) => {
+const createReview = async (req, res) => {
   const { rating, comment } = req.body;
-  const product_id = req.params.pId;
+  const { pId } = req.params;
+  const userId = req.token.userId;
 
-  const user_id = req.token.userId;
+  try {
+    console.log("userId", userId);
+    const newReview = await pool.query(
+      `INSERT INTO reviews (rating, comment, user_id, product_id) 
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [rating, comment, userId, pId]
+    );
 
-  const query = `INSERT INTO reviews (product_id, user_id, rating,comment) VALUES ($1,$2,$3,$4)RETURNING *;`;
-  const data = [product_id, user_id, rating, comment];
-  pool
-    .query(query, data)
-    .then((result) => {
-      res.status(200).json({
-        success: true,
-        message: "review created successfully",
-        result: result.rows[0],
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+    const user = await pool.query(
+      `SELECT first_name, last_name, profile_image FROM users WHERE id = $1`,
+      [userId]
+    );
 
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-        err: err,
-      });
+    res.status(201).json({
+      result: {
+        ...newReview.rows[0],
+        user_name: `${user.rows[0].first_name} ${user.rows[0].last_name}`,
+        profile_image: user.rows[0].profile_image || null,
+      },
     });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Failed to create review." });
+  }
 };
+
 const updateReview = async (req, res) => {
   const reviewId = req.params.reviewId;
   const { comment, rating } = req.body;
-  const userId = req.token.userId; // Get user ID from the JWT token
+  const userId = req.token.userId;
 
   try {
-    // Check if the review exists and belongs to the logged-in user
     const result = await pool.query(
       "SELECT * FROM reviews WHERE id = $1 AND user_id = $2",
       [reviewId, userId]
@@ -45,7 +48,6 @@ const updateReview = async (req, res) => {
         .json({ message: "You can only edit your own reviews" });
     }
 
-    // Update the review
     const updatedReview = await pool.query(
       "UPDATE reviews SET comment = $1, rating = $2 WHERE id = $3 RETURNING *",
       [comment || null, rating || null, reviewId]
@@ -59,10 +61,9 @@ const updateReview = async (req, res) => {
 };
 const removeReview = async (req, res) => {
   const reviewId = req.params.reviewId;
-  const userId = req.token.userId; // User who is logged in
+  const userId = req.token.userId;
 
   try {
-    // Check if the review exists and belongs to the logged-in user
     const result = await pool.query(
       "SELECT * FROM reviews WHERE id = $1 AND user_id = $2",
       [reviewId, userId]
@@ -129,7 +130,10 @@ const getProductReviews = async (req, res) => {
       success: true,
       message: "Reviews fetched successfully",
       reviews: reviewsResult.rows,
-      number_of_reviews: parseInt(aggregateResult.rows[0].number_of_reviews, 10),
+      number_of_reviews: parseInt(
+        aggregateResult.rows[0].number_of_reviews,
+        10
+      ),
       average_rating: parseFloat(aggregateResult.rows[0].average_rating),
     });
   } catch (err) {
@@ -141,7 +145,6 @@ const getProductReviews = async (req, res) => {
     });
   }
 };
-
 
 const createSellerReviews = (req, res) => {
   const { user_id, rating, comment } = req.body;

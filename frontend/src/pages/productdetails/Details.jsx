@@ -38,7 +38,7 @@ const Details = () => {
       console.log("Review", response.data.reviews);
       console.log("average_rating", response.data.average_rating);
     });
-  }, [pId]);
+  }, [pId, reviews]);
   console.log(reviews);
 
   const addToCart = () => {
@@ -82,8 +82,8 @@ const Details = () => {
         )
         .then((response) => {
           console.log(response.data);
-
-          setReviews([...reviews, response.data.result]);
+          const newReview = response.data.result;
+          setReviews([...reviews, newReview]);
           setNewComment("");
           setRating(0);
         })
@@ -163,198 +163,149 @@ const Details = () => {
             />
           </div>
 
+          <div className="product-main">
+            {/* Product Details */}
+            <div className="product-info-container">
+              <h1 className="product-title">{product.title}</h1>
 
-            <div className="product-main">
-              {/* Product Details */}
-              <div className="product-info-container">
-                <h1 className="product-title">{product.title}</h1>
-
-                {/* Product Rating */}
-                <div className="product-rating-container">
-                  <div className="product-stars">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <i
-                        key={star}
-                        className={`star-icon ${
-                          avgrate >= star ? "fas fa-star" : "far fa-star"
-                        }`}
-                      ></i>
-                    ))}
-                  </div>
+              {/* Product Rating */}
+              <div className="product-rating-container">
+                <div className="product-stars">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <i
+                      key={star}
+                      className={`star-icon ${
+                        avgrate >= star ? "fas fa-star" : "far fa-star"
+                      }`}
+                    ></i>
+                  ))}
                 </div>
+              </div>
 
-                <p className="product-price">{product.price} JD</p>
-                <p className="product-description">{product.description}</p>
+              <p className="product-price">{product.price} JD</p>
+              <p className="product-description">{product.description}</p>
 
-                <div className="product-seller">
-                  <strong>Added by: </strong>
-                  <Link
-                    to={`/users/${product.seller_id}`}
-                    className="seller-link"
-                  >
-                    {product.user_name}
-                  </Link>
-                </div>
+              <div className="product-seller">
+                <strong>Added by: </strong>
+                <Link
+                  to={`/users/${product.seller_id}`}
+                  className="seller-link"
+                >
+                  {product.user_name}
+                </Link>
+              </div>
 
-                <div className="add-to-cart-section">
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    min="1"
-                    className="quantity-input"
-                  />
-                  <button className="add-to-cart-button" onClick={addToCart}>
-                    Add to Cart
-                  </button>
-                </div>
+              <div className="add-to-cart-section">
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  min="1"
+                  className="quantity-input"
+                />
+                <button className="add-to-cart-button" onClick={addToCart}>
+                  Add to Cart
+                </button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="product-reviews-section">
-  <h2 className="product-reviews-title">Customer Reviews</h2>
+      <div className="product-reviews-section">
+        <h2 className="product-reviews-title">Customer Reviews</h2>
 
-  {/* New Review Form */}
-  <div className="product-reviews-new-review-container">
-    <h3 className="product-reviews-new-review-title">Write a Review</h3>
-    <div className="product-reviews-rating-input">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          onClick={() => setRating(star)}
-          className={`product-reviews-star ${
-            rating >= star ? "product-reviews-star-filled" : ""
-          }`}
-        >
-          ★
-        </span>
-      ))}
-    </div>
-    <textarea
-      value={newComment}
-      onChange={(e) => setNewComment(e.target.value)}
-      placeholder="Share your experience..."
-      className="product-reviews-new-review-textarea"
-    />
-    <button
-      onClick={createReview}
-      className="product-reviews-submit-review-button"
-    >
-      Submit
-    </button>
-  </div>
-
-  {/* Review Cards */}
-  <div className="product-reviews-cards">
-    {reviews.length > 0 ? (
-      reviews
-        .slice(0, showAllComments ? reviews.length : 5)
-        .map((review) => (
-          <div className="product-reviews-card" key={review.id}>
-            <div className="product-reviews-card-header">
-              <span className="product-reviews-author">{review.user_name}</span>
-              <span className="product-reviews-date">
-                {new Date(review.created_at).toLocaleString()}
+        <div className="product-reviews-new-review-container">
+          <h3 className="product-reviews-new-review-title">Write a Review</h3>
+          <div className="product-reviews-rating-input">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                onClick={() => setRating(star)}
+                className={`product-reviews-star ${
+                  rating >= star ? "product-reviews-star-filled" : ""
+                }`}
+              >
+                ★
               </span>
-            </div>
-            <div className="product-reviews-card-stars">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <i
-                  key={star}
-                  className={`product-reviews-star-icon ${
-                    review.rating >= star ? "fas fa-star" : "far fa-star"
-                  }`}
-                ></i>
-              ))}
-            </div>
-            <p className="product-reviews-card-comment">{review.comment}</p>
-
-            {review.user_id === parseInt(userId) && (
-              <div className="product-reviews-card-actions">
-                <button
-                  className="product-reviews-edit-review-button"
-                  onClick={() => handleEdit(review)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="product-reviews-delete-review-button"
-                  onClick={() => deleteReview(review.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-
-            {editingReview?.id === review?.id && (
-              <div className="product-reviews-edit-review-container">
-                <div className="product-reviews-rating-input">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      onClick={() => setEditRating(star)}
-                      className={`product-reviews-star ${
-                        editRating >= star
-                          ? "product-reviews-star-filled"
-                          : ""
-                      }`}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <textarea
-                  value={editComment}
-                  onChange={(e) => setEditComment(e.target.value)}
-                  placeholder="Edit your review..."
-                  className="product-reviews-edit-review-textarea"
-                />
-                <div className="product-reviews-edit-actions">
-                  <button
-                    onClick={() => handleUpdate(review.id)}
-                    className="product-reviews-update-review-button"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => setEditingReview(null)}
-                    className="product-reviews-cancel-edit-button"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
+            ))}
           </div>
-        ))
-    ) : (
-      <p className="product-reviews-no-reviews-message">
-        No reviews yet. Be the first to review!
-      </p>
-    )}
-  </div>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Share your experience..."
+            className="product-reviews-new-review-textarea"
+          />
+          <button
+            onClick={createReview}
+            className="product-reviews-submit-review-button"
+          >
+            Submit
+          </button>
+        </div>
 
-  {/* Show All Button */}
-  {reviews.length > 5 && (
-    <button
-      onClick={toggleShowAllComments}
-      className="product-reviews-toggle-button"
-    >
-      {showAllComments ? "Show Less" : "Show All"}
-    </button>
-  )}
+        <div className="product-reviews-cards">
+          {reviews.length > 0 ? (
+            reviews
+              .slice(0, showAllComments ? reviews.length : 5)
+              .map((review) => (
+                <div className="product-reviews-card" key={review.id}>
+                  <div className="product-reviews-card-header">
+                    <div className="product-reviews-user-info">
+                      {review.profile_image ? (
+                        <img
+                          src={review.profile_image}
+                          alt={review.user_name}
+                          className="product-reviews-profile-image"
+                        />
+                      ) : (
+                        <i className="fas fa-user-circle product-reviews-profile-icon"></i>
+                      )}
+                      <span className="product-reviews-author">
+                        {review.user_name}
+                      </span>
+                    </div>
+                    <span className="product-reviews-date">
+                      {new Date(review.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="product-reviews-card-stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i
+                        key={star}
+                        className={`product-reviews-star-icon ${
+                          review.rating >= star ? "fas fa-star" : "far fa-star"
+                        }`}
+                      ></i>
+                    ))}
+                  </div>
+                  <p className="product-reviews-card-comment">
+                    {review.comment}
+                  </p>
+                </div>
+              ))
+          ) : (
+            <p className="product-reviews-no-reviews-message">
+              No reviews yet. Be the first to review!
+            </p>
+          )}
+        </div>
 
-  {/* Modal */}
-  <Modal
-    isOpen={modalVisible}
-    autoClose={closeModal}
-    message={modalMessage}
-  />
-</div>
+        {reviews.length > 5 && (
+          <button
+            onClick={toggleShowAllComments}
+            className="product-reviews-toggle-button"
+          >
+            {showAllComments ? "Show Less" : "Show All"}
+          </button>
+        )}
 
-
+        <Modal
+          isOpen={modalVisible}
+          autoClose={closeModal}
+          message={modalMessage}
+        />
+      </div>
     </>
   );
 };
