@@ -127,7 +127,10 @@ const UserProfile = () => {
             <p>{userData.role}</p>
           </div>
         </div>
+        <button onClick={()=>{history(`/chat/${userId}`)}}>message</button>
+
       </div>
+      
     </div>
   );
 };

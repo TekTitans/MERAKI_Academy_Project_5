@@ -79,7 +79,7 @@ const Messages = ({ socket, userid }) => {
     return () => {
       socket.off("message");
     };
-  }, [allMessages, dispatch, socket, recived]);
+  }, [dispatch, socket]);
 
   useEffect(() => {
     const chatBox = chatBoxRef.current;
