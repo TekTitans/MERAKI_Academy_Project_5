@@ -68,6 +68,8 @@ export const router = createBrowserRouter(
 
 
         { path: "/users/:userId", element: <UserProfile /> },
+        { path: "/chat/:userid", element: <Chat /> },
+
 
         { path: "/users/:userId", element: <UserProfile /> },
       ],

@@ -7,7 +7,7 @@ const createMessage = (req, res) => {
     const from_id = req.body.from_id;
 
 
-    const add = "INSERT INTO messages (from_user, to_user, message,from_id) VALUES ($1, $2, $3,$4)";
+    const add = "INSERT INTO messages (from_user, to_user, message,from_id) VALUES ($1, $2, $3,$4)returning *";
     
     pool.query(add, [from, to, message,from_id])
       .then((response) => {
@@ -24,10 +24,12 @@ const createMessage = (req, res) => {
  
 
     const getMessages = (req, res) => {
-        const from = req.body.from;
-        const to = req.body.to;
+        const from =Number( req.token.userId);
+        ;
+        const to =Number( req.params.id);
+        
     
-        const query = "SELECT sender_id, receiver_id, message_text, timestamp FROM messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1) ORDER BY timestamp ASC";
+        const query = "SELECT from_user, to_user, message, timestamp FROM messages WHERE (from_id = $1 AND to_user = $2) OR (from_id = $2 AND to_user = $1) ORDER BY timestamp ASC";
         
         pool.query(query, [from, to])
             .then((response) => {
