@@ -28,6 +28,7 @@ const Wishlist = () => {
         });
         if (response.data.success) {
           setWishlist(response.data.wishlists);
+          console.log("wishlists", response.data.wishlists);
         }
         console.log("wishlists: ", response.data.wishlists);
       } catch (err) {
@@ -61,7 +62,10 @@ const Wishlist = () => {
 
   return (
     <div className="wishlist-grid">
-      <h2>Your Wishlist</h2>
+<h2 class="wishlist-heading">
+  <i class="fas fa-heart wishlist-icon"></i>
+  Your Wishlist
+</h2>
       {wishlist.length === 0 ? (
         <p className="no-results1"> Wishlist Empty!...</p>
       ) : (
@@ -91,29 +95,42 @@ const Wishlist = () => {
                   {item.price ? `${item.price} JD` : "Price Not Available"}
                 </div>
                 <div className="modern-product-rating">
-                      <div className="rating-container">
-                        {Array.from({ length: 5 }, (_, index) => (
-                          <i
-                            key={index}
-                            className={`rating-star ${
-                              index < item.average_rating
-                                ? "fas fa-star"
-                                : "far fa-star"
-                            }`}
-                          ></i>
-                        ))}
-                        <span className="rating-count">
-                          ({item.number_of_reviews}{" "}
-                          {item.number_of_reviews === 1 ? "rating" : "ratings"})
-                        </span>
-                      </div>
-                    </div>
-                <button
-                  onClick={() => removeFromWishlist(item.product_id)}
-                  className="wishlist-card-remove-btn"
-                >
-                  Remove
-                </button>
+                  <div className="rating-container">
+                    {Array.from({ length: 5 }, (_, index) => (
+                      <i
+                        key={index}
+                        className={`rating-star ${
+                          index < item.average_rating
+                            ? "fas fa-star"
+                            : "far fa-star"
+                        }`}
+                      ></i>
+                    ))}
+                    <span className="rating-count">
+                      ({item.number_of_reviews}{" "}
+                      {item.number_of_reviews === 1 ? "rating" : "ratings"})
+                    </span>
+                  </div>
+                </div>
+                <div className="modern-product-price-row">
+                  <button
+                    onClick={() => removeFromWishlist(item.product_id)}
+                    className="wishlist-card-remove-btn"
+                  >
+                    Remove
+                  </button>
+                  <button
+                    className="modern-cart-icon"
+                    id="modern-cart-icon_WishList"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(prod.id);
+                    }}
+                    aria-label="Add to Cart"
+                  >
+                    <i className="fas fa-shopping-cart"></i>
+                  </button>
+                </div>
               </div>
             </div>
           ))}

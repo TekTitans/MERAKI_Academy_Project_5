@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import { FaShoppingCart, FaBars, FaTimes,FaShoppingBag,FaHeart  } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaBars,
+  FaTimes,
+  FaShoppingBag,
+  FaHeart,
+} from "react-icons/fa";
 //import { RiAccountCircleFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
 import { clearRecived } from "../../components/redux/reducers/auth";
 import axios from "axios";
-import { FaHeart } from "react-icons/fa";
 import { setCartNum } from "../redux/reducers/orders";
-
 
 const Navbar = () => {
   const allMessages = useSelector((state) => state.auth.allMessages);
@@ -68,7 +72,6 @@ const Navbar = () => {
             />
           </form>
 
-          
           <Link
             to="/wishlist"
             className="navbar-wishlist"
@@ -81,14 +84,12 @@ const Navbar = () => {
           </Link>
 
           <a className="cart-icon">
-      <FaShoppingCart onClick={() => history("/cart")} />
-      {cartNum > 0 && (
-        <span className="cart-count">{cartNum}</span>
-      )}
-    </a>
+            <FaShoppingCart onClick={() => history("/cart")} />
+            {cartNum > 0 && <span className="cart-count">{cartNum}</span>}
+          </a>
           <a className="cart-icon">
-            <FaShoppingBag  onClick={() => history("/myorders")} />
-
+            <FaShoppingBag onClick={() => history("/myorders")} />
+          </a>
 
           {/* Notification Button */}
           <button
