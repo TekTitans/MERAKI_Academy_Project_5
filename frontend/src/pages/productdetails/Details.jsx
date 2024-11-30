@@ -29,15 +29,14 @@ const Details = () => {
   useEffect(() => {
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
       setProduct(response.data.product);
-      console.log(response.data);
+      console.log("product", response.data.product);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
-      const allReview = response.data.result;
+      const allReview = response.data.reviews;
       setReviews(allReview);
-      const total = allReview.reduce((sum, review) => sum + review.rating, 0);
-      const avg =
-        allReview.length > 0 ? (total / allReview.length).toFixed(2) : null;
-      setAvgrate(avg);
+      setAvgrate(response.data.average_rating);
+      console.log("Review", response.data.reviews);
+      console.log("average_rating", response.data.average_rating);
     });
   }, [pId]);
   console.log(reviews);
@@ -142,58 +141,74 @@ const Details = () => {
     <>
       <Breadcrumb />
 
-      <div className="details-container">
-        <div className="productpage">
-          <div className="productimage">
-            <img
-              src={
-                product.product_image || "https://via.placeholder.com/400x400"
-              }
-              alt={product.title}
-            />
-          </div>
+      <div className="product-details-container">
+  <div className="product-main">
+    {/* Full-Height Product Image */}
+    <div className="product-image-container">
+      <img
+        src={
+          product.product_image || "https://via.placeholder.com/600x600"
+        }
+        alt={product.title}
+        className="product-image"
+      />
+    </div>
 
-          <div className="productdetails">
-            <h1 className="producttitle">{product.title}</h1>
-            <p className="productprice">{product.price} JD</p>
-            <p className="productdescription">{product.description}</p>
+    {/* Product Details */}
+    <div className="product-info-container">
+      <h1 className="product-title">{product.title}</h1>
 
-            <div className="add-to-cart">
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                min="1"
-                className="quantity-input"
-              />
-              <button className="add-to-cart-button" onClick={addToCart}>
-                Add to Cart
-              </button>
-            </div>
-            <p>
-              <strong>Added by:</strong>
-              <Link to={`/users/${product.seller_id}`} className="user-link">
-                {product.user_name}
-              </Link>
-            </p>
-          </div>
-        </div>
-        <div className="avgrating">
-          <span className="ratingstart">Rating</span>
+      {/* Product Rating */}
+      <div className="product-rating-container">
+        <div className="product-stars">
           {[1, 2, 3, 4, 5].map((star) => (
-            <span
+            <i
               key={star}
-              className={`star ${avgrate >= star ? "filled" : ""}`}
-            >
-              ★
-            </span>
+              className={`star-icon ${
+                avgrate >= star ? "fas fa-star" : "far fa-star"
+              }`}
+            ></i>
           ))}
         </div>
-        <div className="reviews-section">
+      </div>
+
+      <p className="product-price">{product.price} JD</p>
+      <p className="product-description">{product.description}</p>
+
+      <div className="product-seller">
+        <strong>Added by: </strong>
+        <Link to={`/users/${product.seller_id}`} className="seller-link">
+          {product.user_name}
+        </Link>
+      </div>
+
+      <div className="add-to-cart-section">
+        <input
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          min="1"
+          className="quantity-input"
+        />
+        <button className="add-to-cart-button" onClick={addToCart}>
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+      <div>
+        {/* Reviews Section */}
+        <div className="reviews-container">
           <h2>Reviews</h2>
 
+          {/* New Review Form */}
           <div className="new-review-form">
-            <div className="rating">
+            <div className="rating-input">
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
@@ -208,46 +223,50 @@ const Details = () => {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write your review..."
+              className="review-textarea"
             />
-            <button onClick={createReview}>Submit Review</button>
+            <button onClick={createReview} className="submit-review-button">
+              Submit Review
+            </button>
           </div>
 
-          <div>
+          {/* Review Cards */}
+          <div className="review-cards">
             {reviews.length > 0 ? (
               reviews
                 .slice(0, showAllComments ? reviews.length : 5)
-                ?.map((review) => (
-                  <div className="review-card" key={review?.id}>
+                .map((review) => (
+                  <div className="review-card" key={review.id}>
                     <div className="review-header">
                       <span className="review-author">{review.user_name}</span>
                       <span className="review-date">
                         {new Date(review.created_at).toLocaleString()}
                       </span>
                     </div>
-                    <div className="review-rating">
+                    <div className="review-stars">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <span
                           key={star}
                           className={`star ${
-                            review?.rating >= star ? "filled" : ""
+                            review.rating >= star ? "filled" : ""
                           }`}
                         >
                           ★
                         </span>
                       ))}
                     </div>
-                    <p className="review-comment">{review?.comment}</p>
+                    <p className="review-comment">{review.comment}</p>
 
-                    {review?.user_id === parseInt(userId) && (
-                      <div className="edit-delete-buttons">
+                    {review.user_id === parseInt(userId) && (
+                      <div className="review-actions">
                         <button
-                          className="edit"
+                          className="edit-review-button"
                           onClick={() => handleEdit(review)}
                         >
                           Edit
                         </button>
                         <button
-                          className="delete"
+                          className="delete-review-button"
                           onClick={() => deleteReview(review.id)}
                         >
                           Delete
@@ -256,8 +275,8 @@ const Details = () => {
                     )}
 
                     {editingReview?.id === review?.id && (
-                      <div>
-                        <div className="rating">
+                      <div className="edit-review-form">
+                        <div className="rating-input">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <span
                               key={star}
@@ -274,11 +293,18 @@ const Details = () => {
                           value={editComment}
                           onChange={(e) => setEditComment(e.target.value)}
                           placeholder="Edit your review..."
+                          className="review-textarea"
                         />
-                        <button onClick={() => handleUpdate(review.id)}>
+                        <button
+                          onClick={() => handleUpdate(review.id)}
+                          className="update-review-button"
+                        >
                           Update
                         </button>
-                        <button onClick={() => setEditingReview(null)}>
+                        <button
+                          onClick={() => setEditingReview(null)}
+                          className="cancel-edit-button"
+                        >
                           Cancel
                         </button>
                       </div>
@@ -286,25 +312,29 @@ const Details = () => {
                   </div>
                 ))
             ) : (
-              <p>No reviews yet. Be the first to review!</p>
-            )}
-
-            {reviews.length > 5 && (
-              <button
-                onClick={toggleShowAllComments}
-                className="show-all-button"
-              >
-                {showAllComments ? "Show Less" : "Show All"}
-              </button>
+              <p className="no-reviews-message">
+                No reviews yet. Be the first to review!
+              </p>
             )}
           </div>
 
-          <Modal
-            isOpen={modalVisible}
-            autoClose={closeModal} // Pass closeModal as the autoClose handler
-            message={modalMessage}
-          />
+          {/* Show All Button */}
+          {reviews.length > 5 && (
+            <button
+              onClick={toggleShowAllComments}
+              className="toggle-reviews-button"
+            >
+              {showAllComments ? "Show Less" : "Show All"}
+            </button>
+          )}
         </div>
+
+        {/* Modal */}
+        <Modal
+          isOpen={modalVisible}
+          autoClose={closeModal}
+          message={modalMessage}
+        />
       </div>
     </>
   );

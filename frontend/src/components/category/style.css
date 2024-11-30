@@ -1,14 +1,12 @@
-/* Product Grid Container */
 .main_product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   padding: 20px;
   background-color: #f9f9f9;
-  justify-content: center; 
+  justify-content: center;
 }
 
-/* Loader */
 .loader-container {
   display: flex;
   justify-content: center;
@@ -43,7 +41,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   max-width: 300px;
-  margin: auto; 
+  margin: auto;
 }
 
 .modern-product-card:hover {
@@ -69,14 +67,14 @@
   right: 10px;
   width: 50px;
   height: 50px;
-  background-color: rgba(0, 123, 255, 0.1); /* Subtle background */
-  color: #007bff; /* Default icon color */
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
   border: none;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px; /* Larger icon size */
+  font-size: 24px;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -84,21 +82,20 @@
 }
 
 .modern-wishlist-icon:hover {
-  background-color: rgba(0, 123, 255, 0.3); /* Brighter background */
-  transform: scale(1.1); /* Slightly enlarge on hover */
+  background-color: rgba(0, 123, 255, 0.3);
+  transform: scale(1.1);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .modern-wishlist-icon.active {
-  background-color: rgba(255, 77, 79, 0.2); /* Light red background */
-  color: #ff4d4f; /* Active red icon */
+  background-color: rgba(255, 77, 79, 0.2);
+  color: #ff4d4f;
 }
 
 .modern-wishlist-icon.active:hover {
-  background-color: rgba(255, 77, 79, 0.4); /* Brighter red on hover */
+  background-color: rgba(255, 77, 79, 0.4);
 }
 
-/* Stock Status Badge */
 .modern-stock-badge {
   position: absolute;
   top: 15px;
@@ -123,7 +120,6 @@
   background-color: #ffc107;
 }
 
-/* Product Info */
 .modern-product-info {
   padding: 15px;
 }
@@ -138,7 +134,6 @@
   overflow: hidden;
 }
 
-/* Price */
 .modern-product-price {
   font-size: 16px;
   font-weight: bold;
@@ -146,7 +141,6 @@
   margin-bottom: 10px;
 }
 
-/* Product Rating */
 .modern-product-rating {
   display: flex;
   align-items: center;
@@ -163,35 +157,28 @@
   margin-left: 5px;
   color: #888888;
 }
-/* Rating Container */
 .rating-container {
   display: flex;
   align-items: center;
-  gap: 5px; /* Space between stars and count */
-  font-size: 16px; /* Base font size */
-  color: #f4c150; /* Gold color for stars */
+  gap: 5px;
+  font-size: 16px;
+  color: #f4c150;
 }
 
-/* Individual Stars */
 .rating-star {
-  font-size: 18px; /* Adjust the size of the stars */
-  color: #f4c150; /* Gold for filled stars */
+  font-size: 18px;
+  color: #f4c150;
 }
 
 .rating-star.empty {
-  color: #e0e0e0; /* Gray for empty stars */
+  color: #e0e0e0;
 }
 
-/* Rating Count */
 .rating-count {
   font-size: 14px;
-  color: #555; /* Neutral color for text */
+  color: #555;
 }
 
-
-
-
-/* Responsive Adjustments */
 @media (max-width: 768px) {
   .modern-product-card {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
