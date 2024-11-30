@@ -141,201 +141,220 @@ const Details = () => {
     <>
       <Breadcrumb />
 
-      <div className="product-details-container">
-  <div className="product-main">
-    {/* Full-Height Product Image */}
-    <div className="product-image-container">
-      <img
-        src={
-          product.product_image || "https://via.placeholder.com/600x600"
-        }
-        alt={product.title}
-        className="product-image"
-      />
-    </div>
+      <div className="details-container">
+        <div className="productpage">
+          <div className="productimage">
+            <img
+              src={
+                product.product_image || "https://via.placeholder.com/600x600"
+              }
+              alt={product.title}
+              className="zoomable-image"
+              onMouseMove={(e) => {
+                const { left, top, width, height } =
+                  e.target.getBoundingClientRect();
+                const x = ((e.clientX - left) / width) * 100;
+                const y = ((e.clientY - top) / height) * 100;
+                e.target.style.transformOrigin = `${x}% ${y}%`;
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transformOrigin = "center";
+              }}
+            />
+          </div>
 
-    {/* Product Details */}
-    <div className="product-info-container">
-      <h1 className="product-title">{product.title}</h1>
 
-      {/* Product Rating */}
-      <div className="product-rating-container">
-        <div className="product-stars">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <i
-              key={star}
-              className={`star-icon ${
-                avgrate >= star ? "fas fa-star" : "far fa-star"
-              }`}
-            ></i>
-          ))}
+            <div className="product-main">
+              {/* Product Details */}
+              <div className="product-info-container">
+                <h1 className="product-title">{product.title}</h1>
+
+                {/* Product Rating */}
+                <div className="product-rating-container">
+                  <div className="product-stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i
+                        key={star}
+                        className={`star-icon ${
+                          avgrate >= star ? "fas fa-star" : "far fa-star"
+                        }`}
+                      ></i>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="product-price">{product.price} JD</p>
+                <p className="product-description">{product.description}</p>
+
+                <div className="product-seller">
+                  <strong>Added by: </strong>
+                  <Link
+                    to={`/users/${product.seller_id}`}
+                    className="seller-link"
+                  >
+                    {product.user_name}
+                  </Link>
+                </div>
+
+                <div className="add-to-cart-section">
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    min="1"
+                    className="quantity-input"
+                  />
+                  <button className="add-to-cart-button" onClick={addToCart}>
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <p className="product-price">{product.price} JD</p>
-      <p className="product-description">{product.description}</p>
+        <div className="product-reviews-section">
+  <h2 className="product-reviews-title">Customer Reviews</h2>
 
-      <div className="product-seller">
-        <strong>Added by: </strong>
-        <Link to={`/users/${product.seller_id}`} className="seller-link">
-          {product.user_name}
-        </Link>
-      </div>
-
-      <div className="add-to-cart-section">
-        <input
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          min="1"
-          className="quantity-input"
-        />
-        <button className="add-to-cart-button" onClick={addToCart}>
-          Add to Cart
-        </button>
-      </div>
+  {/* New Review Form */}
+  <div className="product-reviews-new-review-container">
+    <h3 className="product-reviews-new-review-title">Write a Review</h3>
+    <div className="product-reviews-rating-input">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          onClick={() => setRating(star)}
+          className={`product-reviews-star ${
+            rating >= star ? "product-reviews-star-filled" : ""
+          }`}
+        >
+          ★
+        </span>
+      ))}
     </div>
+    <textarea
+      value={newComment}
+      onChange={(e) => setNewComment(e.target.value)}
+      placeholder="Share your experience..."
+      className="product-reviews-new-review-textarea"
+    />
+    <button
+      onClick={createReview}
+      className="product-reviews-submit-review-button"
+    >
+      Submit
+    </button>
   </div>
+
+  {/* Review Cards */}
+  <div className="product-reviews-cards">
+    {reviews.length > 0 ? (
+      reviews
+        .slice(0, showAllComments ? reviews.length : 5)
+        .map((review) => (
+          <div className="product-reviews-card" key={review.id}>
+            <div className="product-reviews-card-header">
+              <span className="product-reviews-author">{review.user_name}</span>
+              <span className="product-reviews-date">
+                {new Date(review.created_at).toLocaleString()}
+              </span>
+            </div>
+            <div className="product-reviews-card-stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <i
+                  key={star}
+                  className={`product-reviews-star-icon ${
+                    review.rating >= star ? "fas fa-star" : "far fa-star"
+                  }`}
+                ></i>
+              ))}
+            </div>
+            <p className="product-reviews-card-comment">{review.comment}</p>
+
+            {review.user_id === parseInt(userId) && (
+              <div className="product-reviews-card-actions">
+                <button
+                  className="product-reviews-edit-review-button"
+                  onClick={() => handleEdit(review)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="product-reviews-delete-review-button"
+                  onClick={() => deleteReview(review.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+
+            {editingReview?.id === review?.id && (
+              <div className="product-reviews-edit-review-container">
+                <div className="product-reviews-rating-input">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      onClick={() => setEditRating(star)}
+                      className={`product-reviews-star ${
+                        editRating >= star
+                          ? "product-reviews-star-filled"
+                          : ""
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <textarea
+                  value={editComment}
+                  onChange={(e) => setEditComment(e.target.value)}
+                  placeholder="Edit your review..."
+                  className="product-reviews-edit-review-textarea"
+                />
+                <div className="product-reviews-edit-actions">
+                  <button
+                    onClick={() => handleUpdate(review.id)}
+                    className="product-reviews-update-review-button"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => setEditingReview(null)}
+                    className="product-reviews-cancel-edit-button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))
+    ) : (
+      <p className="product-reviews-no-reviews-message">
+        No reviews yet. Be the first to review!
+      </p>
+    )}
+  </div>
+
+  {/* Show All Button */}
+  {reviews.length > 5 && (
+    <button
+      onClick={toggleShowAllComments}
+      className="product-reviews-toggle-button"
+    >
+      {showAllComments ? "Show Less" : "Show All"}
+    </button>
+  )}
+
+  {/* Modal */}
+  <Modal
+    isOpen={modalVisible}
+    autoClose={closeModal}
+    message={modalMessage}
+  />
 </div>
 
 
-
-
-      <div>
-        {/* Reviews Section */}
-        <div className="reviews-container">
-          <h2>Reviews</h2>
-
-          {/* New Review Form */}
-          <div className="new-review-form">
-            <div className="rating-input">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  onClick={() => setRating(star)}
-                  className={`star ${rating >= star ? "filled" : ""}`}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write your review..."
-              className="review-textarea"
-            />
-            <button onClick={createReview} className="submit-review-button">
-              Submit Review
-            </button>
-          </div>
-
-          {/* Review Cards */}
-          <div className="review-cards">
-            {reviews.length > 0 ? (
-              reviews
-                .slice(0, showAllComments ? reviews.length : 5)
-                .map((review) => (
-                  <div className="review-card" key={review.id}>
-                    <div className="review-header">
-                      <span className="review-author">{review.user_name}</span>
-                      <span className="review-date">
-                        {new Date(review.created_at).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="review-stars">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={`star ${
-                            review.rating >= star ? "filled" : ""
-                          }`}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <p className="review-comment">{review.comment}</p>
-
-                    {review.user_id === parseInt(userId) && (
-                      <div className="review-actions">
-                        <button
-                          className="edit-review-button"
-                          onClick={() => handleEdit(review)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="delete-review-button"
-                          onClick={() => deleteReview(review.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-
-                    {editingReview?.id === review?.id && (
-                      <div className="edit-review-form">
-                        <div className="rating-input">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                              key={star}
-                              onClick={() => setEditRating(star)}
-                              className={`star ${
-                                editRating >= star ? "filled" : ""
-                              }`}
-                            >
-                              ★
-                            </span>
-                          ))}
-                        </div>
-                        <textarea
-                          value={editComment}
-                          onChange={(e) => setEditComment(e.target.value)}
-                          placeholder="Edit your review..."
-                          className="review-textarea"
-                        />
-                        <button
-                          onClick={() => handleUpdate(review.id)}
-                          className="update-review-button"
-                        >
-                          Update
-                        </button>
-                        <button
-                          onClick={() => setEditingReview(null)}
-                          className="cancel-edit-button"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))
-            ) : (
-              <p className="no-reviews-message">
-                No reviews yet. Be the first to review!
-              </p>
-            )}
-          </div>
-
-          {/* Show All Button */}
-          {reviews.length > 5 && (
-            <button
-              onClick={toggleShowAllComments}
-              className="toggle-reviews-button"
-            >
-              {showAllComments ? "Show Less" : "Show All"}
-            </button>
-          )}
-        </div>
-
-        {/* Modal */}
-        <Modal
-          isOpen={modalVisible}
-          autoClose={closeModal}
-          message={modalMessage}
-        />
-      </div>
     </>
   );
 };
