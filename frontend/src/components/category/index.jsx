@@ -527,8 +527,22 @@ const Category = () => {
                   <div className="modern-product-info">
                     <h3 className="modern-product-title">{prod.title}</h3>
 
-                    <div className="modern-product-price">
-                      {prod.price ? `${prod.price} JD` : "Price Not Available"}
+                    <div className="modern-product-price-row">
+                      <div className="modern-product-price">
+                        {prod.price
+                          ? `${prod.price} JD`
+                          : "Price Not Available"}
+                      </div>
+                      <button
+                        className="modern-cart-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(prod.id);
+                        }}
+                        aria-label="Add to Cart"
+                      >
+                        <i className="fas fa-shopping-cart"></i>
+                      </button>
                     </div>
 
                     <div className="modern-product-rating">

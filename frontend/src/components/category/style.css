@@ -41,6 +41,8 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   max-width: 300px;
+  min-width: 250px;
+
   margin: auto;
 }
 
@@ -177,6 +179,45 @@
 .rating-count {
   font-size: 14px;
   color: #555;
+}
+
+.modern-product-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  gap: 10px; 
+}
+
+.modern-product-price {
+  font-size: 1.2rem;
+}
+
+.modern-cart-icon {
+  background: none; 
+  border: none; 
+  padding: 0;
+  color: #007bff; 
+  font-size: 1.5rem; 
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.modern-cart-icon i {
+  display: inline-block;
+}
+
+.modern-cart-icon:hover {
+  color: #0056b3; 
+  transform: translateY(-2px); 
+  background: none; 
+}
+
+.modern-cart-icon:active {
+  color: #003d80; 
+  transform: scale(0.95); 
 }
 
 @media (max-width: 768px) {
