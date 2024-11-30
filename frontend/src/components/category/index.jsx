@@ -351,7 +351,6 @@ const Category = () => {
         <div className="loading-circle"></div>
       </div>
     );
-
   return (
     <div className="category-page-container">
       <Breadcrumb />
@@ -388,7 +387,7 @@ const Category = () => {
             <select
               id="filter-subcategory"
               name="selectedSubcategory"
-              value={product.subcategory_id}
+              value={filters.selectedSubcategory}
               onChange={handleFilterChange}
               required
               disabled={!filters.selectedCategory}
@@ -424,7 +423,7 @@ const Category = () => {
             <div id="star-filter-container" className="star-filter">
               {Array.from({ length: 5 }, (_, index) => (
                 <span
-                  id={`star`}
+                  id={`star-${index}`}
                   key={index}
                   className={`star ${
                     filterRating >= index + 1 ? "selected" : ""
@@ -446,9 +445,6 @@ const Category = () => {
               <h3>Sort By:</h3>
               {["price", "time", "rating"].map((type) => {
                 const isActive = sortOption.startsWith(type);
-                const order = sortOption.endsWith("highest")
-                  ? "highest"
-                  : "lowest";
 
                 return (
                   <button
@@ -459,16 +455,13 @@ const Category = () => {
                       handleSortChange(type);
                     }}
                   >
-                    {type === activeSortType && (
-                      <>
-                        {sortOption.endsWith("highest") ? (
-                          <FaSortAmountDown />
-                        ) : (
-                          <FaSortAmountUp />
-                        )}
-                      </>
-                    )}
-                    {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
+                    {sortOption.startsWith(type) &&
+                      (sortOption.endsWith("highest") ? (
+                        <FaSortAmountDown />
+                      ) : (
+                        <FaSortAmountUp />
+                      ))}
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
                   </button>
                 );
               })}
@@ -479,9 +472,6 @@ const Category = () => {
           {loading ? (
             <div className="loading-container_Main">
               <div className="loading-circle"></div>
-
-            <div className="loader-container">
-              <div className="loader-circle"></div>
             </div>
           ) : filteredProducts.length > 0 ? (
             filteredProducts.map((prod) => {
@@ -521,7 +511,7 @@ const Category = () => {
 
                   <button
                     className={`modern-wishlist-icon ${
-                      wishlist.includes(prod.id) ? "active" : ""
+                      isWishlisted ? "active" : ""
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -534,9 +524,7 @@ const Category = () => {
                     ) : (
                       <i
                         className={
-                          wishlist.includes(prod.id)
-                            ? "fas fa-heart"
-                            : "far fa-heart"
+                          isWishlisted ? "fas fa-heart" : "far fa-heart"
                         }
                       ></i>
                     )}
@@ -600,5 +588,4 @@ const Category = () => {
     </div>
   );
 };
-
 export default Category;

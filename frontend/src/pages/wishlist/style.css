@@ -1,4 +1,32 @@
 
+/* Wishlist Heading */
+.wishlist-heading {
+  font-size: 2rem; /* Large font size */
+  font-weight: bold; /* Bold text */
+  text-align: center; /* Center align */
+  margin-bottom: 20px; /* Space below the heading */
+  padding: 10px 15px; /* Padding around the heading */
+  background: linear-gradient(90deg, #ff6b6b, #ff4757); /* Gradient red background */
+  color: white; /* White icon to match text */
+  display: flex; /* Flex layout for icon and text */
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center items horizontally */
+  gap: 10px; /* Space between icon and text */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Wishlist Icon */
+.wishlist-icon {
+  font-size: 2rem; /* Icon size matches text size */
+  color: white; /* White icon to match text */
+  transition: transform 0.3s ease, color 0.3s ease; /* Smooth animations */
+}
+
+/* Hover Effect */
+.wishlist-heading:hover .wishlist-icon {
+  color: #2d3748;
+  transform: scale(1.2); /* Slightly enlarge icon */
+}
 
 .wishlist-card-remove-btn {
   background-color: #dc3545;
@@ -8,7 +36,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .wishlist-card-remove-btn:hover {
@@ -19,4 +47,8 @@
   text-align: center;
   font-size: 1.5rem;
   color: #666;
+}
+
+#modern-cart-icon_WishList {
+  margin-top: 1rem;
 }

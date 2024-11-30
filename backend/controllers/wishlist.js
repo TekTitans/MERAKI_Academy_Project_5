@@ -81,11 +81,17 @@ const getwishlist = async (req, res) => {
 
   try {
     const query = `
-        SELECT *
-        FROM wishlists w
-        JOIN products p ON w.product_id = p.id
-        WHERE w.user_id = $1
-      `;
+      SELECT 
+        p.*,
+        w.id AS wishlist_id,
+        COUNT(r.id) AS number_of_reviews,
+        COALESCE(AVG(r.rating), 0) AS average_rating
+      FROM wishlists w
+      JOIN products p ON w.product_id = p.id
+      LEFT JOIN reviews r ON p.id = r.product_id
+      WHERE w.user_id = $1
+      GROUP BY p.id, w.id
+    `;
     const result = await pool.query(query, [userId]);
 
     if (result.rows.length === 0) {
@@ -152,7 +158,7 @@ const getWishlistCount = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Wishlist count fetched successfully.",
-      count: parseInt(count), 
+      count: parseInt(count),
     });
   } catch (error) {
     console.error("Error fetching wishlist count:", error);
