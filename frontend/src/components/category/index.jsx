@@ -319,6 +319,21 @@ const Category = () => {
       </div>
     </div>
   );
+  const addToCart = (pId) => {
+    if (!token) {
+      history("/users/login");
+    }
+    console.log("pId", pId);
+    const quantity = 1;
+    axios
+      .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
+      .then((response) => {
+        history("/cart");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
     if (error || message) {

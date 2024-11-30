@@ -269,6 +269,7 @@ const Details = () => {
                       {new Date(review.created_at).toLocaleString()}
                     </span>
                   </div>
+
                   <div className="product-reviews-card-stars">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <i
@@ -282,6 +283,63 @@ const Details = () => {
                   <p className="product-reviews-card-comment">
                     {review.comment}
                   </p>
+
+                  {review.user_id === parseInt(userId) && (
+                    <div className="product-reviews-card-actions">
+                      <button
+                        className="product-reviews-edit-review-button"
+                        onClick={() => handleEdit(review)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="product-reviews-delete-review-button"
+                        onClick={() => deleteReview(review.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+
+                  {editingReview?.id === review?.id && (
+                    <div className="product-reviews-edit-review-container">
+                      <div className="product-reviews-rating-input">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            onClick={() => setEditRating(star)}
+                            className={`product-reviews-star ${
+                              editRating >= star
+                                ? "product-reviews-star-filled"
+                                : ""
+                            }`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <textarea
+                        value={editComment}
+                        onChange={(e) => setEditComment(e.target.value)}
+                        placeholder="Edit your review..."
+                        className="product-reviews-edit-review-textarea"
+                      />
+                      <div className="product-reviews-edit-actions">
+                        <button
+                          onClick={() => handleUpdate(review.id)}
+                          className="product-reviews-update-review-button"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => setEditingReview(null)}
+                          className="product-reviews-cancel-edit-button"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
           ) : (
