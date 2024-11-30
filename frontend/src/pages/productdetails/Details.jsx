@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./details.css";
 import Modal from "../modal/Modal";
 import Breadcrumb from "../../components/Breadcrumb";
+import { addToCart } from "../../components/redux/reducers/cart";
 
 const Details = () => {
   const token = useSelector((state) => state.auth.token);
@@ -26,33 +27,61 @@ const Details = () => {
   const [showAllComments, setShowAllComments] = useState(false);
   const [avgrate, setAvgrate] = useState();
   //comment
+
+  const cart = useSelector((state) => state.cart.cart || []);
+  const count = useSelector((state) => state.cart.count);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
       setProduct(response.data.product);
-      console.log("product", response.data.product);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
       const allReview = response.data.reviews;
       setReviews(allReview);
       setAvgrate(response.data.average_rating);
-      console.log("Review", response.data.reviews);
-      console.log("average_rating", response.data.average_rating);
     });
   }, [pId, reviews]);
-  console.log(reviews);
 
-  const addToCart = () => {
+  useEffect(() => {
+    console.log("Cart state updated:", cart);
+    console.log("Total unique items updated:", count);
+  }, [cart, count]);
+
+  const addCart = () => {
     if (!token) {
       Navigate("/users/login");
+      return;
     }
+
     axios
       .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
       .then((response) => {
+        if (response.data.success) {
+          const product = response.data.product;
+          console.log("Product added to cart:", product);
+
+          dispatch(
+            addToCart({
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              quantity: parseInt(product.quantity, 10),
+            })
+          );
+
+          console.log("Cart state after adding:", cart);
+          console.log("Total unique items in cart:", count);
+        } else {
+          console.warn(response.data.message);
+        }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error adding to cart:", error);
       });
   };
+
   const deleteReview = (reviewId) => {
     axios
       .delete(`http://localhost:5000/review/${reviewId}`, { headers })
@@ -202,7 +231,7 @@ const Details = () => {
                   min="1"
                   className="quantity-input"
                 />
-                <button className="add-to-cart-button" onClick={addToCart}>
+                <button className="add-to-cart-button" onClick={addCart}>
                   Add to Cart
                 </button>
               </div>

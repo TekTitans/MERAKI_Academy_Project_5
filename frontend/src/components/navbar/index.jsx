@@ -17,7 +17,7 @@ import { setCartNum } from "../redux/reducers/orders";
 
 const Navbar = () => {
   const allMessages = useSelector((state) => state.auth.allMessages);
-  const cartNum = useSelector((state) => state.order.cartnum);
+  const count = useSelector((state) => state.cart.count);
 
   const wishlistCount = useSelector((state) => state.product.count);
   const dispatch = useDispatch();
@@ -85,7 +85,7 @@ const Navbar = () => {
 
           <a className="cart-icon">
             <FaShoppingCart onClick={() => history("/cart")} />
-            {cartNum > 0 && <span className="cart-count">{cartNum}</span>}
+            {count > 0 && <span className="cart-count">{count}</span>}
           </a>
           <a className="cart-icon">
             <FaShoppingBag onClick={() => history("/myorders")} />

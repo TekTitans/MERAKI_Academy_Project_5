@@ -1,32 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { useSelector,useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
-import './cart.css';
-import { setCartNum } from "../../components/redux/reducers/orders";
+import {
+  removeFromCart,
+  updateCart,
+  setCart,
+} from "../../components/redux/reducers/cart";
 
-const Loading = () => {
-  return (
-    <div className="loading-container">
-      <div className="loading-circle"></div>
-    </div>
-  );
-};
+import "./cart.css";
+
+const Loading = () => (
+  <div className="loading-container">
+    <div className="loading-circle"></div>
+  </div>
+);
 
 const Cart = () => {
-  const dispatch=useDispatch()
-  const [localCart, setLocalCart] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [debounceTimer, setDebounceTimer] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const token = useSelector((state) => state.auth.token);
-  const cartnum = useSelector((state) => state.order.cartnum);
-
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const cart = useSelector((state) => state.cart.cart);
+  const count = useSelector((state) => state.cart.count);
+
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const navigate = useNavigate();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" />;
@@ -36,64 +40,55 @@ const Cart = () => {
     axios
       .get("http://localhost:5000/cart", { headers })
       .then((response) => {
-        setLocalCart(response.data.result);
+        dispatch(setCart(response.data.result));
         setLoading(false);
       })
       .catch((err) => {
         console.log("Error fetching cart data:", err);
         setLoading(false);
       });
-  }, [token]);
+  }, [dispatch, token]);
 
-  const sendQuantityUpdate = (id, quantity) => {
-    axios
-      .post(`http://localhost:5000/cart/${id}`, { quantity }, { headers })
-      .then((response) => {
-        console.log("Updated cart item:", response.data);
-      })
-      .catch((error) => {
-        console.log("Error updating cart item:", error);
-      });
-  };
+  const handleQuantityChange = (newQuantity, item) => {
+    dispatch(updateCart({ id: item.id, quantity: newQuantity })); // Update Redux immediately
 
-  const handleQuantityChange = (e, elem) => {
-    
-    const newQuantity = Math.max(1, parseInt(e.target.value) || 1);
-    const updatedCart = localCart.map((item) =>
-      item.id === elem.id ? { ...item, quantity: newQuantity } : item
-    );
-    setLocalCart(updatedCart);
-
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-
+    if (debounceTimer) clearTimeout(debounceTimer);
     const timer = setTimeout(() => {
-      sendQuantityUpdate(elem.id, newQuantity);
-    }, 500);
-
+      axios
+        .put(
+          `http://localhost:5000/cart/${item.id}`,
+          { quantity: newQuantity },
+          { headers }
+        )
+        .then(() => console.log("Quantity updated."))
+        .catch((error) => console.error("Error updating quantity:", error));
+    }, 300);
     setDebounceTimer(timer);
   };
 
-  const removeFromCart = (id) => {
+  const removeItem = (id) => {
     axios
       .delete(`http://localhost:5000/cart/${id}`, { headers })
-      .then((response) => {
-        const updatedCart = localCart.filter((item) => item.id !== id);
-        setLocalCart(updatedCart);
+      .then(() => {
+        dispatch(removeFromCart(id));
+      })
+      .catch((error) => console.error("Error removing item:", error));
+  };
+
+  const clearAllCart = () => {
+    axios
+      .delete("http://localhost:5000/cart/cart", { headers })
+      .then(() => {
+        dispatch(setCart([])); // Clear cart in Redux
       })
       .catch((error) => {
-        console.log("Error removing item from cart:", error);
+        console.error("Error clearing cart:", error);
       });
   };
 
-  const totalAmount = localCart?.reduce(
-    (acc, elem) => acc + elem.price * elem.quantity,
-    0
-  );
-console.log(localCart.length)
-dispatch(setCartNum(localCart.length))
-
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="myCart">
@@ -101,7 +96,7 @@ dispatch(setCartNum(localCart.length))
 
       {loading ? (
         <Loading />
-      ) : localCart.length > 0 ? (
+      ) : cart.length > 0 ? (
         <div className="cartTableWrapper">
           <table className="cartTable">
             <thead>
@@ -115,40 +110,76 @@ dispatch(setCartNum(localCart.length))
               </tr>
             </thead>
             <tbody>
-              {localCart.map((elem, index) => (
+              {cart.map((item, index) => (
                 <tr key={index}>
                   <td>
                     <button
                       className="remove-btn"
-                      onClick={() => removeFromCart(elem.id)}
+                      onClick={() => removeItem(item.id)}
                     >
                       Remove
                     </button>
                   </td>
                   <td>
                     <img
-                      src={elem.product_image || "https://via.placeholder.com/150"}
-                      alt={elem.title}
+                      src={
+                        item.product_image || "https://via.placeholder.com/150"
+                      }
+                      alt={item.title}
                       className="product-images"
                     />
                   </td>
-                  <td>{elem.title}</td>
-                  <td>{elem.price} JD</td>
+                  <td>{item.title}</td>
+                  <td>{item.price} JD</td>
                   <td>
-                    <input
-                      type="number"
-                      value={elem.quantity}
-                      min={1}
-                      onChange={(e) => handleQuantityChange(e, elem)}
-                    />
+                    <div className="quantity-controls">
+                      <button
+                        onClick={() =>
+                          handleQuantityChange(
+                            Math.max(1, item.quantity - 1),
+                            item
+                          )
+                        }
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        min={1}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            Math.max(1, parseInt(e.target.value) || 1),
+                            item
+                          )
+                        }
+                      />
+                      <button
+                        onClick={() =>
+                          handleQuantityChange(item.quantity + 1, item)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
                   </td>
-                  <td>{elem.price * elem.quantity}.00 JD</td>
+
+                  <td>{(item.price * item.quantity).toFixed(2)}.00 JD</td>
                 </tr>
               ))}
             </tbody>
             <thead>
               <tr>
-                <th colSpan="6">Total: {totalAmount} JD</th>
+                <th colSpan="6">
+                  Total:{" "}
+                  {cart
+                    .reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
+                    )
+                    .toFixed(2)}{" "}
+                  JD
+                </th>
               </tr>
             </thead>
           </table>
@@ -156,15 +187,24 @@ dispatch(setCartNum(localCart.length))
       ) : (
         <div className="empty-cart-message" id="emptyCartMessage">
           <h2>Your Cart is Empty</h2>
-          <p>It looks like you haven't added anything to your cart yet. Start shopping now!</p>
+          <p>
+            It looks like you haven't added anything to your cart yet. Start
+            shopping now!
+          </p>
           <button onClick={() => navigate("/shop")}>Go to Shop</button>
         </div>
       )}
 
-      {localCart.length > 0 && (
+      {cart.length > 0 && (
         <div className="checkout">
-          <button onClick={() => navigate("/placeorder")} className="checkoutB">
+          <button
+            className="checkout-btn"
+            onClick={() => navigate("/placeorder")}
+          >
             Checkout
+          </button>
+          <button onClick={clearAllCart} className="clear-cart-btn">
+            Clear Cart
           </button>
         </div>
       )}
