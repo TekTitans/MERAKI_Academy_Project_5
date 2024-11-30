@@ -57,7 +57,7 @@
   resize: none;
 }
 
-.submit-button {
+.prodAdd_submit-button {
   background: linear-gradient(135deg, #4caf50, #6fd83e);
   color: #ffffff;
   border: none;
@@ -69,11 +69,11 @@
   font-family: "Arial", sans-serif;
 }
 
-.submit-button:hover {
+.prodAdd_submit-button:hover {
   background: linear-gradient(135deg, #6fd83e, #4caf50);
 }
 
-.submit-button:disabled {
+.prodAdd_submit-button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
@@ -196,7 +196,7 @@
     height: 12rem;
   }
 
-  .submit-button {
+  .prodAdd_submit-button {
     width: 100%;
   }
 }
@@ -213,7 +213,7 @@
     height: 200px;
   }
 
-  .submit-button {
+  .prodAdd_submit-button {
     font-size: 0.9rem;
     padding: 0.4rem 0.8rem;
   }

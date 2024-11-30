@@ -9,6 +9,7 @@ const {
   removeCategory,
   getAllCategory,
   uploadCategoryImage,
+  getCategoryById,
 } = require("../controllers/category");
 
 const cateogryRouter = express.Router();
@@ -24,5 +25,6 @@ cateogryRouter.post(
 cateogryRouter.put("/:catId", auth, updateCategory);
 cateogryRouter.delete("/:catId", auth, removeCategory);
 cateogryRouter.get("/", getAllCategory);
+cateogryRouter.get("/:catId", getCategoryById);
 
 module.exports = cateogryRouter;

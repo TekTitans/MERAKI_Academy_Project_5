@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import { FaShoppingCart, FaBars, FaTimes,FaShoppingBag  } from "react-icons/fa";
+import { FaShoppingCart, FaBars, FaTimes,FaShoppingBag,FaHeart  } from "react-icons/fa";
 //import { RiAccountCircleFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import { clearRecived } from "../../components/redux/reducers/auth";
 import axios from "axios";
 import { FaHeart } from "react-icons/fa";
 import { setCartNum } from "../redux/reducers/orders";
+
 
 const Navbar = () => {
   const allMessages = useSelector((state) => state.auth.allMessages);
@@ -30,14 +31,15 @@ const Navbar = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       history(`/search/${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(""); // Clear the search input after redirection
     }
-    setSearchQuery("");
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleLogout = () => {
     dispatch(setLogout());
+    history("/"); // Redirect to homepage after logout
   };
 
   return (
@@ -48,31 +50,14 @@ const Navbar = () => {
             <div className="icon">
               <i className="fas fa-shopping-cart"></i>
             </div>
-            <h2>SmartCart</h2>
-          </div>
-
-          <div className={`navbar-links ${isOpen ? "active" : ""}`}>
-            <ul>
-              <li>
-                <Link className="Navbar_Links" to="/">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link className="Navbar_Links" to="/Contact">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link className="Navbar_Links" to="/About">
-                  About
-                </Link>
-              </li>
-            </ul>
+            <Link className="blogo" to="/">
+              <span className="brand">SmartCart</span>
+            </Link>
           </div>
         </div>
 
         <div className="navbar-icons">
+          {/* Search Input */}
           <form className="navbar-search" onSubmit={handleSearch}>
             <input
               type="text"
@@ -81,18 +66,19 @@ const Navbar = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="submit" className="search-button">
-              🔍
-            </button>
           </form>
-          <Link to="/wishlist" className="navbar-wishlist">
+
+          
+          <Link
+            to="/wishlist"
+            className="navbar-wishlist"
+            aria-label="Go to Wishlist"
+          >
             Wishlist <FaHeart />
             {wishlistCount > 0 && (
               <span className="wishlist-count">{wishlistCount}</span>
             )}
           </Link>
-         
-
 
           <a className="cart-icon">
       <FaShoppingCart onClick={() => history("/cart")} />
@@ -102,14 +88,14 @@ const Navbar = () => {
     </a>
           <a className="cart-icon">
             <FaShoppingBag  onClick={() => history("/myorders")} />
-          </a>
 
+
+          {/* Notification Button */}
           <button
-            onClick={() => {
-              dispatch(clearRecived());
-            }}
+            onClick={() => dispatch(clearRecived())}
             type="button"
             className="Notification"
+            aria-label="Clear Notifications"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -127,25 +113,33 @@ const Navbar = () => {
             </span>
           </button>
 
-
+          {/* User Profile */}
           {isLoggedIn && (
             <div className="navbar-user" onClick={() => history("/Profile")}>
               <span className="navbar-username">{userName}</span>
             </div>
           )}
+
+          {/* Login/Logout Button */}
           <div
             className="login-btn"
             onClick={() => {
-              history(isLoggedIn ? "/users/login" : "/users/login");
-              {
-                isLoggedIn ? handleLogout() : null;
+              if (isLoggedIn) {
+                handleLogout();
+                history("/users/login");
+              } else {
+                history("/users/login");
               }
             }}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </div>
 
-          <button className="navbar-toggle" onClick={toggleMenu}>
+          <button
+            className="navbar-toggle"
+            onClick={toggleMenu}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+          >
             {isOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>

@@ -12,14 +12,14 @@
   width: 100%;
 }
 
-.navbar-logo {
+.seller_navbar-logo {
   display: flex;
   align-items: center;
   width: fit-content;
   align-items: center;
 }
 
-.navbar-logo h1 {
+.seller_navbar-logo h1 {
   font-size: 1.5rem;
   font-weight: bold;
   margin-right: 20;
@@ -28,7 +28,7 @@
   margin-bottom: 0;
 }
 
-.menu-toggle {
+.seller_navbar-toggle {
   display: none;
   background: none;
   border: none;
@@ -37,7 +37,7 @@
   cursor: pointer;
 }
 
-.navbar-links {
+.seller_navbar-links {
   list-style: none;
   display: flex;
   gap: 0;
@@ -45,7 +45,7 @@
   padding: 0;
 }
 
-.navbar-links li {
+.seller_navbar-links li {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -59,30 +59,30 @@
   width: fit-content;
 }
 
-.navbar-links li:hover {
+.seller_navbar-links li:hover {
   background-color: #3b82f6;
   color: #ffffff;
 }
 
-.navbar-links li.active {
+.seller_navbar-links li.active {
   background-color: #facc15;
   color: #1e293b;
   font-weight: bold;
 }
 
-.navbar-icon {
+.seller_navbar-icon {
   font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {
-  .menu-toggle {
+  .seller_navbar-toggle {
     display: block;
     margin-left: auto;
     margin-right: 10px;
     padding: 2px;
   }
 
-  .navbar-links {
+  .seller_navbar-links {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
@@ -96,11 +96,11 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
-  .navbar-links.open {
+  .seller_navbar-links.open {
     display: flex;
   }
 
-  .navbar-links li {
+  .seller_navbar-links li {
     width: 100%;
     text-align: left;
     padding: 12px;

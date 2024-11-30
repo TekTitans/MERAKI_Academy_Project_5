@@ -17,6 +17,7 @@ import {
 import "./style.css";
 import { FaArrowLeft, FaArrowRight, FaHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
 
 const CategoriesPage = () => {
   const history = useNavigate();
@@ -35,7 +36,7 @@ const CategoriesPage = () => {
   const [modalMessage, setModalMessage] = useState("");
   const dispatch = useDispatch();
   const closeModal = () => {
-    setModalVisible(false); 
+    setModalVisible(false);
   };
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -208,77 +209,73 @@ const CategoriesPage = () => {
 
   return (
     <div className="All_Cat_Page_Container">
-      <div className="All_Cat_Page_content">
-        <div className="cat-page">
+      <Breadcrumb />
+
+      <div className="all-cat-page-content">
+        <div className="category-page">
           {error && <div className="error-message">Error: {error}</div>}
           {message && <div className="success-message">{message}</div>}
 
-          <div className="SDB_product-list">
-            <div className="Cat_Header">
-              <div className="filters">
-                <input
-                  type="text"
-                  name="search"
-                  placeholder="Search By Category Name"
-                  value={filters.search}
-                  onChange={handleFilterChange}
-                />
-                <button
-                  className="clear-filters-button"
-                  onClick={handleClearFilters}
-                >
-                  Clear
-                </button>
-              </div>
+          <div className="category-header">
+            <div className="filters-container">
+              <input
+                type="text"
+                name="search"
+                placeholder="Search by Category Name"
+                value={filters.search}
+                onChange={handleFilterChange}
+                className="filter-search"
+              />
+              <button
+                className="clear-filters-button"
+                onClick={handleClearFilters}
+              >
+                Clear
+              </button>
             </div>
-
-            <div className="SDB_product-grid">
-              {loading ? (
-                <div class="loading-container">
-                  <div class="loading-circle"></div>
-                </div>
-              ) : (
-                filteredCategories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    className="Category-card"
-                    onClick={() => {
-                      history(`/category/${cat.id}`);
-                    }}
-                  >
-                    <img
-                      src={
-                        cat.category_image ||
-                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                      }
-                      alt={cat.name}
-                      className="SDB_product-image"
-                      onError={(e) =>
-                        (e.target.src =
-                          "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                      }
-                    />
-
-                   
-                    <div className="SDB_product-info">
-                      <h3 className="SDB_product-title">{cat.name}</h3>
-                      <p className="SDB_product-description">
-                        {cat.description || "No Description"}
-                      </p>
-
-                      <div className="product-actions"></div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            {paginationControls}
           </div>
+
+          <div className="category-grid">
+            {loading ? (
+              <div className="loading-container">
+                <div className="loading-circle"></div>
+              </div>
+            ) : (
+              filteredCategories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="category-card"
+                  onClick={() => history(`/shop/${cat.id}`)}
+                >
+                  <img
+                    src={
+                      cat.category_image ||
+                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                    }
+                    alt={cat.name}
+                    className="category-image"
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                    }
+                  />
+                  <div className="category-info">
+                    <h3 className="category-title">{cat.name}</h3>
+                    <p className="category-description">
+                      {cat.description || "No Description"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {paginationControls}
         </div>
 
         <Modal
           isOpen={modalVisible}
-          autoClose={closeModal} // Pass closeModal as the autoClose handler
+          autoClose={closeModal}
           message={modalMessage}
         />
       </div>

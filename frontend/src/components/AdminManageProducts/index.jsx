@@ -66,7 +66,7 @@ const AdminManageProducts = () => {
 
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/subcateogry");
+        const response = await axios.get("http://localhost:5000/subCategory");
         setSubcategories(response.data.subCategory);
       } catch (error) {
         console.error("Error fetching subcategories:", error);
