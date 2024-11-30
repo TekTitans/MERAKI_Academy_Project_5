@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import { FaShoppingCart, FaBars, FaTimes, FaHeart } from "react-icons/fa";
+import { FaShoppingCart, FaBars, FaTimes,FaShoppingBag,FaHeart  } from "react-icons/fa";
+//import { RiAccountCircleFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogout } from "../redux/reducers/auth";
 import { clearRecived } from "../../components/redux/reducers/auth";
+import axios from "axios";
+import { FaHeart } from "react-icons/fa";
+import { setCartNum } from "../redux/reducers/orders";
+
 
 const Navbar = () => {
   const allMessages = useSelector((state) => state.auth.allMessages);
+  const cartNum = useSelector((state) => state.order.cartnum);
+
   const wishlistCount = useSelector((state) => state.product.count);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const history = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [itemCount, setItemCount] = useState(3);
+
   const recived = useSelector((state) => state.auth.recived);
 
   const { userName } = useSelector((state) => state.auth);
@@ -71,14 +80,15 @@ const Navbar = () => {
             )}
           </Link>
 
-         
-          <a
-            className="cart-icon"
-            aria-label="Go to Cart"
-            onClick={() => history("/cart")}
-          >
-            <FaShoppingCart />
-          </a>
+          <a className="cart-icon">
+      <FaShoppingCart onClick={() => history("/cart")} />
+      {cartNum > 0 && (
+        <span className="cart-count">{cartNum}</span>
+      )}
+    </a>
+          <a className="cart-icon">
+            <FaShoppingBag  onClick={() => history("/myorders")} />
+
 
           {/* Notification Button */}
           <button

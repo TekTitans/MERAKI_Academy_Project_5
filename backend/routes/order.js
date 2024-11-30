@@ -11,6 +11,7 @@ const {
   generateInvoice,
   getSellerSummary,
   getAdminSummary,
+  getUserOrders
 } = require("../controllers/order");
 
 const orderRouter = express.Router();
@@ -24,5 +25,7 @@ orderRouter.get("/seller/:sellerId", auth, getSellerOrders);
 orderRouter.put("/:id/status", auth, updateOrderStatus);
 orderRouter.get("/:id/invoice", generateInvoice);
 orderRouter.get("/admin/summary", auth, getAdminSummary);
+orderRouter.get("/user/orders", auth, getUserOrders);
+
 
 module.exports = orderRouter;

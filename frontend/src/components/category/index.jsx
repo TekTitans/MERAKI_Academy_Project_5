@@ -272,8 +272,8 @@ const Category = () => {
 
   if (loading)
     return (
-      <div class="loading-container_Main">
-        <div class="loading-circle"></div>
+      <div className="loading-container_Main">
+        <div className="loading-circle"></div>
       </div>
     );
 
@@ -402,6 +402,9 @@ const Category = () => {
         </div>
         <div className="product-grid">
           {loading ? (
+            <div className="loading-container_Main">
+              <div className="loading-circle"></div>
+
             <div className="loader-container">
               <div className="loader-circle"></div>
             </div>
