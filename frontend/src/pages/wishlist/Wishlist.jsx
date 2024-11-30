@@ -12,7 +12,7 @@ const Wishlist = () => {
   const [modalMessage, setModalMessage] = useState("");
 
   const closeModal = () => {
-    setModalVisible(false); // This function hides the modal
+    setModalVisible(false);
   };
 
   const token = useSelector((state) => state.auth.token);
@@ -29,6 +29,7 @@ const Wishlist = () => {
         if (response.data.success) {
           setWishlist(response.data.wishlists);
         }
+        console.log("wishlists: ", response.data.wishlists);
       } catch (err) {
         console.error("Error fetching wishlist:", err);
       }
@@ -59,40 +60,68 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="wishlist-container">
+    <div className="wishlist-grid">
       <h2>Your Wishlist</h2>
       {wishlist.length === 0 ? (
         <p className="no-results1"> Wishlist Empty!...</p>
       ) : (
-        <table className="wishlist-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Description</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {wishlist.map((item) => (
-              <tr key={item.product_id}>
-                <td>{item.title}</td>
-                <td>{item.description}</td>
-                <td>
-                  <button
-                    onClick={() => removeFromWishlist(item.product_id)}
-                    className="remove-btn"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="main_product-grid">
+          {wishlist.map((item) => (
+            <div className="modern-product-card" key={item.product_id}>
+              <div
+                className={`modern-stock-badge ${
+                  item.stock_status
+                    ? item.stock_status.toLowerCase()
+                    : "unknown"
+                }`}
+              >
+                {item.stock_status
+                  ? item.stock_status.replace("_", " ")
+                  : "Unknown"}
+              </div>
+              <img
+                src={item.product_image || "/default-product-image.jpg"}
+                alt={item.title}
+                className="modern-product-image"
+              />
+              <div className="modern-product-info">
+                {" "}
+                <h3 className="modern-product-title">{item.title}</h3>
+                <div className="modern-product-price">
+                  {item.price ? `${item.price} JD` : "Price Not Available"}
+                </div>
+                <div className="modern-product-rating">
+                      <div className="rating-container">
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <i
+                            key={index}
+                            className={`rating-star ${
+                              index < item.average_rating
+                                ? "fas fa-star"
+                                : "far fa-star"
+                            }`}
+                          ></i>
+                        ))}
+                        <span className="rating-count">
+                          ({item.number_of_reviews}{" "}
+                          {item.number_of_reviews === 1 ? "rating" : "ratings"})
+                        </span>
+                      </div>
+                    </div>
+                <button
+                  onClick={() => removeFromWishlist(item.product_id)}
+                  className="wishlist-card-remove-btn"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
       <Modal
         isOpen={modalVisible}
-        autoClose={closeModal} // Pass closeModal as the autoClose handler
+        autoClose={closeModal}
         message={modalMessage}
       />
     </div>

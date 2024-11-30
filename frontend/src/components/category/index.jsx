@@ -15,6 +15,8 @@ import {
 } from "react-icons/fa";
 const Category = () => {
   const { cId } = useParams();
+  const [wishlist, setWishlist] = useState([]);
+  const [loadingWishlist, setLoadingWishlist] = useState({});
 
   const [product, setProduct] = useState({
     title: "",
@@ -93,6 +95,7 @@ const Category = () => {
 
       if (response.data.products) {
         dispatch(setProducts(response.data.products));
+        console.log(products);
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
       dispatch(setLoading(false));
@@ -103,29 +106,96 @@ const Category = () => {
       dispatch(setError("Error fetching seller products"));
     }
   };
-  const handleWishlist = (productId) => {
-    if (!token) {
-      setModalMessage("Login First");
-      setModalVisible(true);
-    } else {
-      axios
-        .post("http://localhost:5000/wishlist", { productId }, { headers })
-        .then((response) => {
-          if (response.data.success) {
-            console.log(response);
 
-            setModalMessage("Product added to wishlist!");
-            dispatch(incrementCount());
-          } else {
-            setModalMessage("Failed to add product to wishlist.");
-          }
-          setModalVisible(true);
-        })
-        .catch((error) => {
-          console.error("Error adding to wishlist:", error);
-          setModalMessage("Product already in your wishlist");
-          setModalVisible(true);
-        });
+  useEffect(() => {
+    if (token) {
+      fetchWishlist();
+    }
+  }, [token]);
+
+  const addToWishlist = async (productId) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/wishlist",
+        { productId },
+        { headers }
+      );
+      if (response.data.success) {
+        setWishlist((prevWishlist) => [...prevWishlist, productId]);
+        setModalMessage("Product added to wishlist!");
+      }
+    } catch (error) {
+      if (error.response?.status === 400) {
+        setModalMessage("Product is already in your wishlist.");
+      } else {
+        setModalMessage("Error adding to wishlist. Please try again.");
+      }
+    } finally {
+      setModalVisible(true);
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/wishlist/${productId}`,
+        {
+          headers,
+        }
+      );
+      if (response.data.success) {
+        setWishlist((prevWishlist) =>
+          prevWishlist.filter((id) => id !== productId)
+        );
+        setModalMessage("Product removed from wishlist.");
+      }
+    } catch (error) {
+      setModalMessage("Error removing from wishlist. Please try again.");
+    } finally {
+      setModalVisible(true);
+    }
+  };
+
+  const toggleWishlist = async (productId) => {
+    setLoadingWishlist((prevState) => ({ ...prevState, [productId]: true }));
+
+    if (wishlist.includes(productId)) {
+      setWishlist((prevWishlist) =>
+        prevWishlist.filter((id) => id !== productId)
+      );
+
+      try {
+        await removeFromWishlist(productId);
+      } catch (error) {
+        setWishlist((prevWishlist) => [...prevWishlist, productId]);
+        console.error("Error removing from wishlist:", error);
+      }
+    } else {
+      setWishlist((prevWishlist) => [...prevWishlist, productId]);
+
+      try {
+        await addToWishlist(productId);
+      } catch (error) {
+        setWishlist((prevWishlist) =>
+          prevWishlist.filter((id) => id !== productId)
+        );
+        console.error("Error adding to wishlist:", error);
+      }
+    }
+
+    setLoadingWishlist((prevState) => ({ ...prevState, [productId]: false }));
+  };
+
+  const fetchWishlist = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/wishlist", {
+        headers,
+      });
+      if (response.data.success) {
+        setWishlist(response.data.wishlists.map((item) => item.product_id));
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
     }
   };
 
@@ -133,16 +203,6 @@ const Category = () => {
     fetchProducts(currentPage);
   }, [dispatch, token, currentPage]);
 
-  const renderStars = (rating) => {
-    const maxStars = 5;
-    return (
-      <span className="rating-stars">
-        {Array.from({ length: maxStars }, (_, i) =>
-          i < rating ? "★" : "☆"
-        ).join("")}
-      </span>
-    );
-  };
   const handleStarClick = (star) => {
     setFilterRating(star);
   };
@@ -259,6 +319,21 @@ const Category = () => {
       </div>
     </div>
   );
+  const addToCart = (pId) => {
+    if (!token) {
+      history("/users/login");
+    }
+    console.log("pId", pId);
+    const quantity = 1;
+    axios
+      .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
+      .then((response) => {
+        history("/cart");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
     if (error || message) {
@@ -400,7 +475,7 @@ const Category = () => {
             </div>
           </div>
         </div>
-        <div className="product-grid">
+        <div className="main_product-grid">
           {loading ? (
             <div className="loading-container_Main">
               <div className="loading-circle"></div>
@@ -408,69 +483,113 @@ const Category = () => {
             <div className="loader-container">
               <div className="loader-circle"></div>
             </div>
-          ) : products.length > 0 ? (
-            filteredProducts.map((prod) => (
-              <div
-                key={prod.id}
-                className="product-card"
-                onClick={() => history(`/shop/${cId}/${prod.id}`)}
-              >
-                <img
-                  src={
-                    prod.product_image ||
-                    "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                  }
-                  alt={prod.title}
-                  className="product-image"
-                  onError={(e) =>
-                    (e.target.src =
-                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                  }
-                />
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map((prod) => {
+              const isWishlisted =
+                Array.isArray(wishlist) && wishlist.includes(prod.id);
 
-                <button
-                  className="wishlist-icon"
-                  onClick={() => handleWishlist(prod.id)}
+              return (
+                <div
+                  key={prod.id}
+                  className="modern-product-card"
+                  onClick={() => history(`/shop/${cId}/${prod.id}`)}
                 >
-                  ♥
-                </button>
-                <div className="product-info">
-                  <h3 className="product-title">{prod.title}</h3>
-
-                  <div className="product-price-stock">
-                    <div className="product-price">
-                      <span className="price">
-                        {prod.price ? `${prod.price}` : "Price Not Available"}{" "}
-                        JD
-                      </span>
-                    </div>
-                    <div className="product-stock">
-                      <span className="stock-status">
-                        {prod.stock_status
-                          ? prod.stock_status.replace("_", " ")
-                          : "Status Unknown"}
-                      </span>
-                      <span className="stock-quantity">
-                        ({prod.stock_quantity || "0"} available)
-                      </span>
-                    </div>
+                  <div
+                    className={`modern-stock-badge ${
+                      prod.stock_status
+                        ? prod.stock_status.toLowerCase()
+                        : "unknown"
+                    }`}
+                  >
+                    {prod.stock_status
+                      ? prod.stock_status.replace("_", " ")
+                      : "Unknown"}
                   </div>
 
-                  <div className="product-rating">
-                    <div className="rating-stars">
-                      {renderStars(prod.average_rating)}
+                  <img
+                    src={
+                      prod.product_image ||
+                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                    }
+                    alt={prod.title}
+                    className="modern-product-image"
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                    }
+                  />
+
+                  <button
+                    className={`modern-wishlist-icon ${
+                      wishlist.includes(prod.id) ? "active" : ""
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(prod.id);
+                    }}
+                    disabled={loadingWishlist[prod.id]}
+                  >
+                    {loadingWishlist[prod.id] ? (
+                      <i className="fas fa-spinner fa-spin"></i>
+                    ) : (
+                      <i
+                        className={
+                          wishlist.includes(prod.id)
+                            ? "fas fa-heart"
+                            : "far fa-heart"
+                        }
+                      ></i>
+                    )}
+                  </button>
+
+                  <div className="modern-product-info">
+                    <h3 className="modern-product-title">{prod.title}</h3>
+
+                    <div className="modern-product-price-row">
+                      <div className="modern-product-price">
+                        {prod.price
+                          ? `${prod.price} JD`
+                          : "Price Not Available"}
+                      </div>
+                      <button
+                        className="modern-cart-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(prod.id);
+                        }}
+                        aria-label="Add to Cart"
+                      >
+                        <i className="fas fa-shopping-cart"></i>
+                      </button>
                     </div>
-                    <span className="rating-count">
-                      (&nbsp;{prod.number_of_reviews}&nbsp;)
-                    </span>
+
+                    <div className="modern-product-rating">
+                      <div className="rating-container">
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <i
+                            key={index}
+                            className={`rating-star ${
+                              index < prod.average_rating
+                                ? "fas fa-star"
+                                : "far fa-star"
+                            }`}
+                          ></i>
+                        ))}
+                        <span className="rating-count">
+                          ({prod.number_of_reviews}{" "}
+                          {prod.number_of_reviews === 1 ? "rating" : "ratings"})
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="no-products">No products found.</p>
           )}
         </div>
+
         {paginationControls}
       </div>
       <Modal

@@ -1,74 +1,22 @@
-.wishlist-container {
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-}
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
 
-.error-message {
-  color: red;
-  text-align: center;
-  font-size: 18px;
-}
-
-.empty-message {
-  text-align: center;
-  color: #666;
-  font-size: 18px;
-}
-
-.wishlist-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.wishlist-table th,
-.wishlist-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-
-.wishlist-table th {
-  background-color: #f4f4f4;
-  color: #333;
-}
-
-.wishlist-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.product-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.product-image {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-}
-
-.remove-btn {
-  padding: 5px 10px;
-  background-color: #ff4d4d;
+.wishlist-card-remove-btn {
+  background-color: #dc3545;
+  color: #fff;
   border: none;
-  color: white;
+  padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 2rem;
 }
 
-.remove-btn:hover {
-  background-color: #ff1a1a;
+.wishlist-card-remove-btn:hover {
+  background-color: #a71d2a;
 }
+
 .no-results1 {
-  font-size: 30px;
   text-align: center;
+  font-size: 1.5rem;
+  color: #666;
 }
