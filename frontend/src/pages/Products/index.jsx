@@ -74,6 +74,7 @@ const CategoriesPage = () => {
       <div
         key={cat.category_id} 
         className="category-card"
+        id="unique_category"
         onClick={() => history(`/shop/${cat.category_id}`)} 
         aria-label={`View ${cat.category_name} category`}
       >
