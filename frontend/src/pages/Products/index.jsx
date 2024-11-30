@@ -72,9 +72,9 @@ const CategoriesPage = () => {
 
     return filteredCategories.map((cat) => (
       <div
-        key={cat.category_id} // Updated to use category_id
+        key={cat.category_id} 
         className="category-card"
-        onClick={() => history(`/shop/${cat.category_id}`)} // Updated for navigation
+        onClick={() => history(`/shop/${cat.category_id}`)} 
         aria-label={`View ${cat.category_name} category`}
       >
         <div className="category-badge">
@@ -98,10 +98,8 @@ const CategoriesPage = () => {
         </div>
         <div className="category-info">
           <h3 className="category-title">{cat.category_name}</h3>{" "}
-          {/* Updated */}
           <p className="category-description">
             {cat.category_description || "Explore this category!"}{" "}
-            {/* Updated */}
           </p>
         </div>
       </div>

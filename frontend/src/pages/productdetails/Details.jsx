@@ -48,7 +48,6 @@ const Details = () => {
     axios
       .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
       .then((response) => {
-        Navigate("/cart");
       })
       .catch((error) => {
         console.error(error);

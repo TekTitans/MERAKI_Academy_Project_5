@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts, incrementCount } from "../redux/reducers/product/product";
+import { setProducts } from "../redux/reducers/product/product";
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,19 +18,7 @@ const Category = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loadingWishlist, setLoadingWishlist] = useState({});
 
-  const [product, setProduct] = useState({
-    title: "",
-    description: "",
-    price: "",
-    stock_status: "in_stock",
-    stock_quantity: "",
-    color_options: "",
-    size_options: "",
-    product_image: "",
-    category_id: "",
-    subcategory_id: "",
-  });
-  const [sortOption, setSortOption] = useState("price-highest");
+  const [sortOption, setSortOption] = useState("");
   const [activeSortType, setActiveSortType] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -275,17 +263,17 @@ const Category = () => {
     })
     .sort((a, b) => {
       switch (sortOption) {
-        case "price-highest":
+        case "Price-highest":
           return b.price - a.price;
-        case "price-lowest":
+        case "Price-lowest":
           return a.price - b.price;
-        case "rating-highest":
+        case "Rating-highest":
           return b.average_rating - a.average_rating;
-        case "rating-lowest":
+        case "Rating-lowest":
           return a.average_rating - b.average_rating;
-        case "time-highest":
+        case "New-highest":
           return new Date(b.created_at) - new Date(a.created_at);
-        case "time-lowest":
+        case "New-lowest":
           return new Date(a.created_at) - new Date(b.created_at);
         default:
           return 0;
@@ -328,7 +316,6 @@ const Category = () => {
     axios
       .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
       .then((response) => {
-        history("/cart");
       })
       .catch((error) => {
         console.error(error);
@@ -443,7 +430,7 @@ const Category = () => {
             </button>
             <div id="sort-buttons-container" className="sort-buttons-modern">
               <h3>Sort By:</h3>
-              {["price", "time", "rating"].map((type) => {
+              {["Price", "New", "Rating"].map((type) => {
                 const isActive = sortOption.startsWith(type);
 
                 return (

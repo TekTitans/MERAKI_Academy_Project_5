@@ -4,6 +4,7 @@ import { decrementCount } from "../../components/redux/reducers/product/product"
 import axios from "axios";
 import "./style.css";
 import Modal from "../modal/Modal";
+import { useNavigate } from "react-router-dom";
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -14,6 +15,7 @@ const Wishlist = () => {
   const closeModal = () => {
     setModalVisible(false);
   };
+  const history = useNavigate();
 
   const token = useSelector((state) => state.auth.token);
   const headers = {
@@ -49,7 +51,7 @@ const Wishlist = () => {
       );
       if (response.data.success) {
         dispatch(decrementCount());
-        setWishlist(wishlist.filter((item) => item.product_id !== productId));
+        setWishlist(wishlist.filter((item) => item.id !== productId));
         setModalMessage(response.data.message);
         setModalVisible(true);
       }
@@ -59,19 +61,35 @@ const Wishlist = () => {
       setModalVisible(true);
     }
   };
-
+  const addToCart = (pId) => {
+    if (!token) {
+      history("/users/login");
+    }
+    console.log("pId", pId);
+    const quantity = 1;
+    axios
+      .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
+      .then((response) => {})
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   return (
     <div className="wishlist-grid">
-<h2 class="wishlist-heading">
-  <i class="fas fa-heart wishlist-icon"></i>
-  Your Wishlist
-</h2>
+      <h2 class="wishlist-heading">
+        <i class="fas fa-heart wishlist-icon"></i>
+        Your Wishlist
+      </h2>
       {wishlist.length === 0 ? (
         <p className="no-results1"> Wishlist Empty!...</p>
       ) : (
         <div className="main_product-grid">
           {wishlist.map((item) => (
-            <div className="modern-product-card" key={item.product_id}>
+            <div
+              className="modern-product-card"
+              onClick={() => history(`/shop/${item.category_id}/${item.id}`)}
+              key={item.id}
+            >
               <div
                 className={`modern-stock-badge ${
                   item.stock_status
@@ -89,7 +107,6 @@ const Wishlist = () => {
                 className="modern-product-image"
               />
               <div className="modern-product-info">
-                {" "}
                 <h3 className="modern-product-title">{item.title}</h3>
                 <div className="modern-product-price">
                   {item.price ? `${item.price} JD` : "Price Not Available"}
@@ -114,17 +131,21 @@ const Wishlist = () => {
                 </div>
                 <div className="modern-product-price-row">
                   <button
-                    onClick={() => removeFromWishlist(item.product_id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFromWishlist(item.id);
+                    }}
                     className="wishlist-card-remove-btn"
                   >
                     Remove
                   </button>
+
                   <button
                     className="modern-cart-icon"
                     id="modern-cart-icon_WishList"
                     onClick={(e) => {
                       e.stopPropagation();
-                      addToCart(prod.id);
+                      addToCart(item.id);
                     }}
                     aria-label="Add to Cart"
                   >
