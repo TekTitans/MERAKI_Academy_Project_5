@@ -98,12 +98,13 @@ const MyOrders = () => {
         }
 
         currentOrderTable = [];
-        totalAmountWithDelivery = 0;
+        totalAmountWithDelivery = parseFloat(order.delivery_charge || 0);
         currentOrderId = order.order_id;
       }
 
       currentOrderTable.push(order);
-      totalAmountWithDelivery = parseFloat(order.total_amount_with_delivery);
+
+      totalAmountWithDelivery += order.quantity * parseFloat(order.price);
     });
 
     if (currentOrderTable.length > 0) {
@@ -183,7 +184,7 @@ const MyOrders = () => {
 
       <div className="orders-container">
         <h1>My Orders</h1>
-       { renderOrders()}
+        {renderOrders()}
       </div>
     </>
   );

@@ -297,6 +297,7 @@ const login = (req, res) => {
                 message: "Valid login credentials",
                 userId: user.id,
                 roleId: user.role_id,
+                userName: user.username,
               });
             }
           } else {
