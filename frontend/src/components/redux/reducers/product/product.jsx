@@ -31,6 +31,19 @@ export const productSlice = createSlice({
     setCart: (state, action) => {
       state.cart = action.payload;
     },
+    addCart: (state, action) => {
+      state.cart.push(action.payload);
+    },
+    updateCart: (state, action) => {
+      const updatedCart = action.payload;
+      state.cart = state.cart.map((product) =>
+        product.id === updatedCart.id ? updatedCart : product
+      );
+    },
+    removeFromCart: (state, action) => {
+      const productId = action.payload;
+      state.cart = state.cart.filter((product) => product.id !== productId);
+    },
     setSearch: (state, action) => {
       state.search = action.payload;
     },
@@ -56,6 +69,9 @@ export const {
   setcatid,
   incrementCount,
   decrementCount,
+  addCart,
+  updateCart,
+  removeFromCart,
 } = productSlice.actions;
 
 export default productSlice.reducer;

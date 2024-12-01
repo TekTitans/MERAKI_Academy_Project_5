@@ -3,7 +3,9 @@ import authReducer from "./reducers/auth";
 import productReducer from "./reducers/product/product";
 import orderReducer from "./reducers/orders";
 import sellerReviewReducer from "./reducers/sellerReviews";
-import categoryReducer from "./reducers/Category"; 
+import categoryReducer from "./reducers/Category";
+import cartReducer from "./reducers/cart";
+import wishlistReducer from "./reducers/cart";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +13,9 @@ const store = configureStore({
     product: productReducer,
     order: orderReducer,
     sellerReview: sellerReviewReducer,
-    category: categoryReducer, 
+    category: categoryReducer,
+    cart: cartReducer,
+    wishlist: wishlistReducer,
   },
 });
 

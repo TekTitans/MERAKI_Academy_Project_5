@@ -82,6 +82,7 @@ const Login = () => {
         password,
       });
       if (result.data) {
+        console.log("result:", result);
         dispatch(setLogin(result.data.token));
         dispatch(setUserId(result.data.userId));
         dispatch(setUserName(result.data.userName));

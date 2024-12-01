@@ -72,9 +72,10 @@ const CategoriesPage = () => {
 
     return filteredCategories.map((cat) => (
       <div
-        key={cat.category_id} // Updated to use category_id
+        key={cat.category_id}
         className="category-card"
-        onClick={() => history(`/shop/${cat.category_id}`)} // Updated for navigation
+        id="unique_category"
+        onClick={() => history(`/shop/${cat.category_id}`)}
         aria-label={`View ${cat.category_name} category`}
       >
         <div className="category-badge">
@@ -98,53 +99,55 @@ const CategoriesPage = () => {
         </div>
         <div className="category-info">
           <h3 className="category-title">{cat.category_name}</h3>{" "}
-          {/* Updated */}
           <p className="category-description">
             {cat.category_description || "Explore this category!"}{" "}
-            {/* Updated */}
           </p>
         </div>
       </div>
     ));
   };
 
-  if (loading) {
-    return (
-      <div className="loading-container_Main">
-        <div className="loading-circle"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="categories_error-message">Error: {error}</div>;
-  }
-
   return (
-    <div className="All_Cat_Page_Container">
-      <Breadcrumb />
-      <div className="all-cat-page-content">
-        <div className="category-header">
-          <div className="filters-container">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search by Category Name"
-              value={filters.search}
-              onChange={handleFilterChange}
-              className="categories_filter-search"
-            />
-            <button
-              className="categories_clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
+    <>
+      <div>
+        {loading ? (
+          <div className="loading-container">
+            <div className="loader">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+            </div>
+            <span>Loading...</span>
           </div>
-        </div>
-        <div className="categories-container">{renderCategories()}</div>
+        ) : (
+          <>
+            {error && <div className="error-message">Error: {error}</div>}
+            {message && <div className="success-message">{message}</div>}
+          </>
+        )}
       </div>
-    </div>
+     
+      <div className="All_Cat_Page_Container">
+        <Breadcrumb />
+        <div className="all-cat-page-content">
+          <div className="category-header">
+            <div className="filters-container">
+              <input
+                type="text"
+                name="search"
+                placeholder="Search by Category Name"
+                value={filters.search}
+                onChange={handleFilterChange}
+                className="categories_filter-search"
+              />
+
+            </div>
+          </div>
+          <div className="categories-container">{renderCategories()}</div>
+        </div>
+      </div>
+    </>
   );
 };
 
