@@ -19,19 +19,10 @@
 }
 
 .productimage img {
-
   width: auto;
   height: 500px;
   transition: transform 0.3s ease-in-out; /* Smooth transition for zoom effect */
-  cursor: zoom-in; /* Change cursor to indicate zoom effect */
-
-
-  width: 100%; /* Ensure the image covers the container width */
-  height: auto;
-  transition: transform 0.5s ease; /* Smooth transition for zoom effect */
-  cursor: zoom-in; /* Change cursor to indicate zoom */
-
-
+  cursor: zoom-in; /* Change cursor to indicate zoom effect *
 }
 
 /* Hover Effect with Movement */

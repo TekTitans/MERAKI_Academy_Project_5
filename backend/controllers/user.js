@@ -386,6 +386,7 @@ const googleLogin = async (req, res) => {
       isComplete,
       isNewUser,
       userName: user.username,
+      roleId: user.role_id,
     });
   } catch (error) {
     console.error("Google login error:", error);

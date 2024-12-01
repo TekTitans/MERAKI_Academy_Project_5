@@ -163,13 +163,14 @@ const Login = () => {
         console.log("role from Redux: ", roleId);
 
         if (res.data.isComplete) {
-          if (Number(result.data.roleId) === 3) {
+          if (Number(res.data.roleId) === 3) {
             history("/");
           } else {
-            if (Number(result.data.roleId) === 2) {
+            if (Number(res.data.roleId) === 2) {
               history("/seller");
             } else {
-              if (Number(result.data.roleId) === 1) history("/admin");
+              console.log(res);
+              if (Number(res.data.roleId) === 1) history("/admin");
             }
           }
         } else {
