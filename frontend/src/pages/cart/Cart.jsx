@@ -121,14 +121,13 @@ const Cart = () => {
       </div>
       <div className="myCart-container">
         <h2 class="cart-heading">
-         
           <i class="fas fa-shopping-cart cart-icon"></i>
           My Cart{" "}
         </h2>
         <>
-            {error && <div className="error-message">Error: {error}</div>}
-            {message && <div className="success-message">{message}</div>}
-          </>
+          {error && <div className="error-message">Error: {error}</div>}
+          {message && <div className="success-message">{message}</div>}
+        </>
         <div className="myCart">
           {loading ? (
             <Loading />
@@ -201,7 +200,7 @@ const Cart = () => {
                         </div>
                       </td>
 
-                      <td>{(item.price * item.quantity).toFixed(2)}.00 JD</td>
+                      <td>{(item.price * item.quantity).toFixed(2)} JD</td>
                     </tr>
                   ))}
                 </tbody>
