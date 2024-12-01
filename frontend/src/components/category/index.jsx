@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts, incrementCount } from "../redux/reducers/product/product";
+import { setProducts } from "../redux/reducers/product/product";
 import { setLoading, setError, setMessage } from "../redux/reducers/orders";
 import "./style.css";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,22 +13,14 @@ import {
   FaSortAmountUp,
   FaSortAmountDown,
 } from "react-icons/fa";
+import { addToCart } from "../../components/redux/reducers/cart";
+
 const Category = () => {
   const { cId } = useParams();
+  const [loadingWishlist, setLoadingWishlist] = useState({});
+  const [loadingCart, setLoadingCart] = useState({});
 
-  const [product, setProduct] = useState({
-    title: "",
-    description: "",
-    price: "",
-    stock_status: "in_stock",
-    stock_quantity: "",
-    color_options: "",
-    size_options: "",
-    product_image: "",
-    category_id: "",
-    subcategory_id: "",
-  });
-  const [sortOption, setSortOption] = useState("price-highest");
+  const [sortOption, setSortOption] = useState("");
   const [activeSortType, setActiveSortType] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,12 +70,6 @@ const Category = () => {
   }, []);
 
   const fetchProducts = async (page = 1) => {
-    if (!token) {
-      dispatch(setLoading(false));
-      dispatch(setError("No token found."));
-      return;
-    }
-
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
@@ -93,6 +79,7 @@ const Category = () => {
 
       if (response.data.products) {
         dispatch(setProducts(response.data.products));
+        console.log("products: ", response.data.products);
       }
       setTotalPages(Math.ceil(response.data.totalProducts / pageSize));
       dispatch(setLoading(false));
@@ -100,49 +87,127 @@ const Category = () => {
       console.log("response", response);
     } catch (error) {
       dispatch(setLoading(false));
-      dispatch(setError("Error fetching seller products"));
+      dispatch(setError("Error fetching products"));
     }
   };
-  const handleWishlist = (productId) => {
-    if (!token) {
-      setModalMessage("Login First");
-      setModalVisible(true);
-    } else {
-      axios
-        .post("http://localhost:5000/wishlist", { productId }, { headers })
-        .then((response) => {
-          if (response.data.success) {
-            console.log(response);
 
-            setModalMessage("Product added to wishlist!");
-            dispatch(incrementCount());
-          } else {
-            setModalMessage("Failed to add product to wishlist.");
-          }
-          setModalVisible(true);
-        })
-        .catch((error) => {
-          console.error("Error adding to wishlist:", error);
-          setModalMessage("Product already in your wishlist");
-          setModalVisible(true);
-        });
+  useEffect(() => {
+    if (token) {
+      fetchWishlist();
+    }
+  }, [token]);
+
+  /*******************  WishList  ********************* */
+
+  const [wishlist, setWishlist] = useState(() => {
+    const storedWishlist = sessionStorage.getItem("wishlist");
+    try {
+      return storedWishlist ? JSON.parse(storedWishlist) : [];
+    } catch (error) {
+      console.error("Failed to parse wishlist from sessionStorage:", error);
+      return [];
+    }
+  });
+
+  // Save wishlist to sessionStorage whenever it changes
+  useEffect(() => {
+    console.log("Saving wishlist to sessionStorage:", wishlist);
+    sessionStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const fetchWishlist = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/wishlist", {
+        headers,
+      });
+
+      if (response.data.success) {
+        console.log(response.data);
+        const wishlistProducts = Array.isArray(response.data.wishlists)
+          ? response.data.wishlists.map((item) => item.id)
+          : [];
+        setWishlist(wishlistProducts); // Update state
+      } else {
+        console.error("Failed to fetch wishlist:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
     }
   };
+
+  const addToWishlist = async (productId) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/wishlist",
+        { productId },
+        { headers }
+      );
+
+      if (response.data.success) {
+        setWishlist((prevWishlist) => [...prevWishlist, productId]); // Add to state
+        dispatch(setMessage("Product added to wishlist!"));
+      } else {
+        console.error("Add to wishlist failed:", response.data.message);
+      }
+    } catch (error) {
+      dispatch(setError("Error adding to wishlist. Please try again."));
+    } finally {
+      setLoadingWishlist((prevState) => ({ ...prevState, [productId]: false }));
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/wishlist/${productId}`,
+        { headers }
+      );
+
+      if (response.data.success) {
+        setWishlist((prevWishlist) =>
+          prevWishlist.filter((id) => id !== productId)
+        ); // Remove from state
+        dispatch(setMessage("Product removed from wishlist."));
+      } else {
+        console.error("Remove from wishlist failed:", response.data.message);
+      }
+    } catch (error) {
+      dispatch(setError("Error removing from wishlist. Please try again."));
+    } finally {
+      setLoadingWishlist((prevState) => ({ ...prevState, [productId]: false }));
+    }
+  };
+
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      setModalMessage("You need to log in to manage your wishlist.");
+      setModalVisible(true);
+      return;
+    }
+
+    setLoadingWishlist((prevState) => ({ ...prevState, [productId]: true }));
+
+    if (wishlist.includes(productId)) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(productId);
+    }
+
+    setLoadingWishlist((prevState) => ({ ...prevState, [productId]: false }));
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchWishlist();
+    }
+  }, [token]);
+
+  /*******************  WishList  ********************* */
 
   useEffect(() => {
     fetchProducts(currentPage);
   }, [dispatch, token, currentPage]);
 
-  const renderStars = (rating) => {
-    const maxStars = 5;
-    return (
-      <span className="rating-stars">
-        {Array.from({ length: maxStars }, (_, i) =>
-          i < rating ? "★" : "☆"
-        ).join("")}
-      </span>
-    );
-  };
   const handleStarClick = (star) => {
     setFilterRating(star);
   };
@@ -196,7 +261,7 @@ const Category = () => {
 
       const matchesSubcategory =
         !filters.selectedSubcategory ||
-        product.subcategory_id === filters.selectedSubcategory;
+        String(product.subcategory_id) === String(filters.selectedSubcategory);
 
       const matchesRating =
         !filterRating || product.average_rating >= parseFloat(filterRating);
@@ -214,23 +279,26 @@ const Category = () => {
       );
     })
     .sort((a, b) => {
+      console.log("Sort Option:", sortOption);
       switch (sortOption) {
-        case "price-highest":
+        case "Price-highest":
           return b.price - a.price;
-        case "price-lowest":
+        case "Price-lowest":
           return a.price - b.price;
-        case "rating-highest":
+        case "Rating-highest":
           return b.average_rating - a.average_rating;
-        case "rating-lowest":
+        case "Rating-lowest":
           return a.average_rating - b.average_rating;
-        case "time-highest":
+        case "New-highest":
           return new Date(b.created_at) - new Date(a.created_at);
-        case "time-lowest":
+        case "New-lowest":
           return new Date(a.created_at) - new Date(b.created_at);
         default:
           return 0;
       }
     });
+
+  console.log("Final Filtered and Sorted Products:", filteredProducts);
 
   const paginationControls = (
     <div className="pagination-controls">
@@ -259,224 +327,341 @@ const Category = () => {
       </div>
     </div>
   );
+  const addCart = async (productId) => {
+    if (!token) {
+      setModalMessage("You need to log in to manage your cart.");
+      setModalVisible(true);
+      return;
+    }
+
+    setLoadingCart((prevState) => ({ ...prevState, [productId]: true }));
+
+    try {
+      const quantity = 1;
+      const response = await axios.post(
+        `http://localhost:5000/cart/${productId}`,
+        { quantity },
+        { headers }
+      );
+
+      if (response.data.success) {
+        const product = response.data.product;
+        console.log("Product added to cart:", product);
+        dispatch(
+          addToCart({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            quantity: parseInt(product.quantity, 10),
+          })
+        );
+        dispatch(setMessage("Product added to cart successfully!"));
+        setLoadingCart((prevState) => ({ ...prevState, [productId]: false }));
+
+        console.log("Cart state after adding:", cart);
+        console.log("Total unique items in cart:", count);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingCart((prevState) => ({ ...prevState, [productId]: false }));
+    }
+  };
 
   useEffect(() => {
     if (error || message) {
       const timer = setTimeout(() => {
         dispatch(setError(null));
         dispatch(setMessage(null));
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [error, message, dispatch]);
 
-  if (loading)
-    return (
-      <div class="loading-container_Main">
-        <div class="loading-circle"></div>
-      </div>
-    );
-
   return (
-    <div className="category-page-container">
-      <Breadcrumb />
-      <div className="category-page-content">
-        {error && <div className="alert-error">Error: {error}</div>}
-        {message && <div className="alert-success">{message}</div>}
-        <div id="filter-sort-section" className="filter-sort-section">
-          <div id="filters-container" className="filters">
-            <input
-              id="filter-date"
-              type="date"
-              name="selectedDate"
-              placeholder="Before Date"
-              value={filters.selectedDate}
-              onChange={handleFilterChange}
-            />
-
-            <input
-              id="filter-min-price"
-              type="number"
-              name="minPrice"
-              placeholder="Min Price"
-              value={filters.minPrice}
-              onChange={handleFilterChange}
-            />
-            <input
-              id="filter-max-price"
-              type="number"
-              name="maxPrice"
-              placeholder="Max Price"
-              value={filters.maxPrice}
-              onChange={handleFilterChange}
-            />
-            <select
-              id="filter-subcategory"
-              name="selectedSubcategory"
-              value={product.subcategory_id}
-              onChange={handleFilterChange}
-              required
-              disabled={!filters.selectedCategory}
-            >
-              <option value="" disabled>
-                All SubCategories
-              </option>
-              {filteredSubcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </select>
-            <select
-              id="filter-status"
-              name="status"
-              value={filters.status}
-              onChange={handleFilterChange}
-            >
-              <option value="">Status</option>
-              <option value="in_stock">In Stock</option>
-              <option value="out_of_stock">Out Of Stock</option>
-              <option value="on_demand">On Demand</option>
-            </select>
-            <input
-              id="filter-search"
-              type="text"
-              name="search"
-              placeholder="Search"
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
-            <div id="star-filter-container" className="star-filter">
-              {Array.from({ length: 5 }, (_, index) => (
-                <span
-                  id={`star`}
-                  key={index}
-                  className={`star ${
-                    filterRating >= index + 1 ? "selected" : ""
-                  }`}
-                  onClick={() => handleStarClick(index + 1)}
-                >
-                  ★
-                </span>
-              ))}
+    <>
+      {" "}
+      <div>
+        {loading ? (
+          <div className="loading-container">
+            <div className="loader">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
             </div>
-            <button
-              id="clear-filters-button"
-              className="clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
-            <div id="sort-buttons-container" className="sort-buttons-modern">
-              <h3>Sort By:</h3>
-              {["price", "time", "rating"].map((type) => {
-                const isActive = sortOption.startsWith(type);
-                const order = sortOption.endsWith("highest")
-                  ? "highest"
-                  : "lowest";
+            <span>Loading...</span>
+          </div>
+        ) : (
+          <>
+            {error && <div className="error-message">Error: {error}</div>}
+            {message && <div className="success-message">{message}</div>}
+          </>
+        )}
+      </div>
+      <div className="category-page-container">
+        <Breadcrumb />
+        <div className="category-page-content">
+          <div id="filter-sort-section" className="filter-sort-section">
+            <div id="filters-container" className="filters">
+              <input
+                id="filter-date"
+                type="date"
+                name="selectedDate"
+                placeholder="Before Date"
+                value={filters.selectedDate}
+                onChange={handleFilterChange}
+              />
 
-                return (
-                  <button
-                    id={`sort-button-${type}`}
-                    key={type}
-                    className={`sort-button ${isActive ? "active" : ""}`}
-                    onClick={() => {
-                      handleSortChange(type);
-                    }}
+              <input
+                id="filter-min-price"
+                type="number"
+                name="minPrice"
+                placeholder="Min Price"
+                value={filters.minPrice}
+                onChange={handleFilterChange}
+              />
+              <input
+                id="filter-max-price"
+                type="number"
+                name="maxPrice"
+                placeholder="Max Price"
+                value={filters.maxPrice}
+                onChange={handleFilterChange}
+              />
+              <select
+                id="filter-subcategory"
+                name="selectedSubcategory"
+                value={filters.selectedSubcategory}
+                onChange={handleFilterChange}
+                required
+              >
+                <option value="">All SubCategories</option>
+                {subcategories.map((subcategory) => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                id="filter-status"
+                name="status"
+                value={filters.status}
+                onChange={handleFilterChange}
+              >
+                <option value="">Status</option>
+                <option value="in_stock">In Stock</option>
+                <option value="out_of_stock">Out Of Stock</option>
+                <option value="on_demand">On Demand</option>
+              </select>
+              <input
+                id="filter-search"
+                type="text"
+                name="search"
+                placeholder="Search"
+                value={filters.search}
+                onChange={handleFilterChange}
+              />
+              <div id="star-filter-container" className="star-filter">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <span
+                    id={`star-${index}`}
+                    key={index}
+                    className={`star ${
+                      filterRating >= index + 1 ? "selected" : ""
+                    }`}
+                    onClick={() => handleStarClick(index + 1)}
                   >
-                    {type === activeSortType && (
-                      <>
-                        {sortOption.endsWith("highest") ? (
+                    ★
+                  </span>
+                ))}
+              </div>
+              <button
+                id="clear-filters-button"
+                className="clear-filters-button"
+                onClick={handleClearFilters}
+              >
+                Clear
+              </button>
+              <div id="sort-buttons-container" className="sort-buttons-modern">
+                <h3>Sort By:</h3>
+                {["Price", "New", "Rating"].map((type) => {
+                  const isActive = sortOption.startsWith(type);
+
+                  return (
+                    <button
+                      id={`sort-button-${type}`}
+                      key={type}
+                      className={`sort-button ${isActive ? "active" : ""}`}
+                      onClick={() => {
+                        handleSortChange(type);
+                      }}
+                    >
+                      {sortOption.startsWith(type) &&
+                        (sortOption.endsWith("highest") ? (
                           <FaSortAmountDown />
                         ) : (
                           <FaSortAmountUp />
-                        )}
-                      </>
-                    )}
-                    {type.charAt(0).toUpperCase() + type.slice(1)}{" "}
-                  </button>
-                );
-              })}
+                        ))}
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="product-grid">
-          {loading ? (
-            <div className="loader-container">
-              <div className="loader-circle"></div>
-            </div>
-          ) : products.length > 0 ? (
-            filteredProducts.map((prod) => (
-              <div
-                key={prod.id}
-                className="product-card"
-                onClick={() => history(`/shop/${cId}/${prod.id}`)}
-              >
-                <img
-                  src={
-                    prod.product_image ||
-                    "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                  }
-                  alt={prod.title}
-                  className="product-image"
-                  onError={(e) =>
-                    (e.target.src =
-                      "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                  }
-                />
-
-                <button
-                  className="wishlist-icon"
-                  onClick={() => handleWishlist(prod.id)}
-                >
-                  ♥
-                </button>
-                <div className="product-info">
-                  <h3 className="product-title">{prod.title}</h3>
-
-                  <div className="product-price-stock">
-                    <div className="product-price">
-                      <span className="price">
-                        {prod.price ? `${prod.price}` : "Price Not Available"}{" "}
-                        JD
-                      </span>
-                    </div>
-                    <div className="product-stock">
-                      <span className="stock-status">
-                        {prod.stock_status
-                          ? prod.stock_status.replace("_", " ")
-                          : "Status Unknown"}
-                      </span>
-                      <span className="stock-quantity">
-                        ({prod.stock_quantity || "0"} available)
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="product-rating">
-                    <div className="rating-stars">
-                      {renderStars(prod.average_rating)}
-                    </div>
-                    <span className="rating-count">
-                      (&nbsp;{prod.number_of_reviews}&nbsp;)
-                    </span>
-                  </div>
-                </div>
+          <div className="main_product-grid">
+            {loading ? (
+              <div className="loading-container_Main">
+                <div className="loading-circle"></div>
               </div>
-            ))
-          ) : (
-            <p className="no-products">No products found.</p>
-          )}
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map((prod) => {
+                const isWishlisted =
+                  Array.isArray(wishlist) && wishlist.includes(prod.id);
+
+                return (
+                  <div
+                    key={prod.id}
+                    className="modern-product-card"
+                    onClick={() => history(`/shop/${cId}/${prod.id}`)}
+                  >
+                    <div
+                      className={`modern-stock-badge ${
+                        prod.stock_status
+                          ? prod.stock_status.toLowerCase()
+                          : "unknown"
+                      }`}
+                    >
+                      {prod.stock_status
+                        ? prod.stock_status.replace("_", " ")
+                        : "Unknown"}
+                    </div>
+
+                    <img
+                      src={
+                        prod.product_image ||
+                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                      }
+                      alt={prod.title}
+                      className="modern-product-image"
+                      onError={(e) =>
+                        (e.target.src =
+                          "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                      }
+                    />
+
+                    <button
+                      className={`modern-wishlist-icon ${
+                        isWishlisted ? "active" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist(prod.id);
+                      }}
+                      disabled={loadingWishlist[prod.id]}
+                    >
+                      {loadingWishlist[prod.id] ? (
+                        <i className="fas fa-spinner fa-spin"></i>
+                      ) : (
+                        <i
+                          className={
+                            isWishlisted ? "fas fa-heart" : "far fa-heart"
+                          }
+                        ></i>
+                      )}
+                    </button>
+
+                    <div className="modern-product-info">
+                      <h3 className="modern-product-title">{prod.title}</h3>
+
+                      <div className="modern-product-price-row">
+                        <div className="modern-product-price">
+                          {prod.price
+                            ? `${prod.price} JD`
+                            : "Price Not Available"}
+                        </div>
+                        <button
+                          className="modern-cart-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addCart(prod.id);
+                          }}
+                          disabled={
+                            loadingCart[prod.id] ||
+                            prod.stock_status === "out_of_stock"
+                          }
+                          aria-label="Add to Cart"
+                        >
+                          {loadingCart[prod.id] ? (
+                            <div className="modern-spinner">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                          ) : (
+                            <i className="fas fa-shopping-cart"></i>
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="modern-product-rating">
+                        <div className="rating-container">
+                          {Array.from({ length: 5 }, (_, index) => (
+                            <i
+                              key={index}
+                              className={`rating-star ${
+                                index < prod.average_rating
+                                  ? "fas fa-star"
+                                  : "far fa-star"
+                              }`}
+                            ></i>
+                          ))}
+                          <span className="rating-count">
+                            ({prod.number_of_reviews}{" "}
+                            {prod.number_of_reviews === 1
+                              ? "rating"
+                              : "ratings"}
+                            )
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <p
+                          className={`product-stock_quantity ${
+                            prod.stock_status === "in_stock"
+                              ? "in-stock"
+                              : prod.stock_status === "out_of_stock"
+                              ? "out-of-stock"
+                              : "on-demand"
+                          }`}
+                        >
+                          {prod.stock_status === "in_stock"
+                            ? `${prod.stock_quantity} in stock`
+                            : prod.stock_status === "out_of_stock"
+                            ? "Out of Stock"
+                            : "Available on Demand"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="no-products">No products found.</p>
+            )}
+          </div>
+
+          {paginationControls}
         </div>
-        {paginationControls}
+        <Modal
+          isOpen={modalVisible}
+          autoClose={closeModal}
+          message={modalMessage}
+        />
       </div>
-      <Modal
-        isOpen={modalVisible}
-        autoClose={closeModal}
-        message={modalMessage}
-      />
-    </div>
+    </>
   );
 };
-
 export default Category;

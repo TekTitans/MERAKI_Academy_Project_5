@@ -8,11 +8,23 @@ import {
   FaPlus,
   FaShoppingCart,
   FaStar,
+  FaSignOutAlt,
+  FaUser,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { setLogout } from "../redux/reducers/auth";
 
 const SellerNavbar = ({ activeSection, setActiveSection }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const history = useNavigate();
+  const { userName } = useSelector((state) => state.auth);
+  const handleLogout = () => {
+    dispatch(setLogout());
+    history("/");
+  };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -21,11 +33,10 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
     <nav className="seller-navbar">
       <div className="seller_navbar-logo">
         <h1>Seller Dashboard</h1>
-       
       </div>
       <button className="seller_navbar-toggle" onClick={toggleMenu}>
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
+        {isMenuOpen ? <FaTimes /> : <FaBars />}
+      </button>
       <ul className={`seller_navbar-links ${isMenuOpen ? "open" : ""}`}>
         <li
           className={activeSection === "summary" ? "active" : ""}
@@ -76,6 +87,27 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
         >
           <FaStar className="seller_navbar-icon" />
           Reviews
+        </li>
+
+        <li
+          className={activeSection === "profile" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("profile");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaUser className="navbar-icon" />
+          Profile
+        </li>
+        <li
+          className={activeSection === "logout" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("logout");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaSignOutAlt className="navbar-icon" />
+          Logout
         </li>
       </ul>
     </nav>

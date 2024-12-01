@@ -7,12 +7,18 @@ import {
   setLogin,
   setUserId,
   setUserName,
+  setIsCompletedRegister,
+  setRoleId,
 } from "../../components/redux/reducers/auth";
 import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isCompletedRegister = useSelector((state) => state.auth.isLoggedIn);
+  const userId = useSelector((state) => state.auth.userId);
+  const roleId = useSelector((state) => state.auth.roleId);
+
   const history = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -23,14 +29,27 @@ const Login = () => {
   const [status, setStatus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isCompletedRegister, setIsCompletedRegister] = useState(false);
+
+  useEffect(() => {
+    const normalizedRoleId = Number(roleId);
+
+    if (!isLoggedIn || !isCompletedRegister || roleId === undefined) return;
+
+    if (isLoggedIn && isCompletedRegister) {
+      if (normalizedRoleId === 3) {
+        history("/");
+      } else {
+        if (normalizedRoleId === 2) {
+          history("/seller");
+        } else {
+          if (normalizedRoleId === 1) history("/admin");
+        }
+      }
+    }
+  }, [isLoggedIn, isCompletedRegister, roleId, history]);
 
   const validateEmail = (email) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
-  const validatePassword = (password) =>
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-      password
-    );
 
   const login = async (e) => {
     e.preventDefault();
@@ -54,30 +73,41 @@ const Login = () => {
       setIsLoading(false);
       return;
     }
-    if (!validatePassword(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters, include at least one number, one letter, and one special character"
-      );
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      console.log("email :", email);
+      console.log("password :", password);
+
       const result = await axios.post("http://localhost:5000/users/login", {
         email,
         password,
       });
       if (result.data) {
+        console.log("result:", result);
         dispatch(setLogin(result.data.token));
         dispatch(setUserId(result.data.userId));
         dispatch(setUserName(result.data.userName));
+        dispatch(setRoleId(result.data.roleId));
+        dispatch(setIsCompletedRegister(true));
+        const normalizedRoleId = Number(roleId);
+
+        console.log("role from Backend: ", result.data.roleId);
+        console.log("role from Redux: ", roleId);
         setMessage("");
         setStatus(true);
-        console.log(result.data);
+        if (Number(result.data.roleId) === 3) {
+          history("/");
+        } else {
+          if (Number(result.data.roleId) === 2) {
+            history("/seller");
+          } else {
+            if (Number(result.data.roleId) === 1) history("/admin");
+          }
+        }
       } else {
         throw new Error("Login failed");
       }
     } catch (error) {
+      console.log(error);
       setMessage(
         error.response?.data?.message ||
           "Error happened while Login, please try again"
@@ -127,10 +157,21 @@ const Login = () => {
         dispatch(setUserId(res.data.userId));
         setIsCompletedRegister(res.data.isComplete);
         dispatch(setUserName(res.data.userName));
-        console.log(res.data);
+        dispatch(setRoleId(res.data.roleId));
+
+        console.log("role from Backend: ", res.data.roleId);
+        console.log("role from Redux: ", roleId);
 
         if (res.data.isComplete) {
-          history("/");
+          if (Number(result.data.roleId) === 3) {
+            history("/");
+          } else {
+            if (Number(result.data.roleId) === 2) {
+              history("/seller");
+            } else {
+              if (Number(result.data.roleId) === 1) history("/admin");
+            }
+          }
         } else {
           history(`/google-complete-register/${res.data.userId}`);
         }
@@ -140,12 +181,6 @@ const Login = () => {
 
   const handleGoogleLoginFailure = (error) =>
     console.error("Google login failure:", error);
-
-  useEffect(() => {
-    if (isLoggedIn && isCompletedRegister) {
-      history("/");
-    }
-  }, [isLoggedIn, isCompletedRegister, history]);
 
   const handleRegisterClick = () => {
     history("/users");

@@ -81,33 +81,34 @@ const getwishlist = async (req, res) => {
 
   try {
     const query = `
-        SELECT *
-        FROM wishlists w
-        JOIN products p ON w.product_id = p.id
-        WHERE w.user_id = $1
-      `;
-    const result = await pool.query(query, [userId]);
+      SELECT 
+        p.*,
+        w.id AS wishlist_id,
+        COUNT(r.id) AS number_of_reviews,
+        COALESCE(AVG(r.rating), 0) AS average_rating
+      FROM wishlists w
+      JOIN products p ON w.product_id = p.id
+      LEFT JOIN reviews r ON p.id = r.product_id
+      WHERE w.user_id = $1
+      GROUP BY p.id, w.id
+    `;
 
-    if (result.rows.length === 0) {
-      return res.status(200).json({
-        success: true,
-        message: "Your wishlist is empty.",
-        wishlists: [],
-      });
-    }
+    const result = await pool.query(query, [userId]);
 
     res.status(200).json({
       success: true,
+      message: result.rows.length === 0 ? "Your wishlist is empty." : "Wishlist fetched successfully.",
       wishlists: result.rows,
     });
   } catch (error) {
-    console.error("Error fetching wishlist:", error);
+    console.error("Error fetching wishlist:", error.message);
     res.status(500).json({
       success: false,
-      message: "Server error. Please try again later.",
+      message: "Unable to fetch the wishlist. Please try again later.",
     });
   }
 };
+
 
 const clearWishlist = async (req, res) => {
   const userId = req.token.userId;
@@ -152,7 +153,7 @@ const getWishlistCount = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Wishlist count fetched successfully.",
-      count: parseInt(count), 
+      count: parseInt(count),
     });
   } catch (error) {
     console.error("Error fetching wishlist count:", error);

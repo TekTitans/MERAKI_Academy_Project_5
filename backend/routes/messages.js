@@ -1,4 +1,5 @@
 const express = require("express");
+const auth = require("../middleware/authentication");
 
 const {
   createMessage,
@@ -10,7 +11,7 @@ const messagesRouter = express.Router();
 
 messagesRouter.post("/", createMessage);
 
-messagesRouter.get("/", getMessages);
+messagesRouter.get("/:id",auth, getMessages);
 
 
 module.exports = messagesRouter;

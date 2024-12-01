@@ -101,6 +101,7 @@ const register = async (req, res) => {
       success: true,
       message:
         "Account created successfully. Please verify your email address.",
+      newUser: newUser,
     });
   } catch (err) {
     console.error(err);
@@ -288,12 +289,15 @@ const login = (req, res) => {
               };
               const options = { expiresIn: "1d" };
               const token = jwt.sign(payload, process.env.SECRET, options);
+              console.log("role", user.role_id);
 
               return res.status(200).json({
                 token,
                 success: true,
                 message: "Valid login credentials",
                 userId: user.id,
+                roleId: user.role_id,
+                userName: user.username,
               });
             }
           } else {
@@ -491,9 +495,7 @@ const getProfile = async (req, res) => {
 };
 
 const getUserbyId = async (req, res) => {
-
-
-  const  {userId}  = req.params;
+  const { userId } = req.params;
 
   try {
     const query = `SELECT * FROM users WHERE id = $1`;
@@ -504,8 +506,6 @@ const getUserbyId = async (req, res) => {
         success: true,
         user: result.rows[0],
       });
-
-
     } else {
       res.status(404).json({
         success: false,
@@ -518,7 +518,6 @@ const getUserbyId = async (req, res) => {
       message: "Server error",
       error: err.message,
     });
-
   }
 };
 
@@ -1071,6 +1070,5 @@ module.exports = {
   googleLogin,
   completeRegister,
 
-
-  getUserbyId
+  getUserbyId,
 };

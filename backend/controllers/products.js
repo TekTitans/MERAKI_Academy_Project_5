@@ -421,16 +421,27 @@ const getProductsByCategory = async (req, res) => {
   const size = parseInt(req.query.size) || 5;
   const offset = (page - 1) * size;
 
-  const query = `SELECT * FROM products WHERE category_id = $1 LIMIT $2 OFFSET $3`;
-  const data = [category_id, size, offset];
+  const query = `
+    SELECT 
+      p.*, 
+      COALESCE(COUNT(r.id), 0) AS number_of_reviews, 
+      COALESCE(ROUND(AVG(r.rating), 1), 0) AS average_rating
+    FROM products p
+    LEFT JOIN reviews r ON p.id = r.product_id
+    WHERE p.category_id = $1
+    GROUP BY p.id
+    LIMIT $2 OFFSET $3
+  `;
+
   const countQuery = `SELECT COUNT(*) FROM products WHERE category_id = $1`;
   const countData = [category_id];
 
   try {
-    const result = await pool.query(query, data);
+    const result = await pool.query(query, [category_id, size, offset]);
+
     const countResult = await pool.query(countQuery, countData);
 
-    const totalProducts = parseInt(countResult.rows[0].count);
+    const totalProducts = parseInt(countResult.rows[0].count, 10);
     const totalPages = Math.ceil(totalProducts / size);
 
     res.json({
@@ -438,18 +449,22 @@ const getProductsByCategory = async (req, res) => {
       message: "Products retrieved successfully",
       totalPages: totalPages,
       totalProducts: totalProducts,
-      products: result.rows,
+      products: result.rows, 
     });
   } catch (error) {
+    console.error("Error fetching products by category:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
 
+
 const searchByName = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.size) || 8;
   const query1 = req.params.query;
   console.log(query1);
 
@@ -462,9 +477,11 @@ const searchByName = async (req, res) => {
 
   const searchQuery = `%${query1.trim()}%`;
 
+  const offset = (page - 1) * limit;
+
   try {
-    const result = await pool.query(
-      `SELECT products.*, categories.name AS category_name 
+    const totalCountResult = await pool.query(
+      `SELECT COUNT(*) AS total 
        FROM products 
        LEFT JOIN categories ON products.category_id = categories.id
        WHERE products.title ILIKE $1 
@@ -473,17 +490,36 @@ const searchByName = async (req, res) => {
       [searchQuery]
     );
 
-    if (result.rows.length === 0) {
+    const totalCount = parseInt(totalCountResult.rows[0].total, 10);
+
+    if (totalCount === 0) {
       return res.status(404).json({
         success: true,
         message: "No products found matching your search",
         products: [],
+        total: 0,
+        page: parseInt(page, 10),
+        totalPages: 0,
       });
     }
+
+    const result = await pool.query(
+      `SELECT products.*, categories.name AS category_name 
+       FROM products 
+       LEFT JOIN categories ON products.category_id = categories.id
+       WHERE products.title ILIKE $1 
+       OR products.description ILIKE $1 
+       OR categories.name ILIKE $1
+       LIMIT $2 OFFSET $3`,
+      [searchQuery, limit, offset]
+    );
 
     return res.status(200).json({
       success: true,
       products: result.rows,
+      total: totalCount,
+      page: parseInt(page, 10),
+      totalPages: Math.ceil(totalCount / limit),
     });
   } catch (error) {
     console.error("Error executing search:", error);
@@ -494,6 +530,7 @@ const searchByName = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   createProduct,
