@@ -19,8 +19,8 @@
 }
 
 .productimage img {
-  width: 100%;
-  height: auto;
+  width: auto;
+  height: 500px;
   transition: transform 0.3s ease-in-out; /* Smooth transition for zoom effect */
   cursor: zoom-in; /* Change cursor to indicate zoom effect */
 }
