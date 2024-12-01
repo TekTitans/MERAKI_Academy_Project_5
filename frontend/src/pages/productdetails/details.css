@@ -19,10 +19,19 @@
 }
 
 .productimage img {
+
+  width: auto;
+  height: 500px;
+  transition: transform 0.3s ease-in-out; /* Smooth transition for zoom effect */
+  cursor: zoom-in; /* Change cursor to indicate zoom effect */
+
+
   width: 100%; /* Ensure the image covers the container width */
   height: auto;
   transition: transform 0.5s ease; /* Smooth transition for zoom effect */
   cursor: zoom-in; /* Change cursor to indicate zoom */
+
+
 }
 
 /* Hover Effect with Movement */
@@ -70,11 +79,20 @@
 .seller-link {
   color: #007bff;
   text-decoration: none;
+
 }
 
 .seller-link:hover {
   text-decoration: underline;
 }
+
+=======
+}
+
+.seller-link:hover {
+  text-decoration: underline;
+}
+
 
 /* Add to Cart */
 .add-to-cart-section {

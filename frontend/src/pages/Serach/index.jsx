@@ -51,7 +51,8 @@ const SearchResults = () => {
           setError(response.data.message || "No products found");
         }
       } catch (err) {
-        setError("Something went wrong");
+        setError("No products found");
+        console.log(err);
       }
     };
 

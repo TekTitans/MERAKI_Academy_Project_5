@@ -73,6 +73,7 @@ export const router = createBrowserRouter(
 
 
         { path: "/users/:userId", element: <UserProfile /> },
+        { path: "/details/:pId", element: <Details /> },
       ],
     },
   ],
