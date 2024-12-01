@@ -217,6 +217,41 @@
   transform: scale(1.05);
 }
 
+.main_cart-icon {
+  position: relative;
+}
+
+
+.cart-count-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 50%;
+  display: none; /* Default: hidden */
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cart-count-badge.active {
+  display: flex; /* Only show when count > 0 */
+}
+
+/* Optional: Adjust badge size for larger icons */
+.main_cart-icon i {
+  font-size: 32px; /* Adjust icon size */
+}
+.cart-count-badge {
+  top: -5px; /* Adjust position for larger icons */
+  right: -5px;
+}
 
 @media (max-width: 768px) {
   .main_navbar-toggle {

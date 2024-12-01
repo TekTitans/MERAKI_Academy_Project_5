@@ -91,6 +91,12 @@ const Navbar = () => {
               </Link>
               <a className="main_cart-icon">
                 <FaShoppingCart onClick={() => history("/cart")} />
+                <span
+                  className={`cart-count-badge ${count > 0 ? "active" : ""}`}
+                  id="cartCountBadge"
+                >
+                  {count}
+                </span>
               </a>
               <a className="main_cart-icon">
                 <FaShoppingBag onClick={() => history("/myorders")} />

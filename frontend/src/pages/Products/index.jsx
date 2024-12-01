@@ -107,49 +107,47 @@ const CategoriesPage = () => {
     ));
   };
 
-  if (loading) {
-    return (
-      <div class="loading-container">
-        <div class="loader">
-          <div class="circle"></div>
-          <div class="circle"></div>
-          <div class="circle"></div>
-          <div class="circle"></div>
-        </div>
-        <span>Loading...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="categories_error-message">Error: {error}</div>;
-  }
-
   return (
-    <div className="All_Cat_Page_Container">
-      <Breadcrumb />
-      <div className="all-cat-page-content">
-        <div className="category-header">
-          <div className="filters-container">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search by Category Name"
-              value={filters.search}
-              onChange={handleFilterChange}
-              className="categories_filter-search"
-            />
-            <button
-              className="categories_clear-filters-button"
-              onClick={handleClearFilters}
-            >
-              Clear
-            </button>
+    <>
+      <div>
+        {loading ? (
+          <div className="loading-container">
+            <div className="loader">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+            </div>
+            <span>Loading...</span>
           </div>
-        </div>
-        <div className="categories-container">{renderCategories()}</div>
+        ) : (
+          <>
+            {error && <div className="error-message">Error: {error}</div>}
+            {message && <div className="success-message">{message}</div>}
+          </>
+        )}
       </div>
-    </div>
+     
+      <div className="All_Cat_Page_Container">
+        <Breadcrumb />
+        <div className="all-cat-page-content">
+          <div className="category-header">
+            <div className="filters-container">
+              <input
+                type="text"
+                name="search"
+                placeholder="Search by Category Name"
+                value={filters.search}
+                onChange={handleFilterChange}
+                className="categories_filter-search"
+              />
+
+            </div>
+          </div>
+          <div className="categories-container">{renderCategories()}</div>
+        </div>
+      </div>
+    </>
   );
 };
 

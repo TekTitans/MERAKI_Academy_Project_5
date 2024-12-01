@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
-import './MyOrders.css';
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; 
+import "./MyOrders.css";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 const MyOrders = () => {
+  const { error, message } = useSelector((state) => state.order);
+
   const [myOrders, setMyOrders] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const headers = {
@@ -60,7 +62,10 @@ const MyOrders = () => {
                     <tr key={index}>
                       <td>
                         <img
-                          src={item.product_image || "https://via.placeholder.com/150"}
+                          src={
+                            item.product_image ||
+                            "https://via.placeholder.com/150"
+                          }
                           alt={item.title}
                           className="product-images"
                         />
@@ -68,13 +73,22 @@ const MyOrders = () => {
                       <td>{item.title}</td>
                       <td>{parseFloat(item.price).toFixed(2)}</td>
                       <td>{item.quantity}</td>
-                      <td>{(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                      <td>
+                        {(item.quantity * parseFloat(item.price)).toFixed(2)}
+                      </td>
                     </tr>
                   ))}
                   <tr>
                     <td colSpan="5">
-                      <strong>Total Price with Delivery: {totalAmountWithDelivery.toFixed(2)}</strong><br />
-                      <strong>Order Status: {currentOrderTable[0].order_status}</strong><br />
+                      <strong>
+                        Total Price with Delivery:{" "}
+                        {totalAmountWithDelivery.toFixed(2)}
+                      </strong>
+                      <br />
+                      <strong>
+                        Order Status: {currentOrderTable[0].order_status}
+                      </strong>
+                      <br />
                     </td>
                   </tr>
                 </tbody>
@@ -111,7 +125,9 @@ const MyOrders = () => {
                 <tr key={index}>
                   <td>
                     <img
-                      src={item.product_image || "https://via.placeholder.com/150"}
+                      src={
+                        item.product_image || "https://via.placeholder.com/150"
+                      }
                       alt={item.title}
                       className="product-images"
                     />
@@ -124,8 +140,15 @@ const MyOrders = () => {
               ))}
               <tr>
                 <td colSpan="5">
-                  <strong>Total Price with Delivery: {totalAmountWithDelivery.toFixed(2)}</strong><br />
-                  <strong>Order Status: {currentOrderTable[0].order_status}</strong><br />
+                  <strong>
+                    Total Price with Delivery:{" "}
+                    {totalAmountWithDelivery.toFixed(2)}
+                  </strong>
+                  <br />
+                  <strong>
+                    Order Status: {currentOrderTable[0].order_status}
+                  </strong>
+                  <br />
                 </td>
               </tr>
             </tbody>
@@ -138,17 +161,31 @@ const MyOrders = () => {
   };
 
   return (
-    <div className="orders-container">
-      <h1>My Orders</h1>
+    <>
+      <div>
+        {loading ? (
+          <div className="loading-container">
+            <div className="loader">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+            </div>
+            <span>Loading...</span>
+          </div>
+        ) : (
+          <>
+            {error && <div className="error-message">Error: {error}</div>}
+            {message && <div className="success-message">{message}</div>}
+          </>
+        )}
+      </div>
 
-      {loading ? (
-        <div className="loading-container">
-          <div className="loading-circle"></div>
-        </div>
-      ) : (
-        renderOrders()
-      )}
-    </div>
+      <div className="orders-container">
+        <h1>My Orders</h1>
+       { renderOrders()}
+      </div>
+    </>
   );
 };
 
