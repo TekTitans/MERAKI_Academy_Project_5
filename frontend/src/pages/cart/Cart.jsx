@@ -92,123 +92,128 @@ const Cart = () => {
 
   return (
     <div className="myCart">
-      <h1>My Cart</h1>
 
-      {loading ? (
-        <Loading />
-      ) : cart.length > 0 ? (
-        <div className="cartTableWrapper">
-          <table className="cartTable">
-            <thead>
-              <tr>
-                <th>Remove</th>
-                <th>Image</th>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <button
-                      className="remove-btn"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                  <td>
-                    <img
-                      src={
-                        item.product_image || "https://via.placeholder.com/150"
-                      }
-                      alt={item.title}
-                      className="product-images"
-                    />
-                  </td>
-                  <td>{item.title}</td>
-                  <td>{item.price} JD</td>
-                  <td>
-                    <div className="quantity-controls">
-                      <button
-                        onClick={() =>
-                          handleQuantityChange(
-                            Math.max(1, item.quantity - 1),
-                            item
-                          )
-                        }
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        value={item.quantity}
-                        min={1}
-                        onChange={(e) =>
-                          handleQuantityChange(
-                            Math.max(1, parseInt(e.target.value) || 1),
-                            item
-                          )
-                        }
-                      />
-                      <button
-                        onClick={() =>
-                          handleQuantityChange(item.quantity + 1, item)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </td>
+        <h2 class="cart-heading">
+  <i class="fas fa-shopping-cart cart-icon"></i>
+  My Cart{" "}
+</h2>
 
-                  <td>{(item.price * item.quantity).toFixed(2)}.00 JD</td>
+        {loading ? (
+          <Loading />
+        ) : cart.length > 0 ? (
+          <div className="cartTableWrapper">
+            <table className="cartTable">
+              <thead>
+                <tr>
+                  <th>Remove</th>
+                  <th>Image</th>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Subtotal</th>
                 </tr>
-              ))}
-            </tbody>
-            <thead>
-              <tr>
-                <th colSpan="6">
-                  Total:{" "}
-                  {cart
-                    .reduce(
-                      (total, item) => total + item.price * item.quantity,
-                      0
-                    )
-                    .toFixed(2)}{" "}
-                  JD
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-      ) : (
-        <div className="empty-cart-message" id="emptyCartMessage">
-          <h2>Your Cart is Empty</h2>
-          <p>
-            It looks like you haven't added anything to your cart yet. Start
-            shopping now!
-          </p>
-          <button onClick={() => navigate("/shop")}>Go to Shop</button>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {cart.map((item, index) => (
+                  <tr key={index}>
+                    <td>
+                      <button
+                        className="remove-btn"
+                        onClick={() => removeItem(item.id)}
+                      >
+                        Remove
+                      </button>
+                    </td>
+                    <td>
+                      <img
+                        src={
+                          item.product_image ||
+                          "https://via.placeholder.com/150"
+                        }
+                        alt={item.title}
+                        className="product-images"
+                      />
+                    </td>
+                    <td>{item.title}</td>
+                    <td>{item.price} JD</td>
+                    <td>
+                      <div className="quantity-controls">
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              Math.max(1, item.quantity - 1),
+                              item
+                            )
+                          }
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          value={item.quantity}
+                          min={1}
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              Math.max(1, parseInt(e.target.value) || 1),
+                              item
+                            )
+                          }
+                        />
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(item.quantity + 1, item)
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
 
-      {cart.length > 0 && (
-        <div className="checkout">
-          <button
-            className="checkout-btn"
-            onClick={() => navigate("/placeorder")}
-          >
-            Checkout
-          </button>
-          <button onClick={clearAllCart} className="clear-cart-btn">
-            Clear Cart
-          </button>
-        </div>
-      )}
-    </div>
+                    <td>{(item.price * item.quantity).toFixed(2)}.00 JD</td>
+                  </tr>
+                ))}
+              </tbody>
+              <thead>
+                <tr>
+                  <th colSpan="6">
+                    Total:{" "}
+                    {cart
+                      .reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
+                      .toFixed(2)}{" "}
+                    JD
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        ) : (
+          <div className="empty-cart-message" id="emptyCartMessage">
+            <h2>Your Cart is Empty</h2>
+            <p>
+              It looks like you haven't added anything to your cart yet. Start
+              shopping now!
+            </p>
+            <button onClick={() => navigate("/shop")}>Go to Shop</button>
+          </div>
+        )}
+
+        {cart.length > 0 && (
+          <div className="checkout">
+            <button
+              className="checkout-btn"
+              onClick={() => navigate("/placeorder")}
+            >
+              Checkout
+            </button>
+            <button onClick={clearAllCart} className="clear-cart-btn">
+              Clear Cart
+            </button>
+          </div>
+        )}
+      </div>
   );
 };
 

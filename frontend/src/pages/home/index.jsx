@@ -8,6 +8,7 @@ import "./style.css";
 const HomePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loading, error, message } = useSelector((state) => state.order);
 
   const categories = useSelector((state) => state.category.categories);
 
@@ -23,6 +24,20 @@ const HomePage = () => {
 
     fetchCategories();
   }, [dispatch]);
+
+  if (loading) {
+    return (
+      <div class="loading-container">
+        <div class="loader">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="homepage">

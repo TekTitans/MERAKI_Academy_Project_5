@@ -72,10 +72,10 @@ const CategoriesPage = () => {
 
     return filteredCategories.map((cat) => (
       <div
-        key={cat.category_id} 
+        key={cat.category_id}
         className="category-card"
         id="unique_category"
-        onClick={() => history(`/shop/${cat.category_id}`)} 
+        onClick={() => history(`/shop/${cat.category_id}`)}
         aria-label={`View ${cat.category_name} category`}
       >
         <div className="category-badge">
@@ -109,8 +109,14 @@ const CategoriesPage = () => {
 
   if (loading) {
     return (
-      <div className="loading-container_Main">
-        <div className="loading-circle"></div>
+      <div class="loading-container">
+        <div class="loader">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <span>Loading...</span>
       </div>
     );
   }
