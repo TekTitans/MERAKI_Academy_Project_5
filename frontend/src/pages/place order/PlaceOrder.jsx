@@ -1,33 +1,41 @@
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "./placeorder.css";
 import CheckoutForm from "../../components/Checkoutform/CheckoutForm";
 import "./deliveryForm.css";
 import { useNavigate } from "react-router-dom";
+import { setCartNum } from "../../components/redux/reducers/orders";
+import { clearCart } from "../../components/redux/reducers/cart";
 
 const PlaceOrder = () => {
+  const dispatch = useDispatch();
+  const cartNum = useSelector((state) => state.order.cartnum);
+
   const [isVisa, setIsVisa] = useState("cash");
   const navigate = useNavigate();
   const jordanGovernorates = [
-    { name: "Amman", deliveryPrice: 5 },
+    { name: "Amman", deliveryPrice: 3 },
     { name: "Zarqa", deliveryPrice: 4 },
-    { name: "Irbid", deliveryPrice: 6 },
-    { name: "Mafraq", deliveryPrice: 7 },
-    { name: "Karak", deliveryPrice: 8 },
-    { name: "Tafilah", deliveryPrice: 9 },
+    { name: "Irbid", deliveryPrice: 7 },
+    { name: "Mafraq", deliveryPrice: 6 },
+    { name: "Karak", deliveryPrice: 6 },
+    { name: "Tafilah", deliveryPrice: 8 },
     { name: "Ma'an", deliveryPrice: 10 },
     { name: "Aqaba", deliveryPrice: 12 },
-    { name: "Balqa", deliveryPrice: 5 },
-    { name: "Jarash", deliveryPrice: 6 },
+    { name: "Balqa", deliveryPrice: 4 },
+    { name: "Jarash", deliveryPrice: 7 },
     { name: "Ajloun", deliveryPrice: 7 },
-    { name: "Madaba", deliveryPrice: 6 },
-    { name: "Al-Karak", deliveryPrice: 8 },
-    { name: "Al-Mafraq", deliveryPrice: 7 }
+    { name: "Madaba", deliveryPrice: 5 },
+    { name: "Al-Karak", deliveryPrice: 6 },
+    { name: "Al-Mafraq", deliveryPrice: 6 },
   ];
 
-  const [tax, setTax] = useState("");
+  const [deliveryPrice, setDeliveryPrice] = useState(null);
   const [myCart, setMyCart] = useState([]);
+  const [street, setStreet] = useState("");
+  const [country, setCountry] = useState("");
+
   const [phone_number, setPhoneNumber] = useState("");
 
   const token = useSelector((state) => state.auth.token);
@@ -35,23 +43,17 @@ const PlaceOrder = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    address: "",
-    city: "",
-    postalCode: "",
-  });
+  useEffect(() => {
+    const selectedGovernorate = jordanGovernorates.find(
+      (governorate) => governorate.name === country
+    );
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
+    if (selectedGovernorate) {
+      setDeliveryPrice(selectedGovernorate.deliveryPrice);
+    } else {
+      setDeliveryPrice(0);
+    }
+  }, [country]);
 
   useEffect(() => {
     axios
@@ -71,15 +73,44 @@ const PlaceOrder = () => {
 
   const createOrder = () => {
     axios
-      .post(`http://localhost:5000/order`, { phone_number }, { headers })
+      .post(
+        `http://localhost:5000/order`,
+        { phone_number, street, country, isVisa, deliveryPrice },
+        { headers }
+      )
       .then((response) => {
         console.log(response.data);
+
+        dispatch(clearCart());
+
+        navigate("/myorders");
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+  };
+
+  const handleCounty = (e) => {
+    setCountry(e.target.value);
+  };
   return (
     <div className="placeOrderPage">
       <div className="orderDetailsCard">
@@ -87,6 +118,7 @@ const PlaceOrder = () => {
         <table className="cartTable">
           <thead>
             <tr>
+              <th>image</th>
               <th>Product</th>
               <th>Price</th>
               <th>Quantity</th>
@@ -96,6 +128,16 @@ const PlaceOrder = () => {
           <tbody>
             {myCart?.map((elem, index) => (
               <tr key={index}>
+                <td>
+                  {" "}
+                  <img
+                    src={
+                      elem.product_image || "https://via.placeholder.com/150"
+                    }
+                    alt={elem.title}
+                    className="product-images"
+                  />
+                </td>
                 <td>{elem.title}</td>
                 <td>{elem.price} JD</td>
                 <td>{elem.quantity}</td>
@@ -105,46 +147,38 @@ const PlaceOrder = () => {
           </tbody>
           <tfoot>
             <tr>
-              <th colSpan="3">Total</th>
-              <th>{totalAmount}.00 JD</th>
+              <th colSpan="4">Total</th>
+              <th>{totalAmount + deliveryPrice}.00 JD</th>
             </tr>
           </tfoot>
           <tfoot>
             <tr>
-              <th colSpan="3">Tax</th>
-              <th>{tax}.00 JD</th>
+              <th colSpan="4">Shipping</th>
+              <th>{deliveryPrice}.00 JD</th>
             </tr>
           </tfoot>
         </table>
         <div className="placeOrderActions">
-          <button onClick={() => { navigate("/cart") }}>Edit Cart</button>
+          <button
+            onClick={() => {
+              navigate("/cart");
+            }}
+          >
+            Edit Cart
+          </button>
         </div>
       </div>
 
       <div className="deliveryForm" onSubmit={handleSubmit}>
         <h2>Delivery Information</h2>
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+
         <input
           type="tel"
           name="phone"
           placeholder="Phone Number"
-          onChange={(e) => { setPhoneNumber(e.target.value) }}
-          required
-        />
-
-        <input
-          type="text"
-          name="city"
-          placeholder="City"
-          value={formData.city}
-          onChange={handleChange}
+          onChange={(e) => {
+            setPhoneNumber(e.target.value);
+          }}
           required
         />
 
@@ -152,7 +186,9 @@ const PlaceOrder = () => {
           <select
             id="governorate"
             name="governorate"
-            onChange={handleChange}
+            onChange={(e) => {
+              handleCounty(e);
+            }}
           >
             <option value="">Select your City</option>
             {jordanGovernorates.map((governorate, index) => (
@@ -161,26 +197,42 @@ const PlaceOrder = () => {
               </option>
             ))}
           </select>
-          <br/>
-          <br/>
+          <br />
+          <br />
+          <input
+            type="text"
+            name="street"
+            placeholder="street"
+            onChange={(e) => {
+              setStreet(e.target.value);
+            }}
+            required
+          />
+
+          <br />
+          <br />
 
           <div className="payment">
             <label>
               <input
-                onChange={() => { setIsVisa("cash") }}
+                onChange={() => {
+                  setIsVisa("cash");
+                }}
                 type="radio"
                 name="paymentMethod"
                 value="cashOnDelivery"
-                checked={isVisa === "cash"} 
+                checked={isVisa === "cash"}
               />
               <span>Cash on Delivery</span>
             </label>
           </div>
-          
+
           <div className="payment">
             <label>
               <input
-                onChange={() => { setIsVisa("visa") }}
+                onChange={() => {
+                  setIsVisa("visa");
+                }}
                 type="radio"
                 name="paymentMethod"
                 value="creditCard"
@@ -192,10 +244,24 @@ const PlaceOrder = () => {
 
           {isVisa === "visa" ? (
             <div>
-              <CheckoutForm />
+              <CheckoutForm
+                phone_number={phone_number}
+                street={street}
+                country={country}
+                isVisa={isVisa}
+                deliveryPrice={deliveryPrice}
+              />
             </div>
           ) : (
-            <button>Complete Payment</button>
+            <button
+              onClick={() => {
+                createOrder();
+              }}
+              disabled={country === ""}
+              className={country === "" ? "disabled-button" : ""}
+            >
+              Complete Payment
+            </button>
           )}
         </div>
       </div>

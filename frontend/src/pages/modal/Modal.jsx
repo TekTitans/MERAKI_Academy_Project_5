@@ -6,22 +6,26 @@ const Modal = ({ isOpen, autoClose, message }) => {
     if (isOpen) {
       const timer = setTimeout(() => {
         autoClose();
-      }, 3000); 
-      return () => clearTimeout(timer); 
+      }, 3000); // Automatically close after 3 seconds
+      return () => clearTimeout(timer); // Cleanup timer
     }
   }, [isOpen, autoClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-container">
-      <div className="modal-header">
-        <img
-          src="https://static.vecteezy.com/system/resources/previews/033/294/081/non_2x/yellow-exclamation-mark-icons-in-line-style-danger-alarm-caution-risk-business-concept-hazard-warning-attention-sign-with-exclamation-mark-symbol-vector.jpg" /* Replace with your icon URL */
-          alt="Success"
-          className="modal-icon"
-        />
-        <span className="modal-message">{message}</span>
+    <div className="modal-overlay">
+      <div className="modal-container error">
+        <div className="modal-header">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/753/753345.png"
+            alt="Error"
+            className="modal-icon"
+          />
+        </div>
+        <div className="modal-content">
+          <p className="modal-message">{message}</p>
+        </div>
       </div>
     </div>
   );

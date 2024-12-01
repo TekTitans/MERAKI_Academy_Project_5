@@ -2,33 +2,61 @@
   width: 100%;
   background-color: #2d3748;
   color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
+  padding: 15px 20px;
   position: relative;
 }
+
+.navbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+}
+
+.navbar-icons.open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #2d3748;
+  padding: 10px 20px;
+  z-index: 1000;
+  border-radius: 0 0 8px 8px;
+}
 .brand {
-  font-size: 45px;
+  font-size: 35px;
   font-weight: bolder;
   text-decoration: none;
 }
+
 .blogo {
   text-decoration: none;
   color: white;
 }
-.blogo :hover {
+
+.blogo:hover {
   text-decoration: none;
+}
+
+.nav-lift {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .nav-lift .logo {
   display: flex;
   align-items: center;
   font-size: 1.5em;
-  /* color: #fff; */
 }
 
 .nav-lift .logo .icon {
@@ -36,22 +64,18 @@
   margin-right: 10px;
 }
 
-.navbar-icons {
-  display: flex;
-  align-items: center;
+#main_navbar-search {
+  width: 100%;
 }
 
-.navbar-search {
-  margin-right: 35px;
-}
-
-.search-input {
-  padding: 8px;
-  font-size: 1rem;
+#main_search-input {
+  padding: 5px;
+  font-size: 0.8rem;
   border: none;
   border-radius: 7px;
-  width: 700px;
+  width: 100%;
   max-width: 800px;
+  transition: outline 0.3s ease;
 }
 
 .search-input:focus {
@@ -59,73 +83,75 @@
 }
 
 .navbar-wishlist {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
+  font-size: 1.2rem;
+  margin-right: 10px;
+  cursor: pointer;
   color: #fff;
-  text-decoration: none;
-  font-size: 1.1rem;
+  position: relative;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
+
 .navbar-wishlist:hover {
   text-decoration: none;
-  color: #45a049;
+  color: #ff6347;
+  transform: scale(1.1);
 }
 
 .brand:hover {
   color: #45a049;
 }
-.blogo:hover {
-  text-decoration: none;
-}
-.navbar-wishlist .wishlist-count {
-  background-color: #ff6347;
-  border-radius: 50%;
-  padding: 0.3em 0.5em;
-  margin-left: 5px;
-  font-size: 0.9rem;
-  color: #fff;
-}
 
-.cart-icon {
-  font-size: 1.5em;
-  margin-right: 20px;
+.main_cart-icon {
+  font-size: 1.2rem;
+  margin-right: 10px;
   cursor: pointer;
   color: #fff;
+  position: relative;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
-.cart-icon:hover {
+
+.main_cart-icon:hover {
   color: #45a049;
+  transform: scale(1.1);
 }
 
 .Notification {
   background: none;
-  border: none;
+  padding: 0;
+  font-size: 1.2rem;
+  margin-right: 10px;
   cursor: pointer;
-  margin-right: 20px;
+  color: #fff;
   position: relative;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
+
 .Notification:hover {
   background: none;
+  transform: scale(1.1);
 }
-.Notification .badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #ff6347;
-  color: white;
-  border-radius: 50%;
-  padding: 0.2em 0.5em;
-  font-size: 0.8em;
+.Notification svg {
+  font-size: 1.2rem;
+}
+
+.Notification svg :hover {
+  color: #45a049;
 }
 
 .navbar-user {
   font-size: 1rem;
-  margin-right: 20px;
+  margin-right: 10px;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .navbar-username {
   font-weight: bold;
 }
+
 .navbar-username:hover {
   font-weight: bolder;
   color: #45a049;
@@ -135,58 +161,187 @@
   font-size: 1rem;
   background-color: #4caf50;
   color: #fff;
-  padding: 8px 16px;
+  padding: 4px 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-right: 5px;
+  transition: background-color 0.3s ease;
 }
 
 .login-btn:hover {
   background-color: #45a049;
 }
 
-.navbar-toggle {
+.main_navbar-toggle {
   display: none;
   background: none;
   border: none;
-  font-size: 2em;
+  font-size: 1rem;
   color: #fff;
   cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  margin-right: 1rem;
+}
+.main_navbar-toggle:hover {
+  background-color: #45a049;
+}
+
+/* Toggle Options Styling */
+.toggle-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #2d3748;
+  padding: 20px;
+  z-index: 1000;
+  border-radius: 0 0 8px 8px;
+}
+
+.toggle-option {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.toggle-option:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.main_cart-icon {
+  position: relative;
+}
+
+
+.cart-count-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 50%;
+  display: none; /* Default: hidden */
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cart-count-badge.active {
+  display: flex; /* Only show when count > 0 */
+}
+
+/* Optional: Adjust badge size for larger icons */
+.main_cart-icon i {
+  font-size: 32px; /* Adjust icon size */
+}
+.cart-count-badge {
+  top: -5px; /* Adjust position for larger icons */
+  right: -5px;
 }
 
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
+  .main_navbar-toggle {
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.5rem;
   }
-
-  .navbar-icons {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-    margin-top: 20px;
-  }
-
-  .navbar-search {
-    margin-right: 0;
-    width: 100%;
-  }
-
-  .navbar-toggle {
-    display: block;
-  }
-
-  .navbar.open .navbar-icons {
-    display: flex;
-  }
-
-  .navbar .navbar-icons {
+  #icons {
     display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
     width: 100%;
     padding: 10px;
     background-color: #444;
     margin-top: 10px;
     border-radius: 5px;
+  }
+
+  .navbar-icons {
+    display: none; /* Initially hidden */
+  }
+
+  .navbar-icons.open {
+    display: flex; /* Shown when toggled */
+  }
+
+  .main_navbar-toggle {
+    display: block;
+  }
+
+  #main_navbar-search {
+    margin-left: 1rem;
+    width: 90%;
+  }
+
+  #main_search-input {
+    padding: 6px;
+    font-size: 0.5rem;
+    border: none;
+  }
+  .navbar {
+    padding: 15px 20px;
+  }
+
+  .brand {
+    font-size: 25px;
+    font-weight: bolder;
+    text-decoration: none;
+  }
+
+  .nav-lift .logo .icon {
+    font-size: 1em;
+    margin-right: 5px;
+  }
+  .nav-lift {
+    gap: 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .main_navbar-toggle {
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.3rem;
+  }
+  #main_navbar-search {
+    margin-right: 0.1rem;
+    width: 70%;
+  }
+
+  #main_search-input {
+    padding: 4px;
+    font-size: 0.5rem;
+    border: none;
+  }
+  .navbar {
+    padding: 15px 20px;
+  }
+
+  .brand {
+    font-size: 25px;
+    font-weight: bolder;
+    text-decoration: none;
+  }
+
+  .nav-lift .logo .icon {
+    font-size: 1em;
+    margin-right: 5px;
+  }
+  .nav-lift {
+    gap: 0.2rem;
   }
 }

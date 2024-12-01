@@ -1,12 +1,23 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./details.css";
 import Modal from "../modal/Modal";
 import Breadcrumb from "../../components/Breadcrumb";
+import { addToCart } from "../../components/redux/reducers/cart";
+import {
+  setLoading,
+  setError,
+  setMessage,
+} from "../../components/redux/reducers/orders";
 
 const Details = () => {
+  const [error_review, setError_review] = useState("");
+  const [message_review, setMessage_review] = useState("");
+  const { loading, error, message } = useSelector((state) => state.order);
+  const [loadingCart, setLoadingCart] = useState({});
+  const [loadibgReview, setLoadingReview] = useState(false);
   const token = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId);
   const userName = useSelector((state) => state.auth.userName);
@@ -26,45 +37,85 @@ const Details = () => {
   const [showAllComments, setShowAllComments] = useState(false);
   const [avgrate, setAvgrate] = useState();
   //comment
+
+  const cart = useSelector((state) => state.cart.cart || []);
+  const count = useSelector((state) => state.cart.count);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
+    setLoading(true);
     axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
+      setLoading(false);
       setProduct(response.data.product);
-      console.log(response.data);
     });
     axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
-      const allReview = response.data.result;
+      const allReview = response.data.reviews;
       setReviews(allReview);
-      const total = allReview.reduce((sum, review) => sum + review.rating, 0);
-      const avg =
-        allReview.length > 0 ? (total / allReview.length).toFixed(2) : null;
-      setAvgrate(avg);
+      setAvgrate(response.data.average_rating);
     });
-  }, [pId]);
-  console.log(reviews);
+  }, [pId, reviews]);
 
-  const addToCart = () => {
+  useEffect(() => {
+    console.log("Cart state updated:", cart);
+    console.log("Total unique items updated:", count);
+  }, [cart, count]);
+
+  const addCart = () => {
     if (!token) {
-      Navigate("/users/login");
+      setModalMessage("You need to log in to manage your cart.");
+      setModalVisible(true);
+      return;
     }
+    setLoadingCart((prevState) => ({ ...prevState, [pId]: true }));
+
     axios
       .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
       .then((response) => {
-        Navigate("/cart");
+        if (response.data.success) {
+          const product = response.data.product;
+          console.log("Product added to cart:", product);
+
+          dispatch(
+            addToCart({
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              quantity: parseInt(product.quantity, 10),
+            })
+          );
+          dispatch(setMessage("Product added to cart successfully!"));
+          setLoadingCart((prevState) => ({ ...prevState, [pId]: false }));
+
+          console.log("Cart state after adding:", cart);
+          console.log("Total unique items in cart:", count);
+        } else {
+          console.warn(response.data.message);
+        }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error adding to cart:", error);
+        dispatch(setError("Error adding to cart. Please try again."));
+
+        setLoadingCart((prevState) => ({ ...prevState, [pId]: false }));
       });
   };
+
   const deleteReview = (reviewId) => {
+    setLoadingReview(true);
     axios
       .delete(`http://localhost:5000/review/${reviewId}`, { headers })
       .then((response) => {
+        setMessage_review("Review Deleted Successfully!");
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review.id !== reviewId)
         );
         setModalMessage(response.data.message);
+        setLoadingReview(false);
       })
       .catch((err) => {
+        setLoadingReview(false);
+
         console.error("Error deleting review:", err);
         setModalMessage("Failed to delete review.");
       });
@@ -72,9 +123,12 @@ const Details = () => {
 
   const createReview = () => {
     if (!token) {
-      setModalMessage("Need to login first ");
+      setModalMessage("You need to log in to Share your Reviews.");
       setModalVisible(true);
+      return;
     } else if (newComment.trim() && rating > 0) {
+      setLoadingReview(true);
+
       axios
         .post(
           `http://localhost:5000/review/${pId}`,
@@ -82,13 +136,19 @@ const Details = () => {
           { headers }
         )
         .then((response) => {
-          console.log(response.data);
+          setMessage_review("Review Added Successfully!");
 
-          setReviews([...reviews, response.data.result]);
+          setLoadingReview(false);
+
+          console.log(response.data);
+          const newReview = response.data.result;
+          setReviews([...reviews, newReview]);
           setNewComment("");
           setRating(0);
         })
         .catch((error) => {
+          setLoadingReview(false);
+
           console.error(error);
         });
     } else {
@@ -108,6 +168,7 @@ const Details = () => {
 
   const handleUpdate = (reviewId) => {
     if (editComment.trim() && editRating > 0) {
+      setLoadingReview(true);
       axios
         .put(
           `http://localhost:5000/review/${reviewId}`,
@@ -115,6 +176,10 @@ const Details = () => {
           { headers }
         )
         .then((response) => {
+          setMessage_review("Review Updated Successfully!");
+
+          setLoadingReview(false);
+
           setReviews(
             reviews?.map((review) =>
               review.id === reviewId ? response.data : review
@@ -127,6 +192,8 @@ const Details = () => {
         })
 
         .catch((error) => {
+          setLoadingReview(false);
+
           console.error(error);
         });
     } else {
@@ -138,67 +205,172 @@ const Details = () => {
     setShowAllComments(!showAllComments);
   };
 
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loader">
+          <div className="circle"></div>
+          <div className="circle"></div>
+          <div className="circle"></div>
+          <div className="circle"></div>
+        </div>
+        <span>Loading...</span>
+      </div>
+    );
+  }
+
   return (
     <>
-      <Breadcrumb />
-
-      <div className="details-container">
-        <div className="productpage">
-          <div className="productimage">
-            <img
-              src={
-                product.product_image || "https://via.placeholder.com/400x400"
-              }
-              alt={product.title}
-            />
-          </div>
-
-          <div className="productdetails">
-            <h1 className="producttitle">{product.title}</h1>
-            <p className="productprice">{product.price} JD</p>
-            <p className="productdescription">{product.description}</p>
-
-            <div className="add-to-cart">
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                min="1"
-                className="quantity-input"
-              />
-              <button className="add-to-cart-button" onClick={addToCart}>
-                Add to Cart
-              </button>
+      <div>
+        {loading ? (
+          <div className="loading-container">
+            <div className="loader">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
             </div>
-            <p>
-              <strong>Added by:</strong>
-              <Link to={`/users/${product.seller_id}`} className="user-link">
-                {product.user_name}
-              </Link>
-            </p>
+            <span>Loading...</span>
+          </div>
+        ) : (
+          <>
+            {error && <div className="error-message">Error: {error}</div>}
+            {message && <div className="success-message">{message}</div>}
+          </>
+        )}
+      </div>
+
+      <>
+        <Breadcrumb />
+
+        <div className="details-container">
+          <div className="productpage">
+            <div className="productimage">
+              <img
+                src={
+                  product.product_image || "https://via.placeholder.com/600x600"
+                }
+                alt={product.title}
+                className="zoomable-image"
+                onMouseMove={(e) => {
+                  const { left, top, width, height } =
+                    e.target.getBoundingClientRect();
+                  const x = ((e.clientX - left) / width) * 100;
+                  const y = ((e.clientY - top) / height) * 100;
+                  e.target.style.transformOrigin = `${x}% ${y}%`;
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transformOrigin = "center";
+                }}
+              />
+              <div
+                className={`modern-stock-badge ${
+                  product.stock_status
+                    ? product.stock_status.toLowerCase()
+                    : "unknown"
+                }`}
+              >
+                {product.stock_status
+                  ? product.stock_status.replace("_", " ")
+                  : "Unknown"}
+              </div>
+            </div>
+
+            <div className="product-main">
+              {/* Product Details */}
+              <div className="product-info-container">
+                <h1 className="product-title">{product.title}</h1>
+
+                {/* Product Rating */}
+                <div className="product-rating-container">
+                  <div className="product-stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i
+                        key={star}
+                        className={`star-icon ${
+                          avgrate >= star ? "fas fa-star" : "far fa-star"
+                        }`}
+                      ></i>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="product-price">{product.price} JD</p>
+                <p className="product-description">{product.description}</p>
+                <p
+                  className={`product-stock_quantity ${
+                    product.stock_status === "in_stock"
+                      ? "in-stock"
+                      : product.stock_status === "out_of_stock"
+                      ? "out-of-stock"
+                      : "on-demand"
+                  }`}
+                >
+                  {product.stock_status === "in_stock"
+                    ? `${product.stock_quantity} in stock`
+                    : product.stock_status === "out_of_stock"
+                    ? "Out of Stock"
+                    : "Available on Demand"}
+                </p>
+
+                <div className="product-seller">
+                  <strong>Added by: </strong>
+                  <Link
+                    to={`/users/${product.seller_id}`}
+                    className="seller-link"
+                  >
+                    {product.user_name}
+                  </Link>
+                </div>
+
+                <div className="add-to-cart-section">
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    min="1"
+                    max={product.stock_quantity}
+                    className="quantity-input"
+                  />
+                  <button
+                    className="add-to-cart-button"
+                    onClick={addCart}
+                    disabled={
+                      loadingCart[product.id] ||
+                      product.stock_status === "out_of_stock"
+                    }
+                    aria-label="Add to Cart"
+                  >
+                    {loadingCart[product.id] ? (
+                      <div className="modern-spinner">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                      </div>
+                    ) : (
+                      <> Add to Cart</>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="avgrating">
-          <span className="ratingstart">Rating</span>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={`star ${avgrate >= star ? "filled" : ""}`}
-            >
-              ★
-            </span>
-          ))}
-        </div>
-        <div className="reviews-section">
-          <h2>Reviews</h2>
 
-          <div className="new-review-form">
-            <div className="rating">
+        <div className="product-reviews-section">
+          <h2 className="product-reviews-title">Customer Reviews</h2>
+
+          <div className="product-reviews-new-review-container">
+            <h3 className="product-reviews-new-review-title">Write a Review</h3>
+            <div className="product-reviews-rating-input">
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
                   onClick={() => setRating(star)}
-                  className={`star ${rating >= star ? "filled" : ""}`}
+                  className={`product-reviews-star ${
+                    rating >= star ? "product-reviews-star-filled" : ""
+                  }`}
                 >
                   ★
                 </span>
@@ -207,47 +379,85 @@ const Details = () => {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write your review..."
+              placeholder="Share your experience..."
+              className="product-reviews-new-review-textarea"
             />
-            <button onClick={createReview}>Submit Review</button>
+            <button
+              onClick={createReview}
+              className="product-reviews-submit-review-button"
+              disabled={loadingCart[product.id]}
+            >
+              {loadibgReview ? (
+                <div className="modern-spinner">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              ) : (
+                <> Submit</>
+              )}
+            </button>
+            {error_review && (
+              <div className="error-message">{error_review}</div>
+            )}
+            {message_review && (
+              <div className="success-message">{message_review}</div>
+            )}
           </div>
 
-          <div>
+          <div className="product-reviews-cards">
             {reviews.length > 0 ? (
               reviews
                 .slice(0, showAllComments ? reviews.length : 5)
-                ?.map((review) => (
-                  <div className="review-card" key={review?.id}>
-                    <div className="review-header">
-                      <span className="review-author">{review.user_name}</span>
-                      <span className="review-date">
+                .map((review) => (
+                  <div className="product-reviews-card" key={review.id}>
+                    <div className="product-reviews-card-header">
+                      <div className="product-reviews-user-info">
+                        {review.profile_image ? (
+                          <img
+                            src={review.profile_image}
+                            alt={review.user_name}
+                            className="product-reviews-profile-image"
+                          />
+                        ) : (
+                          <i className="fas fa-user-circle product-reviews-profile-icon"></i>
+                        )}
+                        <span className="product-reviews-author">
+                          {review.user_name}
+                        </span>
+                      </div>
+                      <span className="product-reviews-date">
                         {new Date(review.created_at).toLocaleString()}
                       </span>
                     </div>
-                    <div className="review-rating">
+
+                    <div className="product-reviews-card-stars">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <span
+                        <i
                           key={star}
-                          className={`star ${
-                            review?.rating >= star ? "filled" : ""
+                          className={`product-reviews-star-icon ${
+                            review.rating >= star
+                              ? "fas fa-star"
+                              : "far fa-star"
                           }`}
-                        >
-                          ★
-                        </span>
+                        ></i>
                       ))}
                     </div>
-                    <p className="review-comment">{review?.comment}</p>
+                    <p className="product-reviews-card-comment">
+                      {review.comment}
+                    </p>
 
-                    {review?.user_id === parseInt(userId) && (
-                      <div className="edit-delete-buttons">
+                    {review.user_id === parseInt(userId) && (
+                      <div className="product-reviews-card-actions">
                         <button
-                          className="edit"
+                          className="product-reviews-edit-review-button"
                           onClick={() => handleEdit(review)}
                         >
                           Edit
                         </button>
                         <button
-                          className="delete"
+                          className="product-reviews-delete-review-button"
                           onClick={() => deleteReview(review.id)}
                         >
                           Delete
@@ -256,14 +466,16 @@ const Details = () => {
                     )}
 
                     {editingReview?.id === review?.id && (
-                      <div>
-                        <div className="rating">
+                      <div className="product-reviews-edit-review-container">
+                        <div className="product-reviews-rating-input">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <span
                               key={star}
                               onClick={() => setEditRating(star)}
-                              className={`star ${
-                                editRating >= star ? "filled" : ""
+                              className={`product-reviews-star ${
+                                editRating >= star
+                                  ? "product-reviews-star-filled"
+                                  : ""
                               }`}
                             >
                               ★
@@ -274,38 +486,59 @@ const Details = () => {
                           value={editComment}
                           onChange={(e) => setEditComment(e.target.value)}
                           placeholder="Edit your review..."
+                          className="product-reviews-edit-review-textarea"
                         />
-                        <button onClick={() => handleUpdate(review.id)}>
-                          Update
-                        </button>
-                        <button onClick={() => setEditingReview(null)}>
-                          Cancel
-                        </button>
+                        <div className="product-reviews-edit-actions">
+                          <button
+                            onClick={() => handleUpdate(review.id)}
+                            className="product-reviews-update-review-button"
+                            disabled={loadingCart[product.id]}
+                          >
+                            {loadibgReview ? (
+                              <div className="modern-spinner">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                              </div>
+                            ) : (
+                              <> Update</>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setEditingReview(null)}
+                            className="product-reviews-cancel-edit-button"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
                 ))
             ) : (
-              <p>No reviews yet. Be the first to review!</p>
-            )}
-
-            {reviews.length > 5 && (
-              <button
-                onClick={toggleShowAllComments}
-                className="show-all-button"
-              >
-                {showAllComments ? "Show Less" : "Show All"}
-              </button>
+              <p className="product-reviews-no-reviews-message">
+                No reviews yet. Be the first to review!
+              </p>
             )}
           </div>
 
+          {reviews.length > 5 && (
+            <button
+              onClick={toggleShowAllComments}
+              className="product-reviews-toggle-button"
+            >
+              {showAllComments ? "Show Less" : "Show All"}
+            </button>
+          )}
+
           <Modal
             isOpen={modalVisible}
-            autoClose={closeModal} // Pass closeModal as the autoClose handler
+            autoClose={closeModal}
             message={modalMessage}
           />
         </div>
-      </div>
+      </>
     </>
   );
 };

@@ -1,74 +1,63 @@
-.wishlist-container {
+.wishlist-heading-container{
   padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
+  border-radius: 8px; /* Rounded corners */
+
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+
+
+/* Wishlist Heading */
+.wishlist-heading {
+  font-size: 2rem; /* Large font size */
+  font-weight: bold; /* Bold text */
+  text-align: center; /* Center align */
+  margin-bottom: 20px; /* Space below the heading */
+  padding: 10px 15px; /* Padding around the heading */
+  background: linear-gradient(90deg, #ff6b6b, #ff4757); /* Gradient red background */
+  color: white; /* White icon to match text */
+  display: flex; /* Flex layout for icon and text */
+  align-items: center; /* Align items vertically */
+  justify-content: center; /* Center items horizontally */
+  gap: 10px; /* Space between icon and text */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-radius: 8px; /* Rounded corners */
+
 }
 
-.error-message {
-  color: red;
-  text-align: center;
-  font-size: 18px;
+/* Wishlist Icon */
+.wishlist-icon {
+  font-size: 2rem; /* Icon size matches text size */
+  color: white; /* White icon to match text */
+  transition: transform 0.3s ease, color 0.3s ease; /* Smooth animations */
 }
 
-.empty-message {
-  text-align: center;
-  color: #666;
-  font-size: 18px;
+/* Hover Effect */
+.wishlist-heading:hover .wishlist-icon {
+  color: #2d3748;
+  transform: scale(1.2); /* Slightly enlarge icon */
 }
 
-.wishlist-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.wishlist-table th,
-.wishlist-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-
-.wishlist-table th {
-  background-color: #f4f4f4;
-  color: #333;
-}
-
-.wishlist-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.product-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.product-image {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-}
-
-.remove-btn {
-  padding: 5px 10px;
-  background-color: #ff4d4d;
+.wishlist-card-remove-btn {
+  background-color: #dc3545;
+  color: #fff;
   border: none;
-  color: white;
+  padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
 }
 
-.remove-btn:hover {
-  background-color: #ff1a1a;
+.wishlist-card-remove-btn:hover {
+  background-color: #a71d2a;
 }
+
 .no-results1 {
-  font-size: 30px;
   text-align: center;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+#modern-cart-icon_WishList {
+  margin-top: 1rem;
 }

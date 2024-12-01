@@ -27,6 +27,7 @@ import PrivacyPolicy from "../pages/Privacy/PrivacyPolicy";
 import UserProfile from "../pages/UserProfile";
 
 import CategoriesPage from "../pages/Products";
+import MyOrders from "../pages/MyOrders/MyOrders";
 export const router = createBrowserRouter(
   [
     {
@@ -60,11 +61,16 @@ export const router = createBrowserRouter(
         { path: "/seller", element: <SellerDashboard /> },
         { path: "/chat", element: <Chat /> },
         { path: "/Admin", element: <AdminDashboard /> },
+        { path: "/MyOrders", element: <MyOrders /> },
 
         { path: "/wishlist", element: <Wishlist /> },
         { path: "/privacy", element: <PrivacyPolicy /> },
+        { path: "/myorders", element: <MyOrders /> },
+
 
         { path: "/users/:userId", element: <UserProfile /> },
+        { path: "/chat/:userid", element: <Chat /> },
+
 
         { path: "/users/:userId", element: <UserProfile /> },
         { path: "/details/:pId", element: <Details /> },
