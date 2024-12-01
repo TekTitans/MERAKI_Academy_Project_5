@@ -1,11 +1,16 @@
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "./MyOrders.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-
+import {
+  setLoading,
+  setError,
+  setMessage,
+} from "../../components/redux/reducers/orders";
 const MyOrders = () => {
   const { error, message } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
 
   const [myOrders, setMyOrders] = useState([]);
   const token = useSelector((state) => state.auth.token);
@@ -160,11 +165,19 @@ const MyOrders = () => {
 
     return tables;
   };
-
+  useEffect(() => {
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
   return (
     <>
       <div>
-        {loading ? (
+        {loading && (
           <div className="loading-container">
             <div className="loader">
               <div className="circle"></div>
@@ -174,16 +187,18 @@ const MyOrders = () => {
             </div>
             <span>Loading...</span>
           </div>
-        ) : (
-          <>
-            {error && <div className="error-message">Error: {error}</div>}
-            {message && <div className="success-message">{message}</div>}
-          </>
         )}
       </div>
 
       <div className="orders-container">
-        <h1>My Orders</h1>
+        <h2 class="Orders-heading">
+          <i class="fas fa-heart Orders-icon"></i>
+          My Orders{" "}
+        </h2>{" "}
+        <>
+          {error && <div className="error-message">Error: {error}</div>}
+          {message && <div className="success-message">{message}</div>}
+        </>
         {renderOrders()}
       </div>
     </>

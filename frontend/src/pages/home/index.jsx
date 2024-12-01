@@ -40,7 +40,7 @@ const HomePage = () => {
       const timer = setTimeout(() => {
         dispatch(setError(null));
         dispatch(setMessage(null));
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [error, message, dispatch]);

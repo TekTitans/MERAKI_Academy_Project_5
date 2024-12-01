@@ -1,3 +1,8 @@
+.myCart-container{
+  padding: 20px;
+}
+
+
 .loading-container {
   display: flex;
   justify-content: center;

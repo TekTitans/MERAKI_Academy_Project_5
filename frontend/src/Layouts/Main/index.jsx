@@ -1,14 +1,24 @@
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "./style.css";
 import Navbar from "../../components/Navbar";
-import Category from "../../components/category";
+import SellerNavbar from "../../components/SellerNavbar";
+import AdminNavbar from "../../components/AdminNavbar";
 import Footer from "../../components/Footer/Footer";
 
 export default function Main() {
+  const roleId = useSelector((state) => state.auth.roleId);
+
   return (
     <div className="root-layout">
       <header>
-        <Navbar />
+        {roleId === 1 ? (
+          <SellerNavbar />
+        ) : roleId === 2 ? (
+          <AdminNavbar />
+        ) : (
+          <Navbar />
+        )}
       </header>
       <main className="main-content">
         <Outlet />

@@ -1,3 +1,34 @@
+.Orders-heading {
+  font-size: 2rem; 
+  font-weight: bold; 
+  text-align: center; 
+  margin-bottom: 20px; 
+  padding: 10px 15px; 
+  background: linear-gradient(90deg, #ffcc00, #ffdd44); /* Gold gradient */
+  color: #2d2d2d; /* Dark text for contrast */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 10px; 
+  box-shadow: 0 4px 8px rgba(255, 204, 0, 0.4); /* Golden glow */
+  width: 100%;
+  border-radius: 8px; /* Rounded corners */
+}
+
+.Orders-icon {
+  font-size: 2rem; 
+  color: #2d2d2d; /* Matches the text color */
+  transition: transform 0.3s ease, color 0.3s ease; 
+}
+
+.Orders-heading:hover .Orders-icon {
+  color: #ffcc00; /* Matches the gold theme */
+  transform: scale(1.2); 
+}
+
+
+
+
 .product-images {
   width: 50px;
   height: 50px;

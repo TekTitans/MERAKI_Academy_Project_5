@@ -9,11 +9,24 @@ import {
   FaShoppingCart,
   FaUserCog,
   FaClipboardList,
+  FaUser,
+  FaSignOutAlt,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+
+import { setLogout } from "../redux/reducers/auth";
 
 const AdminNavbar = ({ activeSection, setActiveSection }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const history = useNavigate();
+  const { userName } = useSelector((state) => state.auth);
+  const handleLogout = () => {
+    dispatch(setLogout());
+    history("/");
+  };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -85,6 +98,26 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
         >
           <FaBoxOpen className="navbar-icon" />
           Products Management
+        </li>
+        <li
+          className={activeSection === "profile" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("profile");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaUser className="navbar-icon" />
+          Profile
+        </li>
+        <li
+          className={activeSection === "logout" ? "active" : ""}
+          onClick={() => {
+            setActiveSection("logout");
+            setIsMenuOpen(false);
+          }}
+        >
+          <FaSignOutAlt className="navbar-icon" />
+          Logout
         </li>
       </ul>
     </nav>
