@@ -68,6 +68,7 @@ const Register = () => {
     setLoading(true);
     try {
       const result = await axios.post("http://localhost:5000/users", formData);
+
       if (result.data.success) {
         setStatus(true);
         setMessage(result.data.message);
@@ -102,8 +103,8 @@ const Register = () => {
     return errors[field] ? "input-error" : "";
   };
 
-  const handleRoleSelection = (role) => {
-    setFormData({ ...formData, role });
+  const handleRoleSelection = (role_id) => {
+    setFormData({ ...formData, role_id });
   };
 
   return (
@@ -214,7 +215,7 @@ const Register = () => {
                 <div className="role-cards">
                   <div
                     className={`role-card ${
-                      formData.role === 2 ? "selected" : ""
+                      formData.role_id === 2 ? "selected" : ""
                     }`}
                     onClick={() => handleRoleSelection(2)}
                   >
@@ -222,7 +223,7 @@ const Register = () => {
                   </div>
                   <div
                     className={`role-card ${
-                      formData.role === 3 ? "selected" : ""
+                      formData.role_id === 3 ? "selected" : ""
                     }`}
                     onClick={() => handleRoleSelection(3)}
                   >
