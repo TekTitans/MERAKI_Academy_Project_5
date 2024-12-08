@@ -128,17 +128,10 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 ---
 
 ## 📂 Database Schema
-### Users Table
-Column	Type	Description
-id	Integer	Unique identifier
-name	String	User's full name
-email	String	User's email address
-password	String	Hashed password
-role_id	Integer	Role (Admin, Seller, Customer)
-blocked	Boolean	User status
+<p align="center">
+  <img src="https://res.cloudinary.com/drhborpt0/image/upload/v1733629507/MERAKI_Academy_Project_5_np5fxy.png" alt="Database Schema" width="600">
+</p>
 
-### Other Tables
-Include tables for Products, Orders, Cart, Reviews, and Categories.
 
 ---
 
