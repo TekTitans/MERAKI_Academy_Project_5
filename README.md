@@ -53,11 +53,11 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 - Manage orders:
   - View and remove orders.
 
-- **Additional Features:**
-  - Email Verification.
-  - Forgot and reset password functionality.
-  - Responsive design for mobile and desktop.
-  - Online Payment.
+### Additional Features
+- Email Verification.
+- Forgot and reset password functionality.
+- Responsive design for mobile and desktop.
+- Online Payment Integration.
 
 ---
 
@@ -83,7 +83,7 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 1. Clone the repository:
    ```bash
    git clone <repository_url>
-   
+
 2. Navigate to the project directory:
    ```bash
    cd project-directory 
@@ -121,6 +121,8 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 - Use the admin dashboard for user management.
 - Customers can add items to their wishlist or cart, and proceed to checkout.
   
+  **Note**: Some features, like adding to cart or wishlist, require user authentication. Role-based access control ensures secure and role-specific functionality.
+  
 ---
 
 ## Database Schema
@@ -140,67 +142,69 @@ Include tables for Products, Orders, Cart, Reviews, and Categories.
 
 ## Frontend Routes
 ### General Routes
-1. **Home Page:** `/`
-2. **Shop Categories:** `/shop`
-3. **Shop Category Details:** `/shop/:cId`
-4. **Product Details:** `/shop/:cId/:pId`
-5. **Search Results:** `/search/:query`
-6. **Contact Page:** `/Contact`
-7. **Privacy Policy:** `/privacy`
-8. **404 Page:** `/*`
+1. **Home Page:** `/`  - View homepage with product highlights.
+2. **Shop Categories:** `/shop` - Browse categories.
+3. **Shop Category Details:** `/shop/:cId` - View products within a specific category.
+4. **Product Details:** `/shop/:cId/:pId` - View detailed information and reviews of a product.
+5. **Search Results:** `/search/:query` - Search for products by name or keyword.
+6. **Contact Page:** `/Contact` - Contact administrators.
+7. **Privacy Policy:** `/privacy`  - View the privacy policy.
+8. **404 Page:** `/*`  - Fallback for undefined routes.
 
 ### User Authentication & Profile
-1. **Register:** `/users`
-2. **Login:** `/users/login`
-3. **Reset Password:** `/users/reset-password/:resetToken`
-4. **Verify Email:** `/users/verifyEmail/:token`
-5. **Google Complete Registration:** `/google-complete-register/:userId`
-6. **User Profile:** `/users/:userId`
-7. **Profile Management:** `/Profile`
+1. **Register:** `/users`  - Register a new account.
+2. **Login:** `/users/login` - Login to your account.
+3. **Reset Password:** `/users/reset-password/:resetToken` - Reset account password.
+4. **Verify Email:** `/users/verifyEmail/:token` - Verify account email.
+5. **Google Complete Registration:** `/google-complete-register/:userId` - Complete registration using Google.
+6. **User Profile:** `/users/:userId` - View a user profile.
+7. **Profile Management:** `/Profile`  - Manage your account details.
 
 ### Customer Routes
-1. **Cart:** `/cart`
-2. **Place Order:** `/placeOrder`
-3. **My Orders:** `/MyOrders`
-4. **Wishlist:** `/wishlist`
+1. **Cart:** `/cart` - View and manage cart items.
+2. **Place Order:** `/placeOrder` - Place an order for items in the cart.
+3. **My Orders:** `/MyOrders` - View a list of your orders.
+4. **Wishlist:** `/wishlist` - Manage your wishlist items.
 
 ### Seller Routes
-1. **Seller Dashboard:** `/seller`
+1. **Seller Dashboard:** `/seller` - Manage inventory and view seller-specific details.
 
 ### Admin Routes
-1. **Admin Dashboard:** `/Admin`
+1. **Admin Dashboard:** `/Admin`  - Manage the platform, including users, categories, and orders.
 
 ### Chatting System
-1. **General Chat:** `/chat`
-2. **Chat with Specific User:** `/chat/:userid`
+1. **General Chat:** `/chat` - Chat with users.
+2. **Chat with Specific User:** `/chat/:userid` - Chat with a specific user.
 
 
 ---
 
 ## Backend Routes
 
+### Table of Contents
+1. [User Management](#user-management)
+2. [Roles and Permissions](#roles-and-permissions)
+3. [Product Management](#product-management)
+4. [Categories Management](#categories-management)
+5. [Order Management](#order-management)
+6. [Cart Management](#cart-management)
+7. [Wishlist Management](#wishlist-management)
+8. [Review Management](#review-management)
+9. [Payment](#payment)
+10. [Messaging System](#messaging-system)
+
+---
+
 ### User Management
 - **Public Routes:**
   - `POST /users` - Register a new user.
-  - `POST /users/verifyEmail/:token` - Verify email using a token.
-- **Protected Routes (Blocked/Unverified Check):**
-  - `POST /users/login` - User login.
-  - `POST /users/forgot-password` - Request password reset.
-  - `POST /users/reset-password` - Reset password.
-  - `POST /users/google-login` - Google login.
-  - `POST /users/google-complete-register/:userId` - Complete Google registration.
-- **Protected Routes (Authenticated):**
-  - `GET /users/profile` - Get user profile.
-  - `PUT /users/profile` - Update profile (with image upload).
-  - `PUT /users/change-password` - Update password.
-  - `DELETE /users/profile` - Delete user account.
-  - `PUT /users/deactivate-profile` - Deactivate account.
-  - `PUT /users/reactivate-profile` - Reactivate account.
+  - `POST /users/verifyEmail/:token` - Verify user email.
+- **Protected Routes:**
+  - Manage profiles, passwords, and account statuses (e.g., deactivate/reactivate).
 - **Admin Routes:**
-  - `GET /users/admin` - Get all users (Admin only).
-  - `DELETE /users/admin/:userId` - Remove a user (Admin only).
-  - `PUT /users/admin/block/:userId` - Block a user (Admin only).
-  - `PUT /users/admin/unblock/:userId` - Unblock a user (Admin only).
+  - View, block, unblock, or delete users (requires admin authorization).
+
+---
 
 ### Roles and Permissions
 - **Roles:**
@@ -210,90 +214,76 @@ Include tables for Products, Orders, Cart, Reviews, and Categories.
 - **Role Permissions:**
   - `POST /roles/role_permission` - Assign permissions to roles.
 
+---
+
 ### Product Management
-- **Products:**
-  - `POST /products` - Add a new product.
-  - `POST /products/upload_Image` - Upload product image.
-  - `PUT /products/:pId` - Update a product.
-  - `DELETE /products/:pId` - Delete a product.
-  - `GET /products` - Get all products.
-  - `GET /products/:pId` - Get product by ID.
-  - `GET /products/category/:cId` - Get products by category.
-  - `GET /products/search/:query` - Search products by name.
-  - `GET /products/seller` - Get seller-specific products.
+| Method | Endpoint                         | Description                        | Authentication Required |
+|--------|----------------------------------|------------------------------------|-------------------------|
+| POST   | `/products`                      | Add a new product                  | Yes                     |
+| GET    | `/products`                      | Retrieve all products              | No                      |
+| GET    | `/products/:pId`                 | Get product details by ID          | No                      |
+| PUT    | `/products/:pId`                 | Update a product                   | Yes                     |
+| DELETE | `/products/:pId`                 | Delete a product                   | Yes                     |
+| POST   | `/products/upload_Image`         | Upload product image               | Yes                     |
+| GET    | `/products/category/:cId`        | Filter products by category        | No                      |
+| GET    | `/products/search/:query`        | Search products by name            | No                      |
+| GET    | `/products/seller`               | Get seller-specific products       | Yes                     |
+
+---
 
 ### Categories Management
 - **Categories:**
-  - `POST /category` - Create a new category.
-  - `POST /category/upload_Image` - Upload category image.
-  - `PUT /category/:catId` - Update a category.
-  - `DELETE /category/:catId` - Delete a category.
-  - `GET /category` - Get all categories.
-  - `GET /category/:catId` - Get category by ID.
+  - CRUD operations for managing categories, including uploading images.
 - **Subcategories:**
-  - `POST /subcategory/:catId` - Create a subcategory.
-  - `POST /subcategory/upload_Image` - Upload subcategory image.
-  - `PUT /subcategory/:subId` - Update a subcategory.
-  - `DELETE /subcategory/:subId` - Delete a subcategory.
-  - `GET /subcategory` - Get all subcategories.
-  - `GET /subcategory/:categoryId` - Get subcategories by category ID.
+  - CRUD operations for subcategories, including uploading images.
+
+---
 
 ### Order Management
-- **Orders:**
-  - `POST /order` - Create a new order.
-  - `DELETE /order/:id` - Cancel an order.
-  - `GET /order` - Get all orders for the user.
-  - `GET /order/details/:id` - Get order details.
-  - `GET /order/seller/summary` - Get seller summary.
-  - `GET /order/seller/:sellerId` - Get seller-specific orders.
-  - `GET /order/admin/summary` - Get admin summary.
-  - `PUT /order/:id/status` - Update order status.
-  - `GET /order/:id/invoice` - Generate order invoice.
+- Customers:
+  - Place, view, and cancel orders.
+- Admins and Sellers:
+  - View summaries, update order statuses, and generate invoices.
+
+---
 
 ### Cart Management
-- **Cart:**
-  - `GET /cart` - Get cart items.
-  - `POST /cart/:id` - Add an item to the cart.
-  - `PUT /cart/:id` - Update cart item quantity.
-  - `DELETE /cart/:id` - Remove an item from the cart.
-  - `DELETE /cart` - Clear the cart.
+| Method | Endpoint            | Description                       | Authentication Required |
+|--------|---------------------|-----------------------------------|-------------------------|
+| GET    | `/cart`             | Get cart items                    | Yes                     |
+| POST   | `/cart/:id`         | Add an item to the cart           | Yes                     |
+| PUT    | `/cart/:id`         | Update cart item quantity         | Yes                     |
+| DELETE | `/cart/:id`         | Remove an item from the cart      | Yes                     |
+| DELETE | `/cart`             | Clear the cart                    | Yes                     |
+
+---
 
 ### Wishlist Management
-- **Wishlist:**
-  - `POST /wishlist` - Add an item to the wishlist.
-  - `GET /wishlist` - Get wishlist items.
-  - `DELETE /wishlist/:productId` - Remove an item from the wishlist.
-  - `DELETE /wishlist/clear` - Clear the wishlist.
-  - `GET /wishlist/count` - Get wishlist item count.
+- Add, remove, view, or clear items in the wishlist.
+
+---
 
 ### Review Management
-- **Product Reviews:**
-  - `POST /review/:pId` - Create a review for a product.
-  - `PUT /review/:reviewId` - Update a review.
-  - `DELETE /review/:reviewId` - Delete a review.
-  - `GET /review/:id` - Get all reviews for a product.
-- **Seller Reviews:**
-  - `POST /review/seller/:id` - Create a review for a seller.
-  - `GET /review/seller/:sellerId` - Get reviews for a seller.
-  - `PUT /review/seller/:id` - Update a seller review.
-  - `DELETE /review/seller/:id` - Delete a seller review.
+- Customers can review products and sellers, with full CRUD capabilities.
+
+---
 
 ### Payment
-- **Payments:**
-  - `POST /pay` - Process a payment.
+- Process payments for orders through `POST /pay`.
+
+---
 
 ### Messaging System
-- **Messages:**
-  - `POST /messages` - Send a message.
-  - `GET /messages/:id` - Get messages by ID.
+- Send and receive messages between users.
 
 
 ---
 
 ## Contributors
-- Khaled Al-Khatib (Scrum Master)
-- Omar Al-labadi
-- Tareq Nabeel
+- [Khaled Al-Khateeb](https://github.com/AlKhateebKhaled) (Scrum Master)
+- [Omar Al-Labadi](https://github.com/omarallabadi)
+- [Tareq Nabeel](https://github.com/TareqIzmirli)
+
 
 
 
