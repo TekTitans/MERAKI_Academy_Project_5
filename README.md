@@ -1,26 +1,26 @@
-# E-Commerce Platform
+# 🛒 E-Commerce Platform
 
-## Table of Contents
-1. [Overview](#overview)
-2. [Features](#features)
-3. [Technologies Used](#technologies-used)
-4. [Installation and Setup](#installation-and-setup)
-5. [Usage](#usage)
-6. [Database Schema](#database-schema)
-7. [Frontend Routes](#frontend-routes)
-8. [Backend Routes](#backend-routes)
-9. [Contributors](#contributors)
-10. [Guided By](#guided_by)
+## 📋 Table of Contents
+1. [📖 Overview](#overview)
+2. [✨ Features](#features)
+3. [🛠️ Technologies Used](#technologies-used)
+4. [⚙️ Installation and Setup](#installation-and-setup)
+5. [🧭 Usage](#usage)
+6. [📂 Database Schema](#database-schema)
+7. [🚀 Frontend Routes](#frontend-routes)
+8. [🔗 Backend Routes](#backend-routes)
+9. [🤝 Contributors](#contributors)
+10. [👨‍🏫 Guided By](#guided_by)
 
 
 ---
 
-## Overview
+## 📖 Overview
 This is a full-stack e-commerce platform built as part of a collaborative team project. Users can register as customers, sellers, or admins, enabling them to browse products, make purchases, and manage inventories. The platform supports role-based functionality to ensure a secure and personalized experience.
 
 ---
 
-## Features
+## ✨ Features
 ### General Users
 - Browse products by category.
 - Filter and search for specific products.
@@ -63,7 +63,7 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 
 ---
 
-## Technologies Used
+## 🛠️ Technologies Used
 - **Frontend:**
   - React.js
   - Redux
@@ -81,10 +81,10 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 
 ---
 
-## Installation and Setup
+## ⚙️ Installation and Setup
 1. Clone the repository:
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/TekTitans/MERAKI_Academy_Project_5.git
 
 2. Navigate to the project directory:
    ```bash
@@ -117,7 +117,7 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
 
 ---
 
-## Usage
+## 🧭 Usage
 - Visit the homepage to browse products.
 - Register/login to access role-specific functionalities.
 - Use the admin dashboard for user management.
@@ -127,7 +127,7 @@ This is a full-stack e-commerce platform built as part of a collaborative team p
   
 ---
 
-## Database Schema
+## 📂 Database Schema
 ### Users Table
 Column	Type	Description
 id	Integer	Unique identifier
@@ -142,7 +142,7 @@ Include tables for Products, Orders, Cart, Reviews, and Categories.
 
 ---
 
-## Frontend Routes
+## 🚀 Frontend Routes
 ### General Routes
 1. **Home Page:** `/`  - View homepage with product highlights.
 2. **Shop Categories:** `/shop` - Browse categories.
@@ -181,7 +181,7 @@ Include tables for Products, Orders, Cart, Reviews, and Categories.
 
 ---
 
-## Backend Routes
+## 🔗 Backend Routes
 
 ### Table of Contents
 1. [User Management](#user-management)
@@ -281,14 +281,14 @@ Include tables for Products, Orders, Cart, Reviews, and Categories.
 
 ---
 
-## Contributors
+## 🤝 Contributors
 - [Khaled Al-Khateeb](https://github.com/AlKhateebKhaled) (Scrum Master)
 - [Omar Al-Labadi](https://github.com/omarallabadi)
 - [Tareq Nabeel](https://github.com/TareqIzmirli)
 
 ---
 
-## ⚠️ Guided By <a name = "guided_by"></a>
+## 👨‍🏫 Guided By <a name = "guided_by"></a>
 
 This project was developed under the guidance of **[MERAKI Academy](https://www.meraki-academy.org)**.
 
