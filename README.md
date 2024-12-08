@@ -10,6 +10,8 @@
 7. [Frontend Routes](#frontend-routes)
 8. [Backend Routes](#backend-routes)
 9. [Contributors](#contributors)
+10. [Guided By](#guided_by)
+
 
 ---
 
@@ -284,7 +286,9 @@ Include tables for Products, Orders, Cart, Reviews, and Categories.
 - [Omar Al-Labadi](https://github.com/omarallabadi)
 - [Tareq Nabeel](https://github.com/TareqIzmirli)
 
+## ⚠️ Guided By <a name = "guided_by"></a>
 
+This project was developed under the guidance of **[MERAKI Academy](https://www.meraki-academy.org)**.
 
 
 
