@@ -12,20 +12,6 @@
 9. [🤝 Contributors](#-contributors)
 10. [👨‍🏫 Guided By](#-guided-by)
 
-
-## 📋 Table of Contents
-1. [📖 Overview](#overview)
-2. [✨ Features](#features)
-3. [🛠️ Technologies Used](#technologies-used)
-4. [⚙️ Installation and Setup](#installation-and-setup)
-5. [🧭 Usage](#usage)
-6. [📂 Database Schema](#database-schema)
-7. [🚀 Frontend Routes](#frontend-routes)
-8. [🔗 Backend Routes](#backend-routes)
-9. [🤝 Contributors](#contributors)
-10. [👨‍🏫 Guided By](#guided_by)
-
-
 ---
 
 ## 📖 Overview
