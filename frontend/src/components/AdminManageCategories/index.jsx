@@ -56,6 +56,7 @@ const AdminManageCatigories = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log("ccc", response.data);
       setTotalPages(Math.ceil(response.data.totalCategories / pageSize));
       dispatch(setLoading(false));
       setCategories(response.data.category);
@@ -128,7 +129,7 @@ const AdminManageCatigories = () => {
   };
 
   const validateForm = () => {
-    if (!formData.name || !formData.description) {
+    if (!formData.category_name || !formData.category_description) {
       dispatch(setLoading(false));
       dispatch(setError("name and description are required."));
       return false;
@@ -462,7 +463,7 @@ const AdminManageCatigories = () => {
                           <div className="SDB_product-info">
                             <h3 className="SDB_product-title">{cat.name}</h3>
                             <p className="SDB_product-description">
-                              {cat.description || "No Description"}
+                              {cat.category_description || "No Description"}
                             </p>
 
                             <div className="product-actions">
@@ -517,8 +518,6 @@ const AdminManageCatigories = () => {
                         Back
                       </button>{" "}
                     </div>
-
-
                   </div>
                   <p className="no-products-message">No SubCategories</p>{" "}
                 </>
@@ -554,16 +553,18 @@ const AdminManageCatigories = () => {
                             cat.category_image ||
                             "https://via.placeholder.com/150"
                           }
-                          alt={cat.name}
+                          alt={cat.category_name}
                           className="SDB_product-image"
                           onError={(e) =>
                             (e.target.src = "https://via.placeholder.com/150")
                           }
                         />
                         <div className="SDB_product-info">
-                          <h3 className="SDB_product-title">{cat.name}</h3>
+                          <h3 className="SDB_product-title">
+                            {cat.category_name}
+                          </h3>
                           <p className="SDB_product-description">
-                            {cat.description || "No Description"}
+                            {cat.category_description || "No Description"}
                           </p>
 
                           <div className="product-actions">

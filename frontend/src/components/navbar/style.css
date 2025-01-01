@@ -11,7 +11,68 @@
   align-items: center;
   padding: 15px 20px;
   position: relative;
+  flex-wrap: nowrap; /* Prevent wrapping */
 }
+
+.nav-lift {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-lift .logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+}
+
+.nav-lift .logo .icon {
+  font-size: 1em;
+  margin-right: 10px;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+}
+
+.blogo {
+  text-decoration: none;
+  color: white;
+}
+
+.blogo:hover {
+  text-decoration: none;
+  color: #45a049;
+}
+
+.nav-center {
+  flex: 1; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 1rem;
+}
+
+#main_navbar-search {
+  width: 100%;
+  max-width: 600px; 
+}
+
+#main_search-input {
+  width: 100%;
+  padding: 5px;
+  font-size: 0.7rem;
+  border: none;
+  border-radius: 7px;
+  transition: outline 0.3s ease;
+}
+.search-input:focus {
+  outline: 2px solid #4caf50;
+}
+
 
 .navbar-icons {
   display: flex;
@@ -32,55 +93,8 @@
   z-index: 1000;
   border-radius: 0 0 8px 8px;
 }
-.brand {
-  font-size: 35px;
-  font-weight: bolder;
-  text-decoration: none;
-}
 
-.blogo {
-  text-decoration: none;
-  color: white;
-}
 
-.blogo:hover {
-  text-decoration: none;
-}
-
-.nav-lift {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.nav-lift .logo {
-  display: flex;
-  align-items: center;
-  font-size: 1.5em;
-}
-
-.nav-lift .logo .icon {
-  font-size: 1.5em;
-  margin-right: 10px;
-}
-
-#main_navbar-search {
-  width: 100%;
-}
-
-#main_search-input {
-  padding: 5px;
-  font-size: 0.8rem;
-  border: none;
-  border-radius: 7px;
-  width: 70vw;
-  max-width: 800px;
-  transition: outline 0.3s ease;
-}
-
-.search-input:focus {
-  outline: 2px solid #4caf50;
-}
 
 .navbar-wishlist {
   font-size: 1.2rem;
@@ -148,11 +162,11 @@
   transition: color 0.2s ease;
 }
 
-.navbar-username {
+.navbar-user {
   font-weight: bold;
 }
 
-.navbar-username:hover {
+.navbar-user:hover {
   font-weight: bolder;
   color: #45a049;
 }

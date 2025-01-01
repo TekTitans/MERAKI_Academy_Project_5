@@ -17,7 +17,7 @@ const AddProduct = () => {
     size_options: "",
     product_image: "",
     category_id: "",
-    subcategory_id: "",
+    subcategory_id: 19,
   });
 
   const { loading, error, message } = useSelector((state) => state.order);
@@ -35,7 +35,7 @@ const AddProduct = () => {
       try {
         const response = await axios.get("http://localhost:5000/category/");
         setCategories(response.data.category);
-        console.log(categories);
+        console.log(response.data.category);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -125,7 +125,7 @@ const AddProduct = () => {
       ...product,
       stock_status: product.stock_status.toLowerCase(),
       category_id: parseInt(product.category_id, 10),
-      subcategory_id: parseInt(product.subcategory_id, 10),
+      subcategory_id:19,
       price: parseFloat(product.price).toFixed(2),
       stock_quantity: parseInt(product.stock_quantity, 10),
       color_options: colorOptionsArray,
@@ -156,7 +156,7 @@ const AddProduct = () => {
         size_options: "",
         product_image: "",
         category_id: "",
-        subcategory_id: "",
+        subcategory_id: 19,
       });
       setImagePreview("");
     } catch (error) {
@@ -281,28 +281,11 @@ const AddProduct = () => {
               </option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {category.category_name}
                 </option>
               ))}
             </select>
-            <select
-              name="subcategory_id"
-              value={product.subcategory_id}
-              onChange={handleChange}
-              required
-              disabled={!product.category_id}
-            >
-              <option value="" disabled>
-                {product.category_id
-                  ? "Select Subcategory"
-                  : "Select a category first"}
-              </option>
-              {filteredSubcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </select>
+
             <button
               type="submit"
               className="prodAdd_submit-button"

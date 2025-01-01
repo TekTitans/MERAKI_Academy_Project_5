@@ -60,7 +60,8 @@ const Navbar = () => {
               <span className="brand">SmartCart</span>
             </Link>
           </div>
-          <div className="nav-center">
+        </div>
+        <div className="nav-center">
             <form
               className="navbar-search"
               id="main_navbar-search"
@@ -76,9 +77,6 @@ const Navbar = () => {
               />
             </form>
           </div>
-        </div>
-
-        {/* Icons for Desktop Navbar */}
         <div className={`navbar-icons ${isOpen ? "open" : ""}`}>
           {!isOpen && (
             <>
@@ -142,46 +140,67 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Options for Mobile Toggle List */}
         {isOpen && (
-          <div className="toggle-options">
-            <Link to="/wishlist" className="toggle-option">
-              Wishlist
-            </Link>
-            <Link to="/cart" className="toggle-option">
-              View Cart
-            </Link>
-            <Link to="/myorders" className="toggle-option">
-              My Orders
-            </Link>
-            <Link to="/notifications" className="toggle-option">
-              Notifications
-            </Link>
-            <Link to="/Profile" className="toggle-option">
-              My Profile
-            </Link>
-            <div
-              className="toggle-option"
-              onClick={() => {
-                if (isLoggedIn) {
-                  handleLogout();
-                  history("/users/login");
-                } else {
-                  history("/users/login");
-                }
-              }}
-            >
-              {isLoggedIn ? "Logout" : "Login"}
-            </div>
-          </div>
-        )}
-        <button
-          className="main_navbar-toggle"
-          onClick={toggleMenu}
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-        >
-          {isOpen ? <FaTimes /> : <FaBars />}
-        </button>
+  <div className="toggle-options">
+    <Link
+      to="/wishlist"
+      className="toggle-option"
+      onClick={toggleMenu} 
+    >
+      Wishlist
+    </Link>
+    <Link
+      to="/cart"
+      className="toggle-option"
+      onClick={toggleMenu} 
+    >
+      View Cart
+    </Link>
+    <Link
+      to="/myorders"
+      className="toggle-option"
+      onClick={toggleMenu} 
+    >
+      My Orders
+    </Link>
+    <Link
+      to="/notifications"
+      className="toggle-option"
+      onClick={toggleMenu} 
+    >
+      Notifications
+    </Link>
+    <Link
+      to="/Profile"
+      className="toggle-option"
+      onClick={toggleMenu} 
+    >
+      My Profile
+    </Link>
+    <div
+      className="toggle-option"
+      onClick={() => {
+        if (isLoggedIn) {
+          handleLogout();
+          toggleMenu(); 
+        } else {
+          history("/users/login");
+          toggleMenu(); 
+        }
+      }}
+    >
+      {isLoggedIn ? "Logout" : "Login"}
+    </div>
+  </div>
+)}
+<button
+  className="main_navbar-toggle"
+  onClick={toggleMenu}
+  aria-label={isOpen ? "Close menu" : "Open menu"}
+>
+  {isOpen ? <FaTimes /> : <FaBars />}
+</button>
+
       </nav>
     </div>
   );

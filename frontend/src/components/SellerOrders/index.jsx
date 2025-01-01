@@ -159,26 +159,11 @@ const SellerOrders = () => {
 
   return (
     <>
-      <div>
-        {loading ? (
-          <div className="loading-container">
-            <div className="loader">
-              <div className="circle"></div>
-              <div className="circle"></div>
-              <div className="circle"></div>
-              <div className="circle"></div>
-            </div>
-            <span>Loading...</span>
-          </div>
-        ) : (
-          <>
-            {error && <div className="error-message">Error: {error}</div>}
-            {message && <div className="success-message">{message}</div>}
-          </>
-        )}
-      </div>
       <div className="seller-page">
         <h2 className="page-title">Seller Orders</h2>
+
+        {error && <div className="error-message">Error: {error}</div>}
+        {message && <div className="success-message">{message}</div>}
 
         <div className="filters">
           <input
@@ -194,22 +179,12 @@ const SellerOrders = () => {
             onChange={handleFilterChange}
           >
             <option value="">Order Status</option>
-            <option value="pending">Pending</option>
-            <option value="shipped">Shipped</option>
-            <option value="completed">Completed</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Canceled</option>
+            <option value="Pending">Pending</option>
+            <option value="Delivering">Delivering</option>
+            <option value="Processing">Confirmed</option>
+            <option value="Canceled">Canceled</option>
           </select>
-          <select
-            name="paymentStatus"
-            value={filters.paymentStatus}
-            onChange={handleFilterChange}
-          >
-            <option value="">Payment Status</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-          </select>
+       
           <input
             type="text"
             name="search"
@@ -223,120 +198,56 @@ const SellerOrders = () => {
         </div>
 
         <div className="seller-orders">
-          <table className="orders-table">
-            <thead>
-              <tr>
-                <th>Order Id</th>
-                <th>Customer Id</th>
-                <th>Total Price</th>
-                <th>Order Status</th>
-                <th>Payment Status</th>
-                <th>Shipping Address</th>
-                <th>Created At</th>
-                <th>Actions</th>
+        <table className="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Total Price</th>
+            <th>Order Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredOrders.length > 0 ? (
+            filteredOrders.map((order) => (
+              <tr key={order.id}>
+                <td>{order.id || "N/A"}</td>
+                <td>{order.user_id || "N/A"}</td>
+                <td>{(order.total_price ?? 0).toFixed(2)}</td>
+                <td className={`status ${order.order_status || "N/A"}`}>
+                  {order.order_status || "N/A"}
+                </td>
+                <td>
+                  {order.order_status === "Pending" && (
+                    <button
+                      onClick={() =>
+                        handleOrderStatusUpdate(order.id, "Processing")
+                      }
+                    >
+                      Confirm
+                    </button>
+                  )}
+                  {["Processing", "Delivering"].includes(order.order_status) && (
+                    <button onClick={() => handleShowStatusModal(order)}>
+                      Update Status
+                    </button>
+                  )}
+                  <button onClick={() => handleInvoice(order.id)}>
+                    Invoice
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  <tr key={order.order_id}>
-                    <td>{order.order_id}</td>
-                    <td>{order.user_id}</td>
-                    <td>
-                      {order.seller_total_price
-                        ? Number(order.seller_total_price).toFixed(2)
-                        : "0.00"}
-                    </td>
-                    <td className={`status ${order.order_status}`}>
-                      {order.order_status}
-                    </td>
-                    <td className={`status ${order.payment_status}`}>
-                      {order.payment_status}
-                    </td>
-                    <td>{order.shipping_address}</td>
-                    <td>
-                      {new Date(order.created_at).toLocaleDateString()}{" "}
-                      {new Date(order.created_at).toLocaleTimeString()}
-                    </td>
-                    <td>
-                      {order.order_status === "pending" && (
-                        <>
-                          <button
-                            onClick={() =>
-                              handleOrderStatusUpdate(
-                                order.order_id,
-                                "confirmed"
-                              )
-                            }
-                          >
-                            Confirm
-                          </button>
-                          <div className="cancel_orders_table">
-                            <button
-                              onClick={() =>
-                                handleOrderStatusUpdate(
-                                  order.order_id,
-                                  "cancelled"
-                                )
-                              }
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </>
-                      )}
-                      {order.order_status === "confirmed" && (
-                        <>
-                          <button onClick={() => handleShowStatusModal(order)}>
-                            Status
-                          </button>
-                          <div className="cancel_orders_table">
-                            <button
-                              onClick={() =>
-                                handleOrderStatusUpdate(
-                                  order.order_id,
-                                  "cancelled"
-                                )
-                              }
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </>
-                      )}
-                      {order.order_status === "completed" && (
-                        <>
-                          <button onClick={() => handleShowStatusModal(order)}>
-                            Status
-                          </button>
-                          <button onClick={() => handleInvoice(order.order_id)}>
-                            Invoice
-                          </button>
-                        </>
-                      )}
-
-                      {order.order_status === "cancelled" && (
-                        <>
-                          <button onClick={() => handleShowStatusModal(order)}>
-                            Status
-                          </button>
-                        </>
-                      )}
-                      <button onClick={() => setSelectedOrder(order)}>
-                        Details
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="empty-state">
-                    No orders found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="empty-state">
+                No orders found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
         </div>
         {showStatusModal && (
           <div className="order-status-modal-wrapper">
@@ -358,9 +269,9 @@ const SellerOrders = () => {
               >
                 <option value="">Select Status</option>
                 <option value="Pending">Pending</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Canceled</option>
+                <option value="Processing">Processing</option>
+                <option value="Delivering">Delivering</option>
+                <option value="Canceled">Canceled</option>
               </select>
 
               <div className="status-modal-footer">
@@ -450,7 +361,7 @@ const SellerOrders = () => {
               <div className="footer">
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  className="cancel"
+                  className="Cancel"
                 >
                   Close
                 </button>

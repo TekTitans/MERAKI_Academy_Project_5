@@ -98,15 +98,15 @@ body {
   font-weight: bold;
 }
 
-.orders-table .status.pending {
+.orders-table .status.Pending {
   color: #ffc107;
 }
 
-.orders-table .status.completed {
+.orders-table .status.Delivering {
   color: #28a745;
 }
 
-.orders-table .status.cancelled {
+.orders-table .status.Cancelled {
   color: #dc3545;
 }
 
@@ -114,11 +114,11 @@ body {
   color: #17a2b8;
 }
 
-.orders-table .status.confirmed {
+.orders-table .status.Processing {
   color: #007bff;
 }
 
-.orders-table .status.failed {
+.orders-table .status.Onhold {
   color: #6c757d;
 }
 

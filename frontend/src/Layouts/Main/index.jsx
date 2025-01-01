@@ -11,19 +11,16 @@ export default function Main() {
 
   return (
     <div className="root-layout">
-      <header>
-        {roleId === 1 ? (
-          <SellerNavbar />
-        ) : roleId === 2 ? (
-          <AdminNavbar />
-        ) : (
-          <Navbar />
-        )}
-      </header>
-      <main className="main-content">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <header>
+      {roleId === 1 && <SellerNavbar />}
+      {roleId === 2 && <AdminNavbar />}
+      {(roleId === 3 || !roleId) && <Navbar />}
+    </header>
+    <main className="main-content">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+  
   );
 }
