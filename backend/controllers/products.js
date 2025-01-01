@@ -188,7 +188,11 @@ const removeProduct = async (req, res) => {
   console.log("productId :", productId);
   console.log("seller_id :", seller_id);
 
-  const query = `DELETE FROM products WHERE id = $1 AND seller_id = $2;`;
+  const query = `
+  UPDATE products 
+  SET is_deleted = TRUE 
+  WHERE id = $1 AND seller_id = $2;
+`;
   const data = [productId, seller_id];
 
   try {

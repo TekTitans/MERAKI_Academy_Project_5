@@ -11,19 +11,17 @@ const SellerSummary = () => {
   const { loading, error, message } = useSelector((state) => state.order);
 
   const [sellerSummary, setSellerSummary] = useState({
-    totalReviews: 0,
-    averageRating: 0,
     totalOrders: 0,
     pendingOrders: 0,
     shippedOrders: 0,
-    completedOrders: 0,
     confirmedOrders: 0,
     cancelledOrders: 0,
     totalSales: 0,
     totalProducts: 0,
     outOfStockProducts: 0,
     totalCustomers: 0,
-    averageOrderValue: 0,
+    totalReviews: 0,
+    averageRating: 0,
     topSellingProduct: null,
   });
 
@@ -43,20 +41,18 @@ const SellerSummary = () => {
 
       if (response.data.success) {
         const summary = response.data.summary;
-        console.log(response.data);
         setSellerSummary({
-          totalReviews: summary.totalReviews,
-          averageRating: summary.averageRating,
-          totalOrders: summary.totalOrders,
-          pendingOrders: summary.pendingOrders,
-          shippedOrders: summary.shippedOrders,
-          completedOrders: summary.completedOrders,
-          confirmedOrders: summary.confirmedOrders,
-          cancelledOrders: summary.cancelledOrders,
-          totalSales: parseFloat(summary.totalSales).toFixed(2),
-          totalProducts: summary.totalProducts,
-          outOfStockProducts: summary.outOfStockProducts,
-          totalCustomers: summary.totalCustomers,
+          totalOrders: summary.totalOrders || 0,
+          pendingOrders: summary.pendingOrders || 0,
+          shippedOrders: summary.shippedOrders || 0,
+          confirmedOrders: summary.confirmedOrders || 0,
+          cancelledOrders: summary.cancelledOrders || 0,
+          totalSales: parseFloat(summary.totalSales || 0).toFixed(2),
+          totalProducts: summary.totalProducts || 0,
+          outOfStockProducts: summary.outOfStockProducts || 0,
+          totalCustomers: summary.totalCustomers || 0,
+          totalReviews: summary.totalReviews || 0,
+          averageRating: summary.averageRating || 0,
           topSellingProduct: summary.topSellingProduct || null,
         });
       }
@@ -102,7 +98,7 @@ const SellerSummary = () => {
             <p>{sellerSummary.totalProducts}</p>
           </div>
 
-          <div className="summary-card cancelled-orders">
+          <div className="summary-card out-of-stock">
             <h4>Out of Stock Products</h4>
             <p>{sellerSummary.outOfStockProducts}</p>
           </div>
@@ -111,28 +107,32 @@ const SellerSummary = () => {
             <div className="summary-card top-selling-product">
               <h4>Top Selling Product</h4>
               <p>
-                {sellerSummary.topSellingProduct?.name} (
-                {sellerSummary.topSellingProduct?.unitsSold} units sold)
+                {sellerSummary.topSellingProduct.name} (
+                {sellerSummary.topSellingProduct.unitsSold} units sold)
               </p>
             </div>
           )}
+
           <div className="summary-card total-customers">
             <h4>Total Customers</h4>
             <p>{sellerSummary.totalCustomers}</p>
           </div>
+
           <div className="summary-card total-reviews">
             <h4>Total Reviews</h4>
-            <p>{sellerSummary.totalReviews || 0}</p>{" "}
+            <p>{sellerSummary.totalReviews}</p>
           </div>
 
           <div className="summary-card average-rating">
             <h4>Average Rating</h4>
-            <p>{(sellerSummary.averageRating || 0).toFixed(2)}</p>
+            <p>{sellerSummary.averageRating.toFixed(2)}</p>
           </div>
+
           <div className="summary-card total-orders">
             <h4>Total Orders</h4>
             <p>{sellerSummary.totalOrders}</p>
           </div>
+
           <div className="summary-card pending-orders">
             <h4>Pending Orders</h4>
             <p>{sellerSummary.pendingOrders}</p>
@@ -153,14 +153,9 @@ const SellerSummary = () => {
             <p>{sellerSummary.shippedOrders}</p>
           </div>
 
-          <div className="summary-card completed-orders">
-            <h4>Completed Orders</h4>
-            <p>{sellerSummary.completedOrders}</p>
-          </div>
-
           <div className="summary-card total-sales">
             <h4>Total Sales</h4>
-            <p>{sellerSummary.totalSales}</p>
+            <p>${sellerSummary.totalSales}</p>
           </div>
         </div>
       </div>

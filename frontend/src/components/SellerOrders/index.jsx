@@ -34,7 +34,6 @@ const SellerOrders = () => {
     totalOrders: 0,
     pendingOrders: 0,
     shippedOrders: 0,
-    completedOrders: 0,
     confirmedOrders: 0,
     cancelledOrders: 0,
     totalSales: 0,
@@ -57,6 +56,7 @@ const SellerOrders = () => {
         }
       );
       dispatch(setOrders(response.data.result));
+      console.log("Orders", response);
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setError(error.message));
@@ -117,6 +117,9 @@ const SellerOrders = () => {
     try {
       dispatch(setLoading(true));
       dispatch(setError(null));
+      console.log("order_id", order_id);
+      console.log("newStatus", newStatus);
+
       await axios.put(
         `http://localhost:5000/order/${order_id}/status`,
         { status: newStatus },
@@ -156,7 +159,17 @@ const SellerOrders = () => {
   const handleInvoice = (order_id) => {
     window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
   };
+  useEffect(() => {
+    if (error || message) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, message, dispatch]);
 
+  if (loading) return <div className="loading-spinner">Loading...</div>;
   return (
     <>
       <div className="seller-page">
@@ -180,11 +193,11 @@ const SellerOrders = () => {
           >
             <option value="">Order Status</option>
             <option value="Pending">Pending</option>
-            <option value="Delivering">Delivering</option>
-            <option value="Processing">Confirmed</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Shipped">Shipped</option>
             <option value="Canceled">Canceled</option>
           </select>
-       
+
           <input
             type="text"
             name="search"
@@ -198,56 +211,115 @@ const SellerOrders = () => {
         </div>
 
         <div className="seller-orders">
-        <table className="orders-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer ID</th>
-            <th>Total Price</th>
-            <th>Order Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredOrders.length > 0 ? (
-            filteredOrders.map((order) => (
-              <tr key={order.id}>
-                <td>{order.id || "N/A"}</td>
-                <td>{order.user_id || "N/A"}</td>
-                <td>{(order.total_price ?? 0).toFixed(2)}</td>
-                <td className={`status ${order.order_status || "N/A"}`}>
-                  {order.order_status || "N/A"}
-                </td>
-                <td>
-                  {order.order_status === "Pending" && (
-                    <button
-                      onClick={() =>
-                        handleOrderStatusUpdate(order.id, "Processing")
-                      }
-                    >
-                      Confirm
-                    </button>
-                  )}
-                  {["Processing", "Delivering"].includes(order.order_status) && (
-                    <button onClick={() => handleShowStatusModal(order)}>
-                      Update Status
-                    </button>
-                  )}
-                  <button onClick={() => handleInvoice(order.id)}>
-                    Invoice
-                  </button>
-                </td>
+          <table className="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer ID</th>
+                <th>Total Price</th>
+                <th>Order Status</th>
+                <th>Actions</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="empty-state">
-                No orders found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.order_id || "N/A"}</td>
+                    <td>{order.user_id || "N/A"}</td>
+                    <td>
+                      {order.products
+                        .reduce(
+                          (total, product) =>
+                            total + product.price * product.quantity,
+                          0
+                        )
+                        .toFixed(2)}
+                    </td>
+                    <td className={`status ${order.order_status || "N/A"}`}>
+                      {order.order_status || "N/A"}
+                    </td>
+                    <td>
+                      {order.order_status === "Pending" && (
+                        <>
+                          <button
+                            id="confirm_orders_Btn"
+                            onClick={() =>
+                              handleOrderStatusUpdate(
+                                order.order_id,
+                                "Confirmed"
+                              )
+                            }
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            id="cancel_orders_Btn"
+                            onClick={() =>
+                              handleOrderStatusUpdate(
+                                order.order_id,
+                                "Canceled"
+                              )
+                            }
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
+                      {order.order_status === "Confirmed" && (
+                        <>
+                          <button
+                            id="ship_orders_Btn"
+                            onClick={() =>
+                              handleOrderStatusUpdate(order.order_id, "Shipped")
+                            }
+                          >
+                            Ship
+                          </button>
+                          <button onClick={() => handleShowStatusModal(order)}>
+                            Update Status
+                          </button>
+                          <button
+                            id="invoice_Btn"
+                            onClick={() => handleInvoice(order.order_id)}
+                          >
+                            Invoice
+                          </button>
+                        </>
+                      )}
+
+                      {order.order_status === "Shipped" && (
+                        <>
+                          <button onClick={() => handleShowStatusModal(order)}>
+                            Update Status
+                          </button>
+                          <button
+                            id="invoice_Btn"
+                            onClick={() => handleInvoice(order.order_id)}
+                          >
+                            Invoice
+                          </button>
+                        </>
+                      )}
+                      {order.order_status === "Canceled" && (
+                        <>
+                          <button onClick={() => handleShowStatusModal(order)}>
+                            Update Status
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="empty-state">
+                    No orders found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
         {showStatusModal && (
           <div className="order-status-modal-wrapper">
@@ -269,8 +341,8 @@ const SellerOrders = () => {
               >
                 <option value="">Select Status</option>
                 <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Delivering">Delivering</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Shipped">Shipped</option>
                 <option value="Canceled">Canceled</option>
               </select>
 
