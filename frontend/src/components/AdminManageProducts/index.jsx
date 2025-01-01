@@ -173,17 +173,8 @@ const AdminManageProducts = () => {
       return;
     }
 
-    const colorOptionsArray = product.color_options
-      ? product.color_options.split(",").map((option) => option.trim())
-      : [];
-    const sizeOptionsArray = product.size_options
-      ? product.size_options.split(",").map((option) => option.trim())
-      : [];
-
     const formattedProduct = {
       ...product,
-      color_options: colorOptionsArray,
-      size_options: sizeOptionsArray,
       price: parseFloat(product.price).toFixed(2),
       stock_quantity: parseInt(product.stock_quantity, 10),
       category_id: parseInt(product.category_id, 10),

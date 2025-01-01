@@ -11,8 +11,6 @@ const createProduct = async (req, res) => {
     price,
     stock_status,
     stock_quantity,
-    color_options,
-    size_options,
     product_image,
     category_id,
     subcategory_id,
@@ -21,8 +19,8 @@ const createProduct = async (req, res) => {
   const query = `INSERT INTO products( title,
   description,
   price,
-  stock_status,stock_quantity,color_options,size_options,seller_id,category_id,subcategory_id,product_image)
-  VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`;
+  stock_status,stock_quantity,seller_id,category_id,subcategory_id,product_image)
+  VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`;
 
   const data = [
     title,
@@ -30,8 +28,6 @@ const createProduct = async (req, res) => {
     price,
     stock_status,
     stock_quantity,
-    color_options,
-    size_options,
     seller_id,
     category_id,
     subcategory_id,
@@ -39,6 +35,17 @@ const createProduct = async (req, res) => {
   ];
 
   try {
+    console.log("Request Body:", req.body);
+    console.log("SQL Query:", query);
+    console.log("Data Array:", data);
+
+    if (!category_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required.",
+      });
+    }
+
     const result = await pool.query(query, data);
     res.json({
       success: true,
@@ -46,10 +53,11 @@ const createProduct = async (req, res) => {
       product: result.rows[0],
     });
   } catch (error) {
+    console.error("Database Error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      err: error,
+      err: error.message,
     });
   }
 };
@@ -180,7 +188,11 @@ const removeProduct = async (req, res) => {
   console.log("productId :", productId);
   console.log("seller_id :", seller_id);
 
-  const query = `DELETE FROM products WHERE id = $1 AND seller_id = $2;`;
+  const query = `
+  UPDATE products 
+  SET is_deleted = TRUE 
+  WHERE id = $1 AND seller_id = $2;
+`;
   const data = [productId, seller_id];
 
   try {
@@ -449,7 +461,7 @@ const getProductsByCategory = async (req, res) => {
       message: "Products retrieved successfully",
       totalPages: totalPages,
       totalProducts: totalProducts,
-      products: result.rows, 
+      products: result.rows,
     });
   } catch (error) {
     console.error("Error fetching products by category:", error);
@@ -460,7 +472,6 @@ const getProductsByCategory = async (req, res) => {
     });
   }
 };
-
 
 const searchByName = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -530,7 +541,6 @@ const searchByName = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   createProduct,

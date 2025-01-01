@@ -9,14 +9,17 @@ import {
   setError,
   setMessage,
 } from "../../components/redux/reducers/orders";
+import Navbar from "../../components/Navbar";
 const HomePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error, message } = useSelector((state) => state.order);
 
   const categories = useSelector((state) => state.category.categories);
+  const roleId = useSelector((state) => state.auth.roleId);
 
   useEffect(() => {
+
     const fetchCategories = async () => {
       try {
         dispatch(setLoading(true));

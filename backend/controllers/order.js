@@ -64,7 +64,7 @@ const createOrder = async (req, res) => {
             stock_status = CASE WHEN stock_quantity - $1 <= 0 THEN 'out_of_stock' ELSE stock_status END
         WHERE id = $2 AND stock_quantity >= $1
       `;
-      
+
       await pool.query(updateStockQuery, [orderedQuantity, productId]);
     }
 
@@ -81,7 +81,6 @@ const createOrder = async (req, res) => {
     });
   }
 };
-
 
 const getAllOrders = (req, res) => {
   const query = `SELECT * FROM orders;`;
@@ -155,7 +154,7 @@ const cancelOrder = (req, res) => {
 };
 const getSellerOrders = async (req, res) => {
   const sellerId = req.token.userId;
-
+  console.log("selleId", sellerId);
   try {
     const query = `
       SELECT 
@@ -185,7 +184,7 @@ const getSellerOrders = async (req, res) => {
       ORDER BY o.created_at DESC;
     `;
 
-    const data = [78]; //sellerId
+    const data = [sellerId]; //sellerId
     const result = await pool.query(query, data);
 
     res.status(200).json({
@@ -207,18 +206,14 @@ const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  const validStatuses = [
-    "pending",
-    "confirmed",
-    "completed",
-    "cancelled",
-    "shipped",
-  ];
-  if (!validStatuses.includes(status.toLowerCase())) {
+  const validStatuses = ["Confirmed", "Shipped", "Canceled", "Pending"];
+
+  if (!validStatuses.includes(status)) {
     return res.status(400).json({
       success: false,
-      message:
-        "Invalid status. Valid statuses are: pending, confirmed, completed, cancelled, shipped.",
+      message: `Invalid order status: ${status}. Valid statuses are ${validStatuses.join(
+        ", "
+      )}.`,
     });
   }
 
@@ -229,7 +224,7 @@ const updateOrderStatus = async (req, res) => {
       WHERE id = $2 AND is_deleted = FALSE
       RETURNING *;
     `;
-    const values = [status.toLowerCase(), id];
+    const values = [status, id];
 
     const result = await pool.query(query, values);
 
@@ -239,6 +234,7 @@ const updateOrderStatus = async (req, res) => {
         message: "Order not found or already deleted.",
       });
     }
+
     res.status(200).json({
       success: true,
       message: "Order status updated successfully.",
@@ -252,32 +248,33 @@ const updateOrderStatus = async (req, res) => {
     });
   }
 };
+
 const generateInvoice = async (req, res) => {
   const { id: orderId } = req.params;
 
   try {
     const orderQuery = `
-      SELECT 
-        o.id AS order_id,
-        o.user_id,
-        o.total_price,
-        o.shipping_address,
-        o.created_at,
-        JSON_AGG(
-          JSON_BUILD_OBJECT(
-            'product_id', p.id,
-            'product_name', p.title,
-            'price', p.price,
-            'quantity', c.quantity,
-            'total', p.price * c.quantity
-          )
-        ) AS products
-      FROM orders o
-      JOIN cart c ON o.id = c.order_id
-      JOIN products p ON c.product_id = p.id
-      WHERE o.id = $1
-      GROUP BY o.id;
-    `;
+    SELECT 
+      o.id AS order_id,
+      o.user_id,
+      o.shipping_address,
+      o.created_at,
+      SUM(p.price * c.quantity) AS total_price, 
+      JSON_AGG(
+        JSON_BUILD_OBJECT(
+          'product_id', p.id,
+          'product_name', p.title,
+          'price', p.price,
+          'quantity', c.quantity,
+          'total', p.price * c.quantity
+        )
+      ) AS products
+    FROM orders o
+    JOIN cart c ON o.id = c.order_id
+    JOIN products p ON c.product_id = p.id
+    WHERE o.id = $1
+    GROUP BY o.id;
+  `;
 
     const result = await pool.query(orderQuery, [orderId]);
 
@@ -424,21 +421,31 @@ const getSellerSummary = async (req, res) => {
     console.log("getSellerSummary");
 
     const summaryQuery = `
-      SELECT 
-        COUNT(o.id) AS total_orders,
-        SUM(CASE WHEN o.order_status = 'pending' THEN 1 ELSE 0 END) AS pending_orders,
-        SUM(CASE WHEN o.order_status = 'shipped' THEN 1 ELSE 0 END) AS shipped_orders,
-        SUM(CASE WHEN o.order_status = 'completed' THEN 1 ELSE 0 END) AS completed_orders,
-        SUM(CASE WHEN o.order_status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed_orders,
-        SUM(CASE WHEN o.order_status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
-        COALESCE(SUM(p.price * c.quantity), 0) AS total_sales,
-        COUNT(DISTINCT p.id) AS total_products,
-        SUM(CASE WHEN p.stock_status = 'out_of_stock' THEN 1 ELSE 0 END) AS out_of_stock_products,
-        COUNT(DISTINCT o.user_id) AS total_customers
-      FROM orders o
-      JOIN cart c ON o.id = c.order_id
-      JOIN products p ON c.product_id = p.id
-      WHERE p.seller_id = $1 AND o.is_deleted = FALSE AND p.is_deleted = FALSE;
+  WITH product_count AS (
+  SELECT COUNT(*) AS total_products
+  FROM products
+  WHERE seller_id = $1 AND is_deleted = FALSE
+),
+out_of_stock_count AS (
+  SELECT COUNT(*) AS out_of_stock_products
+  FROM products
+  WHERE seller_id = $1 AND is_deleted = FALSE AND stock_status = 'out_of_stock'
+)
+SELECT 
+  COUNT(DISTINCT o.id) AS total_orders, -- حساب الطلبات الفريدة فقط
+  COUNT(DISTINCT CASE WHEN o.order_status = 'Pending' THEN o.id END) AS pending_orders, -- الطلبات الفريدة ذات الحالة "Pending"
+  COUNT(DISTINCT CASE WHEN o.order_status = 'Shipped' THEN o.id END) AS shipped_orders, -- الطلبات الفريدة ذات الحالة "Shipped"
+  COUNT(DISTINCT CASE WHEN o.order_status = 'Confirmed' THEN o.id END) AS confirmed_orders, -- الطلبات الفريدة ذات الحالة "Confirmed"
+  COUNT(DISTINCT CASE WHEN o.order_status = 'Canceled' THEN o.id END) AS cancelled_orders, -- الطلبات الفريدة ذات الحالة "Canceled"
+  COALESCE(SUM(p.price * c.quantity), 0) AS total_sales, -- إجمالي المبيعات
+  COUNT(DISTINCT o.user_id) AS total_customers, -- عدد العملاء الفريدين
+  (SELECT total_products FROM product_count) AS total_products,
+  (SELECT out_of_stock_products FROM out_of_stock_count) AS out_of_stock_products
+FROM orders o
+LEFT JOIN cart c ON o.id = c.order_id
+LEFT JOIN products p ON c.product_id = p.id
+WHERE p.seller_id = $1 AND o.is_deleted = FALSE AND p.is_deleted = FALSE;
+
     `;
 
     const topSellingQuery = `
@@ -452,17 +459,19 @@ const getSellerSummary = async (req, res) => {
       ORDER BY units_sold DESC
       LIMIT 1;
     `;
-    const reviewQuery = ` SELECT 
-      COUNT(*) AS total_reviews,
-      AVG(reviews.rating) AS average_rating
-    FROM sellerReviews reviews
-    WHERE reviews.seller_id = $1
-      AND reviews.is_deleted = false;
+
+    const reviewQuery = `
+      SELECT 
+        COUNT(*) AS total_reviews,
+        AVG(reviews.rating) AS average_rating
+      FROM sellerReviews reviews
+      WHERE reviews.seller_id = $1
+        AND reviews.is_deleted = false;
     `;
 
-    const summaryResult = await pool.query(summaryQuery, [78]); //sellerId
-    const topSellingResult = await pool.query(topSellingQuery, [78]); //sellerId
-    const reviewResult = await pool.query(reviewQuery, [78]); //sellerId
+    const summaryResult = await pool.query(summaryQuery, [sellerId]); //sellerId
+    const topSellingResult = await pool.query(topSellingQuery, [sellerId]); //sellerId
+    const reviewResult = await pool.query(reviewQuery, [sellerId]); //sellerId
 
     console.log("reviewResult", reviewResult);
     const summary = summaryResult.rows[0];
@@ -480,7 +489,6 @@ const getSellerSummary = async (req, res) => {
         totalOrders: parseInt(summary.total_orders, 10),
         pendingOrders: parseInt(summary.pending_orders, 10),
         shippedOrders: parseInt(summary.shipped_orders, 10),
-        completedOrders: parseInt(summary.completed_orders, 10),
         confirmedOrders: parseInt(summary.confirmed_orders, 10),
         cancelledOrders: parseInt(summary.cancelled_orders, 10),
         totalSales: parseFloat(summary.total_sales).toFixed(2),
@@ -504,6 +512,7 @@ const getSellerSummary = async (req, res) => {
     });
   }
 };
+
 const getAdminSummary = async (req, res) => {
   try {
     console.log("Fetching Admin Summary");
@@ -516,8 +525,8 @@ const getAdminSummary = async (req, res) => {
           (SELECT COUNT(*) FROM users WHERE is_deleted = FALSE AND created_at >= NOW() - INTERVAL '7 days') AS new_users,
           (SELECT COUNT(*) FROM products WHERE is_deleted = FALSE) AS total_products,
           (SELECT COUNT(*) FROM orders WHERE is_deleted = FALSE) AS total_orders,
-          (SELECT COUNT(*) FROM orders WHERE order_status = 'pending' AND is_deleted = FALSE) AS pending_orders,
-          (SELECT COUNT(*) FROM orders WHERE order_status = 'completed' AND is_deleted = FALSE) AS completed_orders,
+          (SELECT COUNT(*) FROM orders WHERE order_status = 'Pending' AND is_deleted = FALSE) AS pending_orders,
+          (SELECT COUNT(*) FROM orders WHERE order_status = 'Processing' AND is_deleted = FALSE) AS completed_orders,
           (SELECT COALESCE(SUM(products.price * cart.quantity), 0) 
            FROM orders
            JOIN cart ON orders.id = cart.order_id
@@ -568,7 +577,7 @@ const getAdminSummary = async (req, res) => {
       `,
       orderConversionRate: `
         SELECT 
-          COUNT(*) FILTER (WHERE order_status = 'completed')::DECIMAL / NULLIF(COUNT(*), 0) AS conversion_rate
+          COUNT(*) FILTER (WHERE order_status = 'Processing')::DECIMAL / NULLIF(COUNT(*), 0) AS conversion_rate
         FROM orders
         WHERE is_deleted = FALSE;
       `,
@@ -786,5 +795,5 @@ module.exports = {
   generateInvoice,
   getSellerSummary,
   getAdminSummary,
-  getUserOrders
+  getUserOrders,
 };

@@ -116,30 +116,27 @@ const AdminSummary = () => {
             <h4>Total Products</h4>
             <p>{adminSummary.totalProducts}</p>
           </div>
-          {adminSummary.lowStockProducts.length > 0 && (
-            <div className="summary-card low-stock-products">
-              <h4>Low Stock Products</h4>
-              <ul>
-                {adminSummary.lowStockProducts.map((product) => (
-                  <li key={product.id}>
-                    {product.name} (Stock: {product.stock})
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {adminSummary.mostReviewedProducts.length > 0 && (
-            <div className="summary-card most-reviewed-products">
-              <h4>Most Reviewed Products</h4>
-              <ul>
-                {adminSummary.mostReviewedProducts.map((product) => (
-                  <li key={product.id}>
-                    {product.name} ({product.reviews} reviews)
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className="summary-card best-product">
+            <h4>Best Product</h4>
+            <p>
+              {adminSummary.bestProduct?.name}
+              <br />
+              Avg. Rating: {adminSummary.bestProduct?.averageRating}
+              <br />
+              {renderStars(adminSummary.bestProduct?.averageRating)}
+            </p>
+          </div>
+          <div className="summary-card best-seller">
+            <h4>Best Seller</h4>
+            <p>
+              {adminSummary.bestSeller?.name}
+              <br />
+              {adminSummary.bestSeller?.averageRating}
+              <br />
+              {renderStars(adminSummary.bestSeller?.averageRating)}
+            </p>
+          </div>
+         
 
           <div className="summary-card total-orders">
             <h4>Total Orders</h4>
@@ -178,35 +175,25 @@ const AdminSummary = () => {
               </ul>
             </div>
           )}
-
-          <div className="summary-card best-product">
-            <h4>Best Product</h4>
-            <p>
-              {adminSummary.bestProduct?.name}
-              <br />
-              Avg. Rating: {adminSummary.bestProduct?.averageRating}
-              <br />
-              {renderStars(adminSummary.bestProduct?.averageRating)}
-            </p>
-          </div>
-          <div className="summary-card best-seller">
-            <h4>Best Seller</h4>
-            <p>
-              {adminSummary.bestSeller?.name}
-              <br />
-              {adminSummary.bestSeller?.averageRating}
-              <br />
-              {renderStars(adminSummary.bestSeller?.averageRating)}
-            </p>
-          </div>
-
-          {adminSummary.geographicDistribution.length > 0 && (
-            <div className="summary-card geographic-distribution">
-              <h4>Geographic Distribution</h4>
+ {adminSummary.lowStockProducts.length > 0 && (
+            <div className="summary-card low-stock-products">
+              <h4>Low Stock Products</h4>
               <ul>
-                {adminSummary.geographicDistribution.map((location) => (
-                  <li key={location.id}>
-                    {location.country}: {location.users} users
+                {adminSummary.lowStockProducts.map((product) => (
+                  <li key={product.id}>
+                    {product.name} (Stock: {product.stock})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {adminSummary.mostReviewedProducts.length > 0 && (
+            <div className="summary-card most-reviewed-products">
+              <h4>Most Reviewed Products</h4>
+              <ul>
+                {adminSummary.mostReviewedProducts.map((product) => (
+                  <li key={product.id}>
+                    {product.name} ({product.reviews} reviews)
                   </li>
                 ))}
               </ul>

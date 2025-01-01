@@ -138,35 +138,6 @@ const EditProductForm = ({
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="color_options" className="form-label">
-            Color Options (comma separated)
-          </label>
-          <input
-            type="text"
-            id="color_options"
-            name="color_options"
-            value={product.color_options}
-            onChange={handleChange}
-            placeholder="Color Options (comma separated)"
-            className="input-field"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="size_options" className="form-label">
-            Size Options (comma separated)
-          </label>
-          <input
-            type="text"
-            id="size_options"
-            name="size_options"
-            value={product.size_options}
-            onChange={handleChange}
-            placeholder="Size Options (comma separated)"
-            className="input-field"
-          />
-        </div>
         <div className="Edit_Action_Btns">
           <button type="submit" className="edit_action-button">
             {loading ? "Updating..." : "Update"}

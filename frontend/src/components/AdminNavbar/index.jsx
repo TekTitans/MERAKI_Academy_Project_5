@@ -23,10 +23,12 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const history = useNavigate();
   const { userName } = useSelector((state) => state.auth);
+
   const handleLogout = () => {
-    dispatch(setLogout());
-    history("/");
+    dispatch(setLogout()); 
+    history("/users/login"); 
   };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -68,6 +70,7 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
           }}
         >
           <FaPlus className="navbar-icon" />
+          Add Category
         </li>
         <li
           className={activeSection === "manageUsers" ? "active" : ""}
@@ -99,20 +102,11 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
           <FaBoxOpen className="navbar-icon" />
           Products Management
         </li>
-        <li
-          className={activeSection === "profile" ? "active" : ""}
-          onClick={() => {
-            setActiveSection("profile");
-            setIsMenuOpen(false);
-          }}
-        >
-          <FaUser className="navbar-icon" />
-          Profile
-        </li>
+       
         <li
           className={activeSection === "logout" ? "active" : ""}
           onClick={() => {
-            setActiveSection("logout");
+            handleLogout(); 
             setIsMenuOpen(false);
           }}
         >

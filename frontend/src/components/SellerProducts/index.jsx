@@ -55,7 +55,6 @@ const SellerProducts = () => {
     maxPrice: "",
     status: "",
     selectedCategory: 0,
-    selectedSubcategory: 0,
   });
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const [filterRating, setFilterRating] = useState(0);
@@ -67,22 +66,14 @@ const SellerProducts = () => {
       try {
         const response = await axios.get("http://localhost:5000/category/");
         setCategories(response.data.category);
+        console.log("response", response.data.category);
+        console.log("category", response.data.category);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
     };
 
-    const fetchSubcategories = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/subCategory");
-        setSubcategories(response.data.subCategory);
-      } catch (error) {
-        console.error("Error fetching subcategories:", error);
-      }
-    };
-
     fetchCategories();
-    fetchSubcategories();
   }, []);
 
   const fetchProducts = async (page = 1) => {
@@ -119,6 +110,7 @@ const SellerProducts = () => {
     fetchProducts(currentPage);
     console.log("selectedProduct: ", selectedProduct);
     console.log("selectedReviews: ", selectedReviews);
+    console.log("filteredProducts: ", filteredProducts);
   }, [dispatch, token, currentPage, updated]);
 
   const validateForm = () => {
@@ -181,17 +173,8 @@ const SellerProducts = () => {
       return;
     }
 
-    const colorOptionsArray = product.color_options
-      ? product.color_options.split(",").map((option) => option.trim())
-      : [];
-    const sizeOptionsArray = product.size_options
-      ? product.size_options.split(",").map((option) => option.trim())
-      : [];
-
     const formattedProduct = {
       ...product,
-      color_options: colorOptionsArray,
-      size_options: sizeOptionsArray,
       price: parseFloat(product.price).toFixed(2),
       stock_quantity: parseInt(product.stock_quantity, 10),
       category_id: parseInt(product.category_id, 10),
@@ -235,6 +218,7 @@ const SellerProducts = () => {
   };
 
   const handleDelete = async (productId) => {
+    console.log("productId", productId);
     try {
       await axios.delete(`http://localhost:5000/products/${productId}`, {
         headers: {
@@ -255,8 +239,6 @@ const SellerProducts = () => {
     setEditProduct(productToEdit);
     setProduct({
       ...productToEdit,
-      color_options: productToEdit.color_options?.join(", ") || "",
-      size_options: productToEdit.size_options?.join(", ") || "",
     });
 
     console.log("Updated productToEdit:", productToEdit);
@@ -291,6 +273,16 @@ const SellerProducts = () => {
       );
       setProduct((prev) => ({ ...prev, subcategory_id: "" }));
     }
+
+    if (name === "status" && value === "out_of_stock") {
+      setFilteredProducts((prevProducts) =>
+        prevProducts.filter((product) => product.stock_quantity === 0)
+      );
+    } else if (name === "status") {
+      setFilteredProducts((prevProducts) =>
+        prevProducts.filter((product) => product.stock_status === value)
+      );
+    }
   };
 
   const handleClearFilters = () => {
@@ -301,7 +293,6 @@ const SellerProducts = () => {
       maxPrice: "",
       status: "",
       selectedCategory: 0,
-      selectedSubcategory: 0,
     });
     setFilterRating(0);
     setSortOption("");
@@ -335,11 +326,7 @@ const SellerProducts = () => {
 
       const matchesCategory =
         !filters.selectedCategory ||
-        product.category_id === filters.selectedCategory;
-
-      const matchesSubcategory =
-        !filters.selectedSubcategory ||
-        product.subcategory_id === filters.selectedSubcategory;
+        product.category_id == filters.selectedCategory;
 
       const matchesRating =
         !filterRating || product.average_rating >= parseFloat(filterRating);
@@ -352,7 +339,6 @@ const SellerProducts = () => {
         matchesSearch &&
         matchesPrice &&
         matchesCategory &&
-        matchesSubcategory &&
         matchesRating &&
         matchesStock
       );
@@ -473,28 +459,12 @@ const SellerProducts = () => {
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
+                  <option key={category.id} value={category.category_id}>
+                    {category.category_name}
                   </option>
                 ))}
               </select>
-              <select
-                id="filter-subcategory"
-                name="selectedSubcategory"
-                value={product.subcategory_id}
-                onChange={handleFilterChange}
-                required
-                disabled={!filters.selectedCategory}
-              >
-                <option value="" disabled>
-                  All SubCategories
-                </option>
-                {filteredSubcategories.map((subcategory) => (
-                  <option key={subcategory.id} value={subcategory.id}>
-                    {subcategory.name}
-                  </option>
-                ))}
-              </select>
+
               <select
                 id="filter-status"
                 name="status"
@@ -506,6 +476,7 @@ const SellerProducts = () => {
                 <option value="out_of_stock">Out Of Stock</option>
                 <option value="on_demand">On Demand</option>
               </select>
+
               <input
                 id="filter-search"
                 type="text"
@@ -597,8 +568,18 @@ const SellerProducts = () => {
                     </div>
 
                     <div className="SDB_product-stock">
-                      <span className="status">
-                        {prod.stock_status
+                      <span
+                        className={`status ${
+                          prod.stock_quantity === 0
+                            ? "out-of-stock"
+                            : prod.stock_status === "in_stock"
+                            ? "in-stock"
+                            : "on-demand"
+                        }`}
+                      >
+                        {prod.stock_quantity === 0
+                          ? "Out of Stock"
+                          : prod.stock_status
                           ? prod.stock_status.replace("_", " ")
                           : "Status Unknown"}
                       </span>
@@ -608,28 +589,8 @@ const SellerProducts = () => {
                       </span>
                     </div>
 
-                    <p className="SDB_product-colors">
-                      <span className="color-list">
-                        {prod.color_options && prod.color_options.length > 0
-                          ? prod.color_options.join(", ")
-                          : "No Colors"}
-                      </span>
-                    </p>
-
-                    <p className="SDB_product-sizes">
-                      <span className="size-list">
-                        {prod.size_options && prod.size_options.length > 0
-                          ? prod.size_options.join(", ")
-                          : "One Size"}
-                      </span>
-                    </p>
-
                     <p className="SDB_product-category">
                       {prod.category_name || "Category Not Specified"}
-                    </p>
-
-                    <p className="SDB_product-subCategory">
-                      {prod.subcategory_name || "Subcategory Not Specified"}
                     </p>
 
                     <div className="SDB_product-rating">
@@ -665,7 +626,7 @@ const SellerProducts = () => {
                         Statistics
                       </button>
                       <button
-                        onClick={() => handleDelete(prod.id)}
+                        onClick={() => handleDelete(prod.product_id)}
                         className="delete-button"
                       >
                         Delete

@@ -98,15 +98,15 @@ body {
   font-weight: bold;
 }
 
-.orders-table .status.pending {
+.orders-table .status.Pending {
   color: #ffc107;
 }
 
-.orders-table .status.completed {
+.orders-table .status.Confirmed {
   color: #28a745;
 }
 
-.orders-table .status.cancelled {
+.orders-table .status.Canceled {
   color: #dc3545;
 }
 
@@ -114,11 +114,11 @@ body {
   color: #17a2b8;
 }
 
-.orders-table .status.confirmed {
+.orders-table .status.Processing {
   color: #007bff;
 }
 
-.orders-table .status.failed {
+.orders-table .status.Onhold {
   color: #6c757d;
 }
 
@@ -528,6 +528,32 @@ body {
     transform: translate(-50%, -50%);
   }
 }
+
+#cancel_orders_Btn{
+  background-color: #dc3545;
+}
+#cancel_orders_Btn:hover {
+  background-color: #b02a37;
+}
+#confirm_orders_Btn{
+  background-color: #28a745;
+}
+#confirm_orders_Btn:hover {
+  background-color: #048f25;
+}
+#ship_orders_Btn {
+  background-color: #6c757d;
+}
+#ship_orders_Btn:hover {
+  background-color: #41352e;
+}
+#invoice_Btn {
+  background-color: #28a745;
+}
+#invoice_Btn:hover {
+  background-color: #048f25;
+}
+
 
 @media (max-width: 1024px) {
   .orders-table th,

@@ -13,11 +13,9 @@ const AddProduct = () => {
     price: "",
     stock_status: "in_stock",
     stock_quantity: "",
-    color_options: "",
-    size_options: "",
     product_image: "",
     category_id: "",
-    subcategory_id: "",
+    subcategory_id: 19,
   });
 
   const { loading, error, message } = useSelector((state) => state.order);
@@ -35,7 +33,7 @@ const AddProduct = () => {
       try {
         const response = await axios.get("http://localhost:5000/category/");
         setCategories(response.data.category);
-        console.log(categories);
+        console.log(response.data.category);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -115,23 +113,16 @@ const AddProduct = () => {
       return;
     }
 
-    const colorOptionsArray = product.color_options
-      ? product.color_options.split(",").map((opt) => opt.trim())
-      : [];
-    const sizeOptionsArray = product.size_options
-      ? product.size_options.split(",").map((opt) => opt.trim())
-      : [];
     const formattedProduct = {
       ...product,
       stock_status: product.stock_status.toLowerCase(),
       category_id: parseInt(product.category_id, 10),
-      subcategory_id: parseInt(product.subcategory_id, 10),
+      subcategory_id: 19,
       price: parseFloat(product.price).toFixed(2),
       stock_quantity: parseInt(product.stock_quantity, 10),
-      color_options: colorOptionsArray,
-      size_options: sizeOptionsArray,
     };
-
+    console.log("Formatted Product:", formattedProduct);
+    console.log("Product:", product);
     dispatch(setLoading(true));
     try {
       const response = await axios.post(
@@ -152,11 +143,9 @@ const AddProduct = () => {
         price: "",
         stock_status: "in_stock",
         stock_quantity: "",
-        color_options: "",
-        size_options: "",
         product_image: "",
         category_id: "",
-        subcategory_id: "",
+        subcategory_id: 19,
       });
       setImagePreview("");
     } catch (error) {
@@ -256,20 +245,6 @@ const AddProduct = () => {
               <option value="out_of_stock">Out of Stock</option>
               <option value="on_demand">On Demand</option>
             </select>
-            <input
-              type="text"
-              name="color_options"
-              value={product.color_options}
-              onChange={handleChange}
-              placeholder="Color Options"
-            />
-            <input
-              type="text"
-              name="size_options"
-              value={product.size_options}
-              onChange={handleChange}
-              placeholder="Size Options"
-            />
             <select
               name="category_id"
               value={product.category_id}
@@ -280,29 +255,12 @@ const AddProduct = () => {
                 Select Category
               </option>
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
+                <option key={category.id} value={category.category_id}>
+                  {category.category_name}
                 </option>
               ))}
             </select>
-            <select
-              name="subcategory_id"
-              value={product.subcategory_id}
-              onChange={handleChange}
-              required
-              disabled={!product.category_id}
-            >
-              <option value="" disabled>
-                {product.category_id
-                  ? "Select Subcategory"
-                  : "Select a category first"}
-              </option>
-              {filteredSubcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </select>
+
             <button
               type="submit"
               className="prodAdd_submit-button"

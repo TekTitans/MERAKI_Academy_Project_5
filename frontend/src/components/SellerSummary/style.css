@@ -74,65 +74,104 @@ body {
 .summary-card.total-orders {
   background-color: #f0f8ff;
   border-left: 5px solid #4682b4;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.pending-orders {
   background-color: #fff3cd;
   border-left: 5px solid #ffc107;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.confirmed-orders {
   background-color: #d4edda;
   border-left: 5px solid #28a745;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.cancelled-orders {
   background-color: #f8d7da;
   border-left: 5px solid #dc3545;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.shipped-orders {
   background-color: #d1ecf1;
   border-left: 5px solid #17a2b8;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.completed-orders {
   background-color: #e9f7ef;
   border-left: 5px solid #28a745;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.total-sales {
   background-color: #f1f5f8;
   border-left: 5px solid #6c757d;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.total-products {
   background-color: #e9ecef;
   border-left: 5px solid #6c757d;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.out-of-stock {
   background-color: #f8d7da;
   border-left: 5px solid #dc3545;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.total-customers {
   background-color: #d1ecf1;
   border-left: 5px solid #17a2b8;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.top-selling-product {
   background-color: #f8f9fa;
   border-left: 5px solid #343a40;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 .summary-card.total-reviews {
   background-color: #e2f7e1;
   border-left: 5px solid #28a745;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .summary-card.average-rating {
   background-color: #f0f8ff;
   border-left: 5px solid #4682b4;
+  height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {

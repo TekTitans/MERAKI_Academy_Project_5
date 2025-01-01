@@ -22,7 +22,7 @@
   width: auto;
   height: 500px;
   transition: transform 0.3s ease-in-out; /* Smooth transition for zoom effect */
-  cursor: zoom-in; /* Change cursor to indicate zoom effect *
+  cursor: zoom-in; /* Change cursor to indicate zoom effect */
 }
 
 /* Hover Effect with Movement */
@@ -65,24 +65,18 @@
 
 .product-seller {
   margin-bottom: 20px;
+  font-weight:bold ;
 }
 
 .seller-link {
   color: #007bff;
   text-decoration: none;
-
 }
 
 .seller-link:hover {
   text-decoration: underline;
 }
 
-=======
-}
-
-.seller-link:hover {
-  text-decoration: underline;
-}
 
 
 /* Add to Cart */
