@@ -55,6 +55,8 @@ export const authSlice = createSlice({
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("isLoggedIn");
       sessionStorage.removeItem("userName");
+      sessionStorage.removeItem("roleId");
+
     },
     setIsCompletedRegister: (state, action) => {
       sessionStorage.setItem("isCompletedRegister", JSON.stringify(true));

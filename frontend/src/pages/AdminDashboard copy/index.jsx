@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import AdminNavbar from "../../components/AdminNavbar";
+import React from "react";
+import { useOutletContext } from "react-router-dom";
+
 import AdminManageProducts from "../../components/AdminManageProducts";
 import AddCategories from "../../components/AddCategory";
 import AdminManageOrders from "../../components/AdminManageOrders";
@@ -9,7 +10,7 @@ import AdminManageUsers from "../../components/AdminManageUsers";
 import AdminManageCatigories from "../../components/AdminManageCategories";
 
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState("summary");
+  const { activeSection } = useOutletContext();
 
   const renderSection = () => {
     switch (activeSection) {
@@ -33,11 +34,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard-container">
-      <AdminNavbar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      />
-
       <div className="admin-dashboard-content">{renderSection()}</div>
     </div>
   );

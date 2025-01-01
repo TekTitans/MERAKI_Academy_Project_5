@@ -102,16 +102,7 @@ const AdminNavbar = ({ activeSection, setActiveSection }) => {
           <FaBoxOpen className="navbar-icon" />
           Products Management
         </li>
-        <li
-          className={activeSection === "profile" ? "active" : ""}
-          onClick={() => {
-            setActiveSection("profile");
-            setIsMenuOpen(false);
-          }}
-        >
-          <FaUser className="navbar-icon" />
-          Profile
-        </li>
+       
         <li
           className={activeSection === "logout" ? "active" : ""}
           onClick={() => {

@@ -145,7 +145,7 @@ const Category = () => {
 
       if (response.data.success) {
         setWishlist((prevWishlist) => [...prevWishlist, productId]); // Add to state
-        dispatch(setMessage("Product added to wishlist!"));
+
       } else {
         console.error("Add to wishlist failed:", response.data.message);
       }
@@ -167,7 +167,6 @@ const Category = () => {
         setWishlist((prevWishlist) =>
           prevWishlist.filter((id) => id !== productId)
         ); // Remove from state
-        dispatch(setMessage("Product removed from wishlist."));
       } else {
         console.error("Remove from wishlist failed:", response.data.message);
       }
@@ -380,287 +379,285 @@ const Category = () => {
 
   return (
     <>
-      {" "}
-      <div>
-        {loading ? (
-          <div className="loading-container">
-            <div className="loader">
-              <div className="circle"></div>
-              <div className="circle"></div>
-              <div className="circle"></div>
-              <div className="circle"></div>
-            </div>
-            <span>Loading...</span>
+      {loading ? (
+        <div className="loading-container">
+          <div className="loader">
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
+            <div className="circle"></div>
           </div>
-        ) : (
-          <>
-            {error && <div className="error-message">Error: {error}</div>}
-            {message && <div className="success-message">{message}</div>}
-          </>
-        )}
-      </div>
-      <div className="category-page-container">
-        <Breadcrumb />
-        <div className="category-page-content">
-          <div id="filter-sort-section" className="filter-sort-section">
-            <div id="filters-container" className="filters">
-              <input
-                id="filter-date"
-                type="date"
-                name="selectedDate"
-                placeholder="Before Date"
-                value={filters.selectedDate}
-                onChange={handleFilterChange}
-              />
+          <span>Loading...</span>
+        </div>
+      ) : (
+        <div className="category-page-container">
+          <Breadcrumb />
+          <div className="category-page-content">
+            <div id="filter-sort-section" className="filter-sort-section">
+              <div id="filters-container" className="filters">
+                <input
+                  id="filter-date"
+                  type="date"
+                  name="selectedDate"
+                  placeholder="Before Date"
+                  value={filters.selectedDate}
+                  onChange={handleFilterChange}
+                />
 
-              <input
-                id="filter-min-price"
-                type="number"
-                name="minPrice"
-                placeholder="Min Price"
-                value={filters.minPrice}
-                onChange={handleFilterChange}
-              />
-              <input
-                id="filter-max-price"
-                type="number"
-                name="maxPrice"
-                placeholder="Max Price"
-                value={filters.maxPrice}
-                onChange={handleFilterChange}
-              />
-              <select
-                id="filter-subcategory"
-                name="selectedSubcategory"
-                value={filters.selectedSubcategory}
-                onChange={handleFilterChange}
-                required
-              >
-                <option value="">All SubCategories</option>
-                {subcategories.map((subcategory) => (
-                  <option key={subcategory.id} value={subcategory.id}>
-                    {subcategory.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                id="filter-status"
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-              >
-                <option value="">Status</option>
-                <option value="in_stock">In Stock</option>
-                <option value="out_of_stock">Out Of Stock</option>
-                <option value="on_demand">On Demand</option>
-              </select>
-              <input
-                id="filter-search"
-                type="text"
-                name="search"
-                placeholder="Search"
-                value={filters.search}
-                onChange={handleFilterChange}
-              />
-              <div id="star-filter-container" className="star-filter">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <span
-                    id={`star-${index}`}
-                    key={index}
-                    className={`star ${
-                      filterRating >= index + 1 ? "selected" : ""
-                    }`}
-                    onClick={() => handleStarClick(index + 1)}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <button
-                id="clear-filters-button"
-                className="clear-filters-button"
-                onClick={handleClearFilters}
-              >
-                Clear
-              </button>
-              <div id="sort-buttons-container" className="sort-buttons-modern">
-                <h3>Sort By:</h3>
-                {["Price", "New", "Rating"].map((type) => {
-                  const isActive = sortOption.startsWith(type);
-
-                  return (
-                    <button
-                      id={`sort-button-${type}`}
-                      key={type}
-                      className={`sort-button ${isActive ? "active" : ""}`}
-                      onClick={() => {
-                        handleSortChange(type);
-                      }}
-                    >
-                      {sortOption.startsWith(type) &&
-                        (sortOption.endsWith("highest") ? (
-                          <FaSortAmountDown />
-                        ) : (
-                          <FaSortAmountUp />
-                        ))}
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-          <div className="main_product-grid">
-            {loading ? (
-              <div className="loading-container_Main">
-                <div className="loading-circle"></div>
-              </div>
-            ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((prod) => {
-                const isWishlisted =
-                  Array.isArray(wishlist) && wishlist.includes(prod.id);
-
-                return (
-                  <div
-                    key={prod.id}
-                    className="modern-product-card"
-                    onClick={() => history(`/shop/${cId}/${prod.id}`)}
-                  >
-                    <div
-                      className={`modern-stock-badge ${
-                        prod.stock_status
-                          ? prod.stock_status.toLowerCase()
-                          : "unknown"
+                <input
+                  id="filter-min-price"
+                  type="number"
+                  name="minPrice"
+                  placeholder="Min Price"
+                  value={filters.minPrice}
+                  onChange={handleFilterChange}
+                />
+                <input
+                  id="filter-max-price"
+                  type="number"
+                  name="maxPrice"
+                  placeholder="Max Price"
+                  value={filters.maxPrice}
+                  onChange={handleFilterChange}
+                />
+                <select
+                  id="filter-subcategory"
+                  name="selectedSubcategory"
+                  value={filters.selectedSubcategory}
+                  onChange={handleFilterChange}
+                  required
+                >
+                  <option value="">All SubCategories</option>
+                  {subcategories.map((subcategory) => (
+                    <option key={subcategory.id} value={subcategory.id}>
+                      {subcategory.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  id="filter-status"
+                  name="status"
+                  value={filters.status}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">Status</option>
+                  <option value="in_stock">In Stock</option>
+                  <option value="out_of_stock">Out Of Stock</option>
+                  <option value="on_demand">On Demand</option>
+                </select>
+                <input
+                  id="filter-search"
+                  type="text"
+                  name="search"
+                  placeholder="Search"
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
+                <div id="star-filter-container" className="star-filter">
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <span
+                      id={`star-${index}`}
+                      key={index}
+                      className={`star ${
+                        filterRating >= index + 1 ? "selected" : ""
                       }`}
+                      onClick={() => handleStarClick(index + 1)}
                     >
-                      {prod.stock_status
-                        ? prod.stock_status.replace("_", " ")
-                        : "Unknown"}
-                    </div>
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <button
+                  id="clear-filters-button"
+                  className="clear-filters-button"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </button>
+                <div
+                  id="sort-buttons-container"
+                  className="sort-buttons-modern"
+                >
+                  <h3>Sort By:</h3>
+                  {["Price", "New", "Rating"].map((type) => {
+                    const isActive = sortOption.startsWith(type);
 
-                    <img
-                      src={
-                        prod.product_image ||
-                        "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
-                      }
-                      alt={prod.title}
-                      className="modern-product-image"
-                      onError={(e) =>
-                        (e.target.src =
-                          "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
-                      }
-                    />
-
-                    <button
-                      className={`modern-wishlist-icon ${
-                        isWishlisted ? "active" : ""
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWishlist(prod.id);
-                      }}
-                      disabled={loadingWishlist[prod.id]}
-                    >
-                      {loadingWishlist[prod.id] ? (
-                        <i className="fas fa-spinner fa-spin"></i>
-                      ) : (
-                        <i
-                          className={
-                            isWishlisted ? "fas fa-heart" : "far fa-heart"
-                          }
-                        ></i>
-                      )}
-                    </button>
-
-                    <div className="modern-product-info">
-                      <h3 className="modern-product-title">{prod.title}</h3>
-
-                      <div className="modern-product-price-row">
-                        <div className="modern-product-price">
-                          {prod.price
-                            ? `${prod.price} JD`
-                            : "Price Not Available"}
-                        </div>
-                        <button
-                          className="modern-cart-icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addCart(prod.id);
-                          }}
-                          disabled={
-                            loadingCart[prod.id] ||
-                            prod.stock_status === "out_of_stock"
-                          }
-                          aria-label="Add to Cart"
-                        >
-                          {loadingCart[prod.id] ? (
-                            <div className="modern-spinner">
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
+                    return (
+                      <button
+                        id={`sort-button-${type}`}
+                        key={type}
+                        className={`sort-button ${isActive ? "active" : ""}`}
+                        onClick={() => {
+                          handleSortChange(type);
+                        }}
+                      >
+                        {sortOption.startsWith(type) &&
+                          (sortOption.endsWith("highest") ? (
+                            <FaSortAmountDown />
                           ) : (
-                            <i className="fas fa-shopping-cart"></i>
-                          )}
-                        </button>
-                      </div>
-
-                      <div className="modern-product-rating">
-                        <div className="rating-container">
-                          {Array.from({ length: 5 }, (_, index) => (
-                            <i
-                              key={index}
-                              className={`rating-star ${
-                                index < prod.average_rating
-                                  ? "fas fa-star"
-                                  : "far fa-star"
-                              }`}
-                            ></i>
+                            <FaSortAmountUp />
                           ))}
-                          <span className="rating-count">
-                            ({prod.number_of_reviews}{" "}
-                            {prod.number_of_reviews === 1
-                              ? "rating"
-                              : "ratings"}
-                            )
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <p
-                          className={`product-stock_quantity ${
-                            prod.stock_status === "in_stock"
-                              ? "in-stock"
-                              : prod.stock_status === "out_of_stock"
-                              ? "out-of-stock"
-                              : "on-demand"
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            <>
+                  {error && <div className="error-message">Error: {error}</div>}
+                  {message && <div className="success-message">{message}</div>}
+                </>
+            <div className="main_product-grid">
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((prod) => {
+                    const isWishlisted =
+                      Array.isArray(wishlist) && wishlist.includes(prod.id);
+
+                    return (
+                      <div
+                        key={prod.id}
+                        className="modern-product-card"
+                        onClick={() => history(`/shop/${cId}/${prod.id}`)}
+                      >
+                        <div
+                          className={`modern-stock-badge ${
+                            prod.stock_status
+                              ? prod.stock_status.toLowerCase()
+                              : "unknown"
                           }`}
                         >
-                          {prod.stock_status === "in_stock"
-                            ? `${prod.stock_quantity} in stock`
-                            : prod.stock_status === "out_of_stock"
-                            ? "Out of Stock"
-                            : "Available on Demand"}
-                        </p>
+                          {prod.stock_status
+                            ? prod.stock_status.replace("_", " ")
+                            : "Unknown"}
+                        </div>
+
+                        <img
+                          src={
+                            prod.product_image ||
+                            "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg"
+                          }
+                          alt={prod.title}
+                          className="modern-product-image"
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://res.cloudinary.com/drhborpt0/image/upload/v1732778621/6689747_xi1mhr.jpg")
+                          }
+                        />
+
+                        <button
+                          className={`modern-wishlist-icon ${
+                            isWishlisted ? "active" : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleWishlist(prod.id);
+                          }}
+                          disabled={loadingWishlist[prod.id]}
+                        >
+                          {loadingWishlist[prod.id] ? (
+                            <i className="fas fa-spinner fa-spin"></i>
+                          ) : (
+                            <i
+                              className={
+                                isWishlisted ? "fas fa-heart" : "far fa-heart"
+                              }
+                            ></i>
+                          )}
+                        </button>
+
+                        <div className="modern-product-info">
+                          <h3 className="modern-product-title">{prod.title}</h3>
+
+                          <div className="modern-product-price-row">
+                            <div className="modern-product-price">
+                              {prod.price
+                                ? `${prod.price} JD`
+                                : "Price Not Available"}
+                            </div>
+                            <button
+                              className="modern-cart-icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addCart(prod.id);
+                              }}
+                              disabled={
+                                loadingCart[prod.id] ||
+                                prod.stock_status === "out_of_stock"
+                              }
+                              aria-label="Add to Cart"
+                            >
+                              {loadingCart[prod.id] ? (
+                                <div className="modern-spinner">
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                </div>
+                              ) : (
+                                <i className="fas fa-shopping-cart"></i>
+                              )}
+                            </button>
+                          </div>
+
+                          <div className="modern-product-rating">
+                            <div className="rating-container">
+                              {Array.from({ length: 5 }, (_, index) => (
+                                <i
+                                  key={index}
+                                  className={`rating-star ${
+                                    index < prod.average_rating
+                                      ? "fas fa-star"
+                                      : "far fa-star"
+                                  }`}
+                                ></i>
+                              ))}
+                              <span className="rating-count">
+                                ({prod.number_of_reviews}{" "}
+                                {prod.number_of_reviews === 1
+                                  ? "rating"
+                                  : "ratings"}
+                                )
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <p
+                              className={`product-stock_quantity ${
+                                prod.stock_status === "in_stock"
+                                  ? "in-stock"
+                                  : prod.stock_status === "out_of_stock"
+                                  ? "out-of-stock"
+                                  : "on-demand"
+                              }`}
+                            >
+                              {prod.stock_status === "in_stock"
+                                ? `${prod.stock_quantity} in stock`
+                                : prod.stock_status === "out_of_stock"
+                                ? "Out of Stock"
+                                : "Available on Demand"}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="no-products">No products found.</p>
-            )}
+                    );
+                  })
+                ) : (
+                  <p className="no-products">No products found.</p>
+                )}
+
+            </div>
+            {paginationControls}
+
           </div>
 
-          {paginationControls}
+          <Modal
+            isOpen={modalVisible}
+            autoClose={closeModal}
+            message={modalMessage}
+          />
         </div>
-        <Modal
-          isOpen={modalVisible}
-          autoClose={closeModal}
-          message={modalMessage}
-        />
-      </div>
+      )}
     </>
   );
 };

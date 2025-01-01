@@ -53,7 +53,7 @@ body {
   box-shadow: var(--box-shadow);
   text-align: center;
   transition: var(--transition);
-  border-left: 5px solid transparent; /* Default border to be overwritten */
+  border-left: 5px solid transparent; 
 }
 
 .summary-card:hover {
@@ -101,7 +101,6 @@ body {
   margin-bottom: 5px;
 }
 
-/* Card Color Variations */
 .summary-card.total-users {
   background-color: #e9ecef;
   border-left: 5px solid #6c757d;
@@ -120,11 +119,19 @@ body {
 .summary-card.low-stock-products {
   background-color: #f8d7da;
   border-left: 5px solid #dc3545;
+  height: 200px; 
+  overflow-y: auto; 
+  padding: 10px; 
+  box-sizing: border-box; 
 }
 
 .summary-card.most-reviewed-products {
   background-color: #f0f8ff;
   border-left: 5px solid #4682b4;
+  height: 200px; 
+  overflow-y: auto; 
+  padding: 10px; 
+  box-sizing: border-box; 
 }
 
 .summary-card.conversion-rate {
@@ -145,6 +152,10 @@ body {
 .summary-card.revenue-by-category {
   background-color: #f0f8ff;
   border-left: 5px solid #4682b4;
+  height: 200px; 
+  overflow-y: auto; 
+  padding: 10px; 
+  box-sizing: border-box;
 }
 
 .summary-card.best-product {
@@ -157,12 +168,7 @@ body {
   border-left: 5px solid #343a40;
 }
 
-.summary-card.geographic-distribution {
-  background-color: #f1f5f8;
-  border-left: 5px solid #6c757d;
-}
 
-/* Responsiveness */
 @media (max-width: 768px) {
   .summary-cards {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

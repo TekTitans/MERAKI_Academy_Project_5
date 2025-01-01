@@ -15,6 +15,8 @@ import {
 const Details = () => {
   const [error_review, setError_review] = useState("");
   const [message_review, setMessage_review] = useState("");
+  const [error_addCart, setError_error_addCart] = useState("");
+  const [message_addCart, setMessage_addCart] = useState("");
   const { loading, error, message } = useSelector((state) => state.order);
   const [loadingCart, setLoadingCart] = useState({});
   const [loadibgReview, setLoadingReview] = useState(false);
@@ -84,7 +86,7 @@ const Details = () => {
               quantity: parseInt(product.quantity, 10),
             })
           );
-          dispatch(setMessage("Product added to cart successfully!"));
+          setMessage_addCart("Product added to cart successfully!");
           setLoadingCart((prevState) => ({ ...prevState, [pId]: false }));
 
           console.log("Cart state after adding:", cart);
@@ -95,7 +97,7 @@ const Details = () => {
       })
       .catch((error) => {
         console.error("Error adding to cart:", error);
-        dispatch(setError("Error adding to cart. Please try again."));
+        setError_error_addCart("Error adding to cart. Please try again.");
 
         setLoadingCart((prevState) => ({ ...prevState, [pId]: false }));
       });
@@ -117,7 +119,7 @@ const Details = () => {
         setLoadingReview(false);
 
         console.error("Error deleting review:", err);
-        setModalMessage("Failed to delete review.");
+        setError_review("Failed to delete review.");
       });
   };
 
@@ -152,12 +154,12 @@ const Details = () => {
           console.error(error);
         });
     } else {
-      setModalMessage("Please provide a valid rating and comment!");
+      setError_review("Please provide a valid rating and comment!");
       setModalVisible(true);
     }
   };
   const closeModal = () => {
-    setModalVisible(false); // This function hides the modal
+    setModalVisible(false);
   };
 
   const handleEdit = (review) => {
@@ -197,7 +199,7 @@ const Details = () => {
           console.error(error);
         });
     } else {
-      setModalMessage("Enter A valid input");
+      setError_review("Enter A valid input");
     }
   };
 
@@ -218,6 +220,34 @@ const Details = () => {
       </div>
     );
   }
+  useEffect(() => {
+    if (
+      error ||
+      message ||
+      error_review ||
+      message_review ||
+      error_addCart ||
+      message_addCart
+    ) {
+      const timer = setTimeout(() => {
+        dispatch(setError(null));
+        dispatch(setMessage(null));
+        setError_error_addCart(null);
+        setMessage_addCart(null);
+        setError_review(null);
+        setMessage_review(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    error,
+    message,
+    error_review,
+    message_review,
+    error_addCart,
+    message_addCart,
+    dispatch,
+  ]);
 
   return (
     <>
@@ -353,6 +383,14 @@ const Details = () => {
                     )}
                   </button>
                 </div>
+                <>
+                  {error_addCart && (
+                    <div className="error-message">Error: {error_addCart}</div>
+                  )}
+                  {message_addCart && (
+                    <div className="success-message">{message_addCart}</div>
+                  )}
+                </>
               </div>
             </div>
           </div>

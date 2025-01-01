@@ -549,6 +549,18 @@
   padding: 0.7rem 0.8rem;
 }
 
+.SDB_product-stock .status.in-stock {
+  color: #28a745; 
+}
+
+.SDB_product-stock .status.out-of-stock {
+  color: #dc3545; 
+}
+
+.SDB_product-stock .status.on-demand {
+  color: #ffc107; 
+}
+
 @media (max-width: 768px) {
   .sort-buttons-modern {
     flex-wrap: wrap;

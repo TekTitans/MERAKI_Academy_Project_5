@@ -23,7 +23,7 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
   const { userName } = useSelector((state) => state.auth);
   const handleLogout = () => {
     dispatch(setLogout());
-    history("/");
+    history("/users/login");
   };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -90,19 +90,9 @@ const SellerNavbar = ({ activeSection, setActiveSection }) => {
         </li>
 
         <li
-          className={activeSection === "profile" ? "active" : ""}
-          onClick={() => {
-            setActiveSection("profile");
-            setIsMenuOpen(false);
-          }}
-        >
-          <FaUser className="navbar-icon" />
-          Profile
-        </li>
-        <li
           className={activeSection === "logout" ? "active" : ""}
           onClick={() => {
-            setActiveSection("logout");
+            handleLogout();
             setIsMenuOpen(false);
           }}
         >

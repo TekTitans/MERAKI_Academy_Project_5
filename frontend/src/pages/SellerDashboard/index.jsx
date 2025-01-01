@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-import SellerNavbar from "../../components/SellerNavbar";
+import React from "react";
+import { useOutletContext } from "react-router-dom";
 import SellerProducts from "../../components/SellerProducts";
 import AddProduct from "../../components/AddProduct";
 import SellerOrders from "../../components/SellerOrders";
 import SellerSummary from "../../components/SellerSummary";
 import SellerReviews from "../../components/SellerReviews";
 import "./style.css";
-import ProfilePage from "../ProfilePage";
 import UserProfile from "../UserProfile";
 
 const SellerDashboard = () => {
-  const [activeSection, setActiveSection] = useState("summary");
+  const { activeSection } = useOutletContext();
 
   const renderSection = () => {
     switch (activeSection) {
@@ -33,10 +32,6 @@ const SellerDashboard = () => {
 
   return (
     <div className="seller-dashboard-container">
-      <SellerNavbar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      />
       <div className="seller-dashboard-content">{renderSection()}</div>
     </div>
   );

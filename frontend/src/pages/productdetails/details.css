@@ -22,64 +22,62 @@
   width: auto;
   height: 500px;
   transition: transform 0.3s ease-in-out; /* Smooth transition for zoom effect */
-  cursor: zoom-in; /* Change cursor to indicate zoom effect *
+  cursor: zoom-in; /* Change cursor to indicate zoom effect */
 }
 
 /* Hover Effect with Movement */
-  .productimage:hover img {
-    transform: scale(1.5); /* Increase the size of the image */
-    transition: transform 0.5s ease; /* Smooth zoom effect */
-  }
+.productimage:hover img {
+  transform: scale(1.5); /* Increase the size of the image */
+  transition: transform 0.5s ease; /* Smooth zoom effect */
+}
 
-  /* Mouse Move Effect */
-  .productimage:hover img {
-    transform-origin: center; /* Default center */
-    cursor: none; /* Hide default cursor */
-  }
+/* Mouse Move Effect */
+.productimage:hover img {
+  transform-origin: center; /* Default center */
+  cursor: none; /* Hide default cursor */
+}
 
-  .productimage:hover {
-    background: rgba(0, 0, 0, 0.1); /* Optional: Light background effect */
-  }
+.productimage:hover {
+  background: rgba(0, 0, 0, 0.1); /* Optional: Light background effect */
+}
 
-  .product-main {
-    margin-left: 50px;
-  }
+.product-main {
+  margin-left: 50px;
+}
 
-  .product-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
+.product-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 
-  .product-price {
-    font-size: 20px;
-    color: #007bff;
-    margin-bottom: 20px;
-  }
+.product-price {
+  font-size: 20px;
+  color: #007bff;
+  margin-bottom: 20px;
+}
 
-  .product-description {
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 20px;
-  }
+.product-description {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
 
-  .product-seller {
-    margin-bottom: 20px;
-  }
+.product-seller {
+  margin-bottom: 20px;
+  font-weight:bold ;
+}
 
-  .seller-link {
-    color: #007bff;
-    text-decoration: none;
-  }
-
-  .seller-link:hover {
-    text-decoration: underline;
-  }
+.seller-link {
+  color: #007bff;
+  text-decoration: none;
 }
 
 .seller-link:hover {
   text-decoration: underline;
 }
+
+
 
 /* Add to Cart */
 .add-to-cart-section {
