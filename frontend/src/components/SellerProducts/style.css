@@ -550,16 +550,38 @@
 }
 
 .SDB_product-stock .status.in-stock {
-  color: #28a745; 
+  color: #28a745;
 }
 
 .SDB_product-stock .status.out-of-stock {
-  color: #dc3545; 
+  color: #dc3545;
 }
 
 .SDB_product-stock .status.on-demand {
-  color: #ffc107; 
+  color: #ffc107;
 }
+
+.reviews-list_seller {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 300px; 
+  overflow-y: auto; 
+}
+
+.reviews-list_seller::-webkit-scrollbar {
+  width: 5px; 
+}
+
+.reviews-list_seller::-webkit-scrollbar-thumb {
+  background-color: #aaa; 
+  border-radius: 10px; 
+}
+
+.reviews-list_seller::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
 
 @media (max-width: 768px) {
   .sort-buttons-modern {
