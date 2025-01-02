@@ -647,49 +647,62 @@ const SellerProducts = () => {
           <div className="order-details-modal">
             <button
               className="close-button"
-              onClick={() => setSelectedProduct(null)}
+              onClick={() => {
+                setSelectedProduct(null);
+                setSelectedReviews(null);
+              }}
             >
               ×
             </button>
             <h3>{selectedProduct.title}</h3>
             {selectedReviews ? (
-              <div className="reviews-list">
-                {selectedProduct.reviews
-                  .map((reviewString) => JSON.parse(reviewString))
-                  .map((review) => (
-                    <div
-                      key={review.id}
-                      className="review-card"
-                      data-rating={
-                        review.rating >= 4
-                          ? "positive"
-                          : review.rating === 3
-                          ? "neutral"
-                          : "negative"
-                      }
-                    >
-                      <div className="profile-wrapper">
-                        {review.profile_image ? (
-                          <img
-                            src={review.profile_image}
-                            alt={`${review.user_name}'s profile`}
-                            className="review-profile-image"
-                          />
-                        ) : (
-                          <FaUserAlt className="fallback-icon" />
-                        )}
-                      </div>
-                      <div className="review-content">
-                        <div className="review-header">
-                          <strong>{review.user_name}</strong> -{" "}
-                          {formatDate(review.created_at)}
+              <>
+                <div className="reviews-list_seller">
+                  {selectedProduct.reviews
+                    .map((reviewString) => JSON.parse(reviewString))
+                    .map((review) => (
+                      <div
+                        key={review.id}
+                        className="review-card"
+                        data-rating={
+                          review.rating >= 4
+                            ? "positive"
+                            : review.rating === 3
+                            ? "neutral"
+                            : "negative"
+                        }
+                      >
+                        <div className="profile-wrapper">
+                          {review.profile_image ? (
+                            <img
+                              src={review.profile_image}
+                              alt={`${review.user_name}'s profile`}
+                              className="review-profile-image"
+                            />
+                          ) : (
+                            <FaUserAlt className="fallback-icon" />
+                          )}
                         </div>
-                        {renderStars(review.rating)}
-                        <p className="review-comment">{review.comment}</p>
+                        <div className="review-content">
+                          <div className="review-header">
+                            <strong>{review.user_name}</strong> -{" "}
+                            {formatDate(review.created_at)}
+                          </div>
+                          {renderStars(review.rating)}
+                          <p className="review-comment">{review.comment}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
+                    ))}
+                </div>
+                <div className="footer">
+                  <button
+                    onClick={() => setSelectedReviews(null)}
+                    className="cancel"
+                  >
+                    Back
+                  </button>
+                </div>
+              </>
             ) : (
               <div className="content">
                 <div className="SDB_product-info">
@@ -762,17 +775,16 @@ const SellerProducts = () => {
                     )}
                   </div>
                 </div>
+                <div className="footer">
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="cancel"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             )}
-
-            <div className="footer">
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="cancel"
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
       )}
