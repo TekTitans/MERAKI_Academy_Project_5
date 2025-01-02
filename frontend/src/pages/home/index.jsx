@@ -9,7 +9,6 @@ import {
   setError,
   setMessage,
 } from "../../components/redux/reducers/orders";
-import Navbar from "../../components/Navbar";
 const HomePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
