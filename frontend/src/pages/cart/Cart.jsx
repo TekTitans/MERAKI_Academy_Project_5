@@ -43,7 +43,7 @@ const Cart = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/cart", { headers })
+      .get("https://smartcart-xdki.onrender.com/cart", { headers })
       .then((response) => {
         dispatch(setCart(response.data.result));
         setLoading(false);
@@ -61,7 +61,7 @@ const Cart = () => {
     const timer = setTimeout(() => {
       axios
         .put(
-          `http://localhost:5000/cart/${item.id}`,
+          `https://smartcart-xdki.onrender.com/cart/${item.id}`,
           { quantity: newQuantity },
           { headers }
         )
@@ -73,7 +73,7 @@ const Cart = () => {
 
   const removeItem = (id) => {
     axios
-      .delete(`http://localhost:5000/cart/${id}`, { headers })
+      .delete(`https://smartcart-xdki.onrender.com/cart/${id}`, { headers })
       .then(() => {
         dispatch(removeFromCart(id));
         dispatch(setMessage("Item Removed Successfully !"));
@@ -83,7 +83,7 @@ const Cart = () => {
 
   const clearAllCart = () => {
     axios
-      .delete("http://localhost:5000/cart/cart", { headers })
+      .delete("https://smartcart-xdki.onrender.com/cart/cart", { headers })
       .then(() => {
         dispatch(setCart([]));
         dispatch(setMessage("Cart Cleared Successfully !"));

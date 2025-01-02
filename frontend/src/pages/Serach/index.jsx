@@ -39,7 +39,7 @@ const SearchResults = () => {
     const fetchProducts = async (page = 1) => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/products/search/${encodeURIComponent(
+          `https://smartcart-xdki.onrender.com/products/search/${encodeURIComponent(
             query
           )}?page=${page}&size=${pageSize}`
         );
@@ -65,7 +65,7 @@ const SearchResults = () => {
       setModalVisible(true);
     } else {
       axios
-        .post("http://localhost:5000/wishlist", { productId }, { headers })
+        .post("https://smartcart-xdki.onrender.com/wishlist", { productId }, { headers })
         .then((response) => {
           if (response.data.success) {
             console.log(response);
@@ -92,7 +92,7 @@ const SearchResults = () => {
     console.log("pId", pId);
     const quantity = 1;
     axios
-      .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
+      .post(`https://smartcart-xdki.onrender.com/cart/${pId}`, { quantity }, { headers })
       .then((response) => {})
       .catch((error) => {
         console.error(error);
@@ -108,7 +108,7 @@ const SearchResults = () => {
   const addToWishlist = async (productId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/wishlist",
+        "https://smartcart-xdki.onrender.com/wishlist",
         { productId },
         { headers }
       );
@@ -159,7 +159,7 @@ const SearchResults = () => {
 
   const fetchWishlist = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/wishlist", {
+      const response = await axios.get("https://smartcart-xdki.onrender.com/wishlist", {
         headers,
       });
       if (response.data.success) {
@@ -174,7 +174,7 @@ const SearchResults = () => {
   const removeFromWishlist = async (productId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/wishlist/${productId}`,
+        `https://smartcart-xdki.onrender.com/wishlist/${productId}`,
         {
           headers,
         }

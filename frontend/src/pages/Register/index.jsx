@@ -67,7 +67,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const result = await axios.post("http://localhost:5000/users", formData);
+      const result = await axios.post("https://smartcart-xdki.onrender.com/users", formData);
 
       if (result.data.success) {
         setStatus(true);

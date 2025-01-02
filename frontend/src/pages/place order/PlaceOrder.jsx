@@ -57,7 +57,7 @@ const PlaceOrder = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/cart", { headers })
+      .get("https://smartcart-xdki.onrender.com/cart", { headers })
       .then((response) => {
         setMyCart(response.data.result);
       })
@@ -74,7 +74,7 @@ const PlaceOrder = () => {
   const createOrder = () => {
     axios
       .post(
-        `http://localhost:5000/order`,
+        `https://smartcart-xdki.onrender.com/order`,
         { phone_number, street, country, isVisa, deliveryPrice },
         { headers }
       )

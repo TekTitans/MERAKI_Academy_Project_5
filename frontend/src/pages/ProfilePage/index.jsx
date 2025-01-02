@@ -46,7 +46,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/users/profile", {
+        const res = await axios.get("https://smartcart-xdki.onrender.com/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userDetails = res.data.user;
@@ -89,7 +89,7 @@ const ProfilePage = () => {
     setIsDeactivating(true);
     try {
       const response = await axios.put(
-        "http://localhost:5000/users/deactivate-profile",
+        "https://smartcart-xdki.onrender.com/users/deactivate-profile",
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -135,7 +135,7 @@ const ProfilePage = () => {
 
     try {
       const response = await axios.put(
-        "http://localhost:5000/users/change-password",
+        "https://smartcart-xdki.onrender.com/users/change-password",
         { oldPassword, newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -162,7 +162,7 @@ const ProfilePage = () => {
       try {
 
         const res = await axios.put(
-          "http://localhost:5000/users/profile",
+          "https://smartcart-xdki.onrender.com/users/profile",
           formData,
           {
             headers: {
@@ -208,7 +208,7 @@ const ProfilePage = () => {
       } = userData;
 
       const response = await axios.put(
-        "http://localhost:5000/users/profile",
+        "https://smartcart-xdki.onrender.com/users/profile",
         {
           firstName,
           lastName,

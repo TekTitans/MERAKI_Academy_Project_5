@@ -11,7 +11,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     if (token) {
       axios
-        .post(`http://localhost:5000/users/verifyEmail/${token}`)
+        .post(`https://smartcart-xdki.onrender.com/users/verifyEmail/${token}`)
         .then((response) => {
           if (response.data.success) {
             setStatus({ message: response.data.message, success: true });

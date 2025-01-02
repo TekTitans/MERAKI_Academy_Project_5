@@ -10,7 +10,7 @@ const Breadcrumb = () => {
 
   useEffect(() => {
     if (cId) {
-      fetch(`http://localhost:5000/category/${cId}`)
+      fetch(`https://smartcart-xdki.onrender.com/category/${cId}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
@@ -21,7 +21,7 @@ const Breadcrumb = () => {
     }
 
     if (pId) {
-      fetch(`http://localhost:5000/products/${pId}`)
+      fetch(`https://smartcart-xdki.onrender.com/products/${pId}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {

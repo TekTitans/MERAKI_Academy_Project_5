@@ -47,11 +47,11 @@ const Details = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:5000/products/${pId}`).then((response) => {
+    axios.get(`https://smartcart-xdki.onrender.com/products/${pId}`).then((response) => {
       setLoading(false);
       setProduct(response.data.product);
     });
-    axios.get(`http://localhost:5000/review/${pId}`).then((response) => {
+    axios.get(`https://smartcart-xdki.onrender.com/review/${pId}`).then((response) => {
       const allReview = response.data.reviews;
       setReviews(allReview);
       setAvgrate(response.data.average_rating);
@@ -72,7 +72,7 @@ const Details = () => {
     setLoadingCart((prevState) => ({ ...prevState, [pId]: true }));
 
     axios
-      .post(`http://localhost:5000/cart/${pId}`, { quantity }, { headers })
+      .post(`https://smartcart-xdki.onrender.com/cart/${pId}`, { quantity }, { headers })
       .then((response) => {
         if (response.data.success) {
           const product = response.data.product;
@@ -106,7 +106,7 @@ const Details = () => {
   const deleteReview = (reviewId) => {
     setLoadingReview(true);
     axios
-      .delete(`http://localhost:5000/review/${reviewId}`, { headers })
+      .delete(`https://smartcart-xdki.onrender.com/review/${reviewId}`, { headers })
       .then((response) => {
         setMessage_review("Review Deleted Successfully!");
         setReviews((prevReviews) =>
@@ -133,7 +133,7 @@ const Details = () => {
 
       axios
         .post(
-          `http://localhost:5000/review/${pId}`,
+          `https://smartcart-xdki.onrender.com/review/${pId}`,
           { rating, comment: newComment },
           { headers }
         )
@@ -173,7 +173,7 @@ const Details = () => {
       setLoadingReview(true);
       axios
         .put(
-          `http://localhost:5000/review/${reviewId}`,
+          `https://smartcart-xdki.onrender.com/review/${reviewId}`,
           { rating: editRating, comment: editComment },
           { headers }
         )

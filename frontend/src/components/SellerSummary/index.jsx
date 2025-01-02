@@ -31,7 +31,7 @@ const SellerSummary = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:5000/order/seller/summary",
+        "https://smartcart-xdki.onrender.com/order/seller/summary",
         {
           headers: {
             Authorization: `Bearer ${token}`,
