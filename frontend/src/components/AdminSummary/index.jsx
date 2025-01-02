@@ -37,7 +37,7 @@ const AdminSummary = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:5000/order/admin/summary",
+        "https://smartcart-xdki.onrender.com/order/admin/summary",
         {
           headers: {
             Authorization: `Bearer ${token}`,

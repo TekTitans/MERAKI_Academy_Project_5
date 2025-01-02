@@ -50,7 +50,7 @@ const SellerOrders = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/order/seller/${sellerId}`,
+        `https://smartcart-xdki.onrender.com/order/seller/${sellerId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -121,7 +121,7 @@ const SellerOrders = () => {
       console.log("newStatus", newStatus);
 
       await axios.put(
-        `http://localhost:5000/order/${order_id}/status`,
+        `https://smartcart-xdki.onrender.com/order/${order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -143,7 +143,7 @@ const SellerOrders = () => {
       dispatch(setLoading(true));
       dispatch(setError(null));
       await axios.put(
-        `http://localhost:5000/order/${orderToUpdate.order_id}/status`,
+        `https://smartcart-xdki.onrender.com/order/${orderToUpdate.order_id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -157,7 +157,7 @@ const SellerOrders = () => {
   };
 
   const handleInvoice = (order_id) => {
-    window.open(`http://localhost:5000/order/${order_id}/invoice`, "_blank");
+    window.open(`https://smartcart-xdki.onrender.com/order/${order_id}/invoice`, "_blank");
   };
   useEffect(() => {
     if (error || message) {

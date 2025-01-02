@@ -44,7 +44,7 @@ const ResetPassword = () => {
       console.log({ resetToken, newPassword });
 
       const result = await axios.post(
-        "http://localhost:5000/users/reset-password",
+        "https://smartcart-xdki.onrender.com/users/reset-password",
         { resetToken, newPassword }
       );
 

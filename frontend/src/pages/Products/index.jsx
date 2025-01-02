@@ -39,7 +39,7 @@ const CategoriesPage = () => {
   const fetchCategories = async () => {
     try {
       dispatch(setLoading(true));
-      const response = await axios.get(`http://localhost:5000/category`);
+      const response = await axios.get(`https://smartcart-xdki.onrender.com/category`);
       dispatch(setLoading(false));
       dispatch(setCategories(response.data.category));
     } catch (error) {

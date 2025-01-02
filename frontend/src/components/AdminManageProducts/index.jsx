@@ -57,7 +57,7 @@ const AdminManageProducts = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/category/");
+        const response = await axios.get("https://smartcart-xdki.onrender.com/category/");
         setCategories(response.data.category);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -66,7 +66,7 @@ const AdminManageProducts = () => {
 
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/subCategory");
+        const response = await axios.get("https://smartcart-xdki.onrender.com/subCategory");
         setSubcategories(response.data.subCategory);
       } catch (error) {
         console.error("Error fetching subcategories:", error);
@@ -87,7 +87,7 @@ const AdminManageProducts = () => {
     dispatch(setError(null));
     try {
       const response = await axios.get(
-        `http://localhost:5000/products/seller?page=${page}&size=${pageSize}`,
+        `https://smartcart-xdki.onrender.com/products/seller?page=${page}&size=${pageSize}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,7 +144,7 @@ const AdminManageProducts = () => {
     formData.append("product_image", file);
     try {
       const res = await axios.post(
-        "http://localhost:5000/products/upload_Image",
+        "https://smartcart-xdki.onrender.com/products/upload_Image",
         formData,
         {
           headers: {
@@ -183,7 +183,7 @@ const AdminManageProducts = () => {
     dispatch(setLoading(true));
     try {
       const response = await axios.put(
-        `http://localhost:5000/products/${product.product_id}`,
+        `https://smartcart-xdki.onrender.com/products/${product.product_id}`,
         formattedProduct,
         {
           headers: {
@@ -219,7 +219,7 @@ const AdminManageProducts = () => {
 
   const handleDelete = async (productId) => {
     try {
-      await axios.delete(`http://localhost:5000/products/${productId}`, {
+      await axios.delete(`https://smartcart-xdki.onrender.com/products/${productId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

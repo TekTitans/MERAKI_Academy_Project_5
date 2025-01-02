@@ -77,7 +77,7 @@ const Login = () => {
       console.log("email :", email);
       console.log("password :", password);
 
-      const result = await axios.post("http://localhost:5000/users/login", {
+      const result = await axios.post("https://smartcart-xdki.onrender.com/users/login", {
         email,
         password,
       });
@@ -132,7 +132,7 @@ const Login = () => {
     try {
       setIsLoading(true);
       const result = await axios.post(
-        "http://localhost:5000/users/forgot-password",
+        "https://smartcart-xdki.onrender.com/users/forgot-password",
         { email }
       );
       setMessage(
@@ -151,7 +151,7 @@ const Login = () => {
   const handleGoogleLoginSuccess = (response) => {
     const { credential } = response;
     axios
-      .post("http://localhost:5000/users/google-login", { token: credential })
+      .post("https://smartcart-xdki.onrender.com/users/google-login", { token: credential })
       .then((res) => {
         dispatch(setLogin(res.data.token));
         dispatch(setUserId(res.data.userId));

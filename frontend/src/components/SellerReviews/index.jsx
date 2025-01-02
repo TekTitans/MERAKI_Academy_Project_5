@@ -32,7 +32,7 @@ const SellerReviews = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:5000/review/seller/${sellerId}`,
+        `https://smartcart-xdki.onrender.com/review/seller/${sellerId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

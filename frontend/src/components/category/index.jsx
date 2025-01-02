@@ -57,7 +57,7 @@ const Category = () => {
         console.log("cId", cId);
 
         const response = await axios.get(
-          `http://localhost:5000/subcategory/${cId}`
+          `https://smartcart-xdki.onrender.com/subcategory/${cId}`
         );
         setSubcategories(response.data.subCategory);
         console.log("response", response);
@@ -74,7 +74,7 @@ const Category = () => {
     dispatch(setError(null));
     try {
       const response = await axios.get(
-        `http://localhost:5000/products/category/${cId}?page=${page}&size=${pageSize}`
+        `https://smartcart-xdki.onrender.com/products/category/${cId}?page=${page}&size=${pageSize}`
       );
 
       if (response.data.products) {
@@ -117,7 +117,7 @@ const Category = () => {
 
   const fetchWishlist = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/wishlist", {
+      const response = await axios.get("https://smartcart-xdki.onrender.com/wishlist", {
         headers,
       });
 
@@ -138,7 +138,7 @@ const Category = () => {
   const addToWishlist = async (productId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/wishlist",
+        "https://smartcart-xdki.onrender.com/wishlist",
         { productId },
         { headers }
       );
@@ -159,7 +159,7 @@ const Category = () => {
   const removeFromWishlist = async (productId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/wishlist/${productId}`,
+        `https://smartcart-xdki.onrender.com/wishlist/${productId}`,
         { headers }
       );
 
@@ -338,7 +338,7 @@ const Category = () => {
     try {
       const quantity = 1;
       const response = await axios.post(
-        `http://localhost:5000/cart/${productId}`,
+        `https://smartcart-xdki.onrender.com/cart/${productId}`,
         { quantity },
         { headers }
       );

@@ -21,7 +21,7 @@ const MyOrders = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/order/user/orders", { headers })
+      .get("https://smartcart-xdki.onrender.com/order/user/orders", { headers })
       .then((response) => {
         setMyOrders(response.data.result);
         setLoading(false);

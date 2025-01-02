@@ -41,7 +41,7 @@ const CheckoutForm = ({ phone_number,street,country,isVisa,deliveryPrice }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/pay", {
+      const response = await axios.post("https://smartcart-xdki.onrender.com/pay", {
         paymentMethodId: paymentMethod.id,
       });
 
@@ -60,7 +60,7 @@ const CheckoutForm = ({ phone_number,street,country,isVisa,deliveryPrice }) => {
   
   const createOrder = () => {
     axios
-      .post(`http://localhost:5000/order`, { phone_number,street,country,isVisa,deliveryPrice }, { headers })
+      .post(`https://smartcart-xdki.onrender.com/order`, { phone_number,street,country,isVisa,deliveryPrice }, { headers })
       .then((response) => {
         console.log(response.data);
         dispatch(setCartNum(0))

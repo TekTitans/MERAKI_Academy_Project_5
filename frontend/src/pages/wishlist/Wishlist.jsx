@@ -34,7 +34,7 @@ const Wishlist = () => {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/wishlist", {
+        const response = await axios.get("https://smartcart-xdki.onrender.com/wishlist", {
           headers,
         });
         if (response.data.success) {
@@ -53,7 +53,7 @@ const Wishlist = () => {
   const removeFromWishlist = async (productId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/wishlist/${productId}`,
+        `https://smartcart-xdki.onrender.com/wishlist/${productId}`,
         {
           headers,
         }
@@ -79,7 +79,7 @@ const Wishlist = () => {
     try {
       const quantity = 1;
       const response = await axios.post(
-        `http://localhost:5000/cart/${productId}`,
+        `https://smartcart-xdki.onrender.com/cart/${productId}`,
         { quantity },
         { headers }
       );

@@ -51,7 +51,7 @@ const AdminManageCatigories = () => {
         return;
       }
       const response = await axios.get(
-        `http://localhost:5000/category?page=${page}&size=${pageSize}`,
+        `https://smartcart-xdki.onrender.com/category?page=${page}&size=${pageSize}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -80,7 +80,7 @@ const AdminManageCatigories = () => {
 
       console.log("catId: ", catId);
       const response = await axios.get(
-        `http://localhost:5000/subcategory/${catId}?page=${page}&size=${pageSize}`,
+        `https://smartcart-xdki.onrender.com/subcategory/${catId}?page=${page}&size=${pageSize}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -110,8 +110,8 @@ const AdminManageCatigories = () => {
       console.log("catId: ", catId);
 
       const endpoint = isCategory
-        ? `http://localhost:5000/category/${catId}`
-        : `http://localhost:5000/subcategory/${catId}`;
+        ? `https://smartcart-xdki.onrender.com/category/${catId}`
+        : `https://smartcart-xdki.onrender.com/subcategory/${catId}`;
 
       const response = await axios.delete(endpoint, {
         headers: {
@@ -170,8 +170,8 @@ const AdminManageCatigories = () => {
 
     try {
       const endpoint = isCategory
-        ? "http://localhost:5000/category/upload_Image"
-        : `http://localhost:5000/subcategory/upload_Image`;
+        ? "https://smartcart-xdki.onrender.com/category/upload_Image"
+        : `https://smartcart-xdki.onrender.com/subcategory/upload_Image`;
 
       const res = await axios.post(endpoint, formDataToUpload, {
         headers: {
@@ -210,8 +210,8 @@ const AdminManageCatigories = () => {
       console.log("editCategory.id: ", editCategory.id);
 
       const endpoint = isCategory
-        ? `http://localhost:5000/category/${editCategory.id}`
-        : `http://localhost:5000/subcategory/${editCategory.id}`;
+        ? `https://smartcart-xdki.onrender.com/category/${editCategory.id}`
+        : `https://smartcart-xdki.onrender.com/subcategory/${editCategory.id}`;
       const data = isCategory
         ? { name, description, category_image }
         : {

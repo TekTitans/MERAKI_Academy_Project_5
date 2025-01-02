@@ -33,7 +33,7 @@ const UserProfile = () => {
 
     const fetchUserData = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/users/${userId}`, {
+        const res = await axios.get(`https://smartcart-xdki.onrender.com/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userDetails = res.data.user;

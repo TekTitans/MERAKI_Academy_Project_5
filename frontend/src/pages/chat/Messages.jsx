@@ -25,7 +25,7 @@ const Messages = ({ socket, userid }) => {
   const createMessage = () => {
     axios
       .post(
-        "http://localhost:5000/messages",
+        "https://smartcart-xdki.onrender.com/messages",
         { from: userName, from_id: userId, to: userid, message: message },
         { headers }
       )
@@ -39,7 +39,7 @@ const Messages = ({ socket, userid }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/messages/${userid}`, { headers })
+      .get(`https://smartcart-xdki.onrender.com/messages/${userid}`, { headers })
       .then((response) => {
         setMessagess(response.data);
       })

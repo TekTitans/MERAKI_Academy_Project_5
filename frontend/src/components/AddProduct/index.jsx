@@ -31,7 +31,7 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/category/");
+        const response = await axios.get("https://smartcart-xdki.onrender.com/category/");
         setCategories(response.data.category);
         console.log(response.data.category);
       } catch (error) {
@@ -41,7 +41,7 @@ const AddProduct = () => {
 
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/subcategory");
+        const response = await axios.get("https://smartcart-xdki.onrender.com/subcategory");
         setSubcategories(response.data.subCategory);
         console.log(subcategories);
       } catch (error) {
@@ -78,7 +78,7 @@ const AddProduct = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/products/upload_Image",
+        "https://smartcart-xdki.onrender.com/products/upload_Image",
         formData,
         {
           headers: {
@@ -126,7 +126,7 @@ const AddProduct = () => {
     dispatch(setLoading(true));
     try {
       const response = await axios.post(
-        "http://localhost:5000/products",
+        "https://smartcart-xdki.onrender.com/products",
         formattedProduct,
         {
           headers: {

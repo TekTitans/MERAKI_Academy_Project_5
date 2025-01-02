@@ -27,7 +27,7 @@ const AddCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/category");
+        const response = await axios.get("https://smartcart-xdki.onrender.com/category");
         setCategories(response.data.category);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -54,8 +54,8 @@ const AddCategories = () => {
 
     try {
       const endpoint = isCategory
-        ? "http://localhost:5000/category/upload_Image"
-        : `http://localhost:5000/subcategory/upload_Image`;
+        ? "https://smartcart-xdki.onrender.com/category/upload_Image"
+        : `https://smartcart-xdki.onrender.com/subcategory/upload_Image`;
 
       const res = await axios.post(endpoint, formDataToUpload, {
         headers: {
@@ -101,8 +101,8 @@ const AddCategories = () => {
     dispatch(setLoading(true));
     try {
       const endpoint = isCategory
-        ? "http://localhost:5000/category"
-        : `http://localhost:5000/subcategory/${category_id}`;
+        ? "https://smartcart-xdki.onrender.com/category"
+        : `https://smartcart-xdki.onrender.com/subcategory/${category_id}`;
       console.log("category_id", category_id);
       const data = isCategory
         ? { name, description, category_image }
