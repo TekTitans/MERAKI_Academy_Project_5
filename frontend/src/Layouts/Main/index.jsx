@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./style.css";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/navbar";
 import SellerNavbar from "../../components/SellerNavbar";
 import AdminNavbar from "../../components/AdminNavbar";
 import Footer from "../../components/Footer/Footer";
