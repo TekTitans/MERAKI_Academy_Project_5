@@ -109,7 +109,7 @@ const MyOrders = () => {
 
       currentOrderTable.push(order);
 
-      totalAmountWithDelivery += order.quantity * parseFloat(order.price);
+      totalAmountWithDelivery += order.quantity * parseFloat(order.price)+1.5;
     });
 
     if (currentOrderTable.length > 0) {
